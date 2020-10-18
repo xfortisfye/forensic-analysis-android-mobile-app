@@ -65,19 +65,13 @@ public class MainActivity extends AppCompatActivity {
                 Uri uri = data.getData();
 
                 try {
-                    /*** Insert all the FAT reading functions here***/
-                    //printHexEdit(uri);
-                    InputStream file = getContentResolver().openInputStream(uri);
-                    System.out.println(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3))));
-                    System.out.println(hexToDecimal(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3)))));
+                    /*** Insert all the FAT reading functions here ***/
                     testingText = (TextView)findViewById(R.id.testingText);
                     testingText.setText("");
                     testingText.append("Hex: ");
-                    testingText.append(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3))));
+                    testingText.append(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3)));
                     testingText.append("\nDecimal: ");
-                    testingText.append(hexToDecimal(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3)))).toString());
-                    testingText.append("\nUDID: ");
-                    testingText.append(hexToLE(getHexData(uri, 440, 443)));
+                    testingText.append(hexToDecimal(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3))).toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                     System.out.println("Unable to read file");
@@ -94,8 +88,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /***** ***** ***** ***** FUNCTIONS TO GRAB HEX ***** ***** ***** *****/
+    /***** ***** ***** ***** FUNCTIONS TO GRAB HEX ***** ***** ***** *****/
+    /***** ***** ***** ***** FUNCTIONS TO GRAB HEX ***** ***** ***** *****/
+    /***** ***** ***** ***** FUNCTIONS TO GRAB HEX ***** ***** ***** *****/
+
     /*** Get Hex Data String in Big Endian Mode ***/
-    public StringBuilder getHexData(Uri uri, int startCount, int endCount) throws IOException {
+    public StringBuilder getBEHexData(Uri uri, int startCount, int endCount) throws IOException {
         int decimalValue;
         StringBuilder hexString = new StringBuilder();
 
@@ -108,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 hexString.append(String.format("%02X", decimalValue));
             }
 
-            // System.out.println("getHexData:" + hexString);
+            System.out.println("getBEHexData:" + hexString);
             file1.close();
             return hexString;
         } catch (FileNotFoundException e) {
@@ -121,23 +120,36 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    /*** Convert to Little Endian Mode***/
-    public StringBuilder hexToLE(StringBuilder hexString) {
-        StringBuilder hexLE = new StringBuilder();
-        for (int j = hexString.length(); j != 0; j-=2) {
-            hexLE.append(hexString.substring(j-2, j));
+    /*** Get Hex Data String in Big Endian Mode ***/
+    public StringBuilder getLEHexData(Uri uri, int startCount, int endCount) throws IOException {
+        int decimalValue;
+        StringBuilder hexString = new StringBuilder();
+
+        try {
+            InputStream file1 = getContentResolver().openInputStream(uri);
+            file1.skip(startCount);
+            for (int i = startCount; i<= endCount; i++)
+            {
+                decimalValue = file1.read();
+                hexString.append(String.format("%02X", decimalValue));
+            }
+
+            StringBuilder hexLE = new StringBuilder();
+            for (int j = hexString.length(); j != 0; j-=2) {
+                hexLE.append(hexString.substring(j-2, j));
+            }
+
+            System.out.println("getLEHexData:" + hexLE);
+            file1.close();
+            return hexLE;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        // System.out.println("Hex to LE: " + hexLE);
-        return hexLE;
-    }
-
-    /*** Concat two Strings of Hex ***/
-    public StringBuilder concatHex(StringBuilder firstHex, StringBuilder secondHex) {
-        StringBuilder concatHex = new StringBuilder();
-        concatHex.append(firstHex).append(secondHex);
-        // System.out.println("ConcatHex: " + concatHex);
-        return concatHex;
+        return null;
     }
 
     /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
@@ -146,6 +158,34 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("Convert Hex: " + hexString + " to Decimal: " + decValue);
         return decValue;
     }
+
+    /*** Concat two Strings of Hex ***/
+    public StringBuilder concatHex(StringBuilder firstHex, StringBuilder secondHex) {
+        StringBuilder concatHex = new StringBuilder();
+        concatHex.append(firstHex).append(secondHex);
+        System.out.println("ConcatHex: " + concatHex);
+        return concatHex;
+    }
+
+    /*** Change Hex to LE to Decimal ***/
+    public Long hex_LE_Dec(Uri uri, int startCount, int endCount) throws IOException {
+        return hexToDecimal(getLEHexData(uri, startCount, endCount));
+    }
+
+    /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
+    /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
+    /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
+    /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
+
+    public void getMBR_PartitionInfo (Uri uri, int startCount, int endCount) throws IOException {
+
+    }
+
+    public void getMBR(Uri uri, int startCount, int endCount) throws IOException {
+        String getDiskIdentifier = getLEHexData(uri, startCount+440, endCount+444).toString();
+        //getMBR_PartitionInfo =
+    }
+
 
 
     /**********Print hex with ASCII version**********/
