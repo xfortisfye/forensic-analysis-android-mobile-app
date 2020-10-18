@@ -68,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
                     /*** Insert all the FAT reading functions here***/
                     //printHexEdit(uri);
                     InputStream file = getContentResolver().openInputStream(uri);
-                    System.out.println("UDID: ");
-                    System.out.println(hexToLE(getUDID(uri,440, 443, file)));
                     System.out.println(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3))));
                     System.out.println(hexToDecimal(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3)))));
                     testingText = (TextView)findViewById(R.id.testingText);
@@ -78,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
                     testingText.append(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3))));
                     testingText.append("\nDecimal: ");
                     testingText.append(hexToDecimal(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3)))).toString());
+                    testingText.append("\nUDID: ");
+                    testingText.append(hexToLE(getHexData(uri, 440, 443)));
                 } catch (IOException e) {
                     e.printStackTrace();
                     System.out.println("Unable to read file");
@@ -94,17 +94,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public StringBuilder getUDID(Uri uri, int startCount, int endCount, InputStream file) throws IOException {
-        int decimalValue;
-        StringBuilder hexString = new StringBuilder();
-        file.skip(startCount);
-        for (int i = startCount; i <= endCount; i++) {
-            decimalValue = file.read();
-            hexString.append(String.format("%02X", decimalValue));
-        }
-        return hexString;
-    }
-
     /*** Get Hex Data String in Big Endian Mode ***/
     public StringBuilder getHexData(Uri uri, int startCount, int endCount) throws IOException {
         int decimalValue;
@@ -119,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 hexString.append(String.format("%02X", decimalValue));
             }
 
-            System.out.println("getHexData:" + hexString);
+            // System.out.println("getHexData:" + hexString);
             file1.close();
             return hexString;
         } catch (FileNotFoundException e) {
@@ -139,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             hexLE.append(hexString.substring(j-2, j));
         }
 
-        System.out.println("Hex to LE: " + hexLE);
+        // System.out.println("Hex to LE: " + hexLE);
         return hexLE;
     }
 
@@ -147,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     public StringBuilder concatHex(StringBuilder firstHex, StringBuilder secondHex) {
         StringBuilder concatHex = new StringBuilder();
         concatHex.append(firstHex).append(secondHex);
-        System.out.println("ConcatHex: " + concatHex);
+        // System.out.println("ConcatHex: " + concatHex);
         return concatHex;
     }
 
