@@ -64,18 +64,19 @@ public class MainActivity extends AppCompatActivity {
             if (data != null){
                 Uri uri = data.getData();
 
-                File file = new File(uri.getPath());
-
                 try {
                     /*** Insert all the FAT reading functions here***/
                     //printHexEdit(uri);
+                    InputStream file = getContentResolver().openInputStream(uri);
+                    System.out.println("UDID: ");
+                    System.out.println(hexToLE(getUDID(uri,440, 443, file)));
                     System.out.println(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3))));
                     System.out.println(hexToDecimal(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3)))));
                     testingText = (TextView)findViewById(R.id.testingText);
                     testingText.setText("");
                     testingText.append("Hex: ");
                     testingText.append(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3))));
-                    testingText.append("\n Decimal: ");
+                    testingText.append("\nDecimal: ");
                     testingText.append(hexToDecimal(concatHex(hexToLE(getHexData(uri, 4, 5)), hexToLE(getHexData(uri, 0, 3)))).toString());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -91,6 +92,17 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    public StringBuilder getUDID(Uri uri, int startCount, int endCount, InputStream file) throws IOException {
+        int decimalValue;
+        StringBuilder hexString = new StringBuilder();
+        file.skip(startCount);
+        for (int i = startCount; i <= endCount; i++) {
+            decimalValue = file.read();
+            hexString.append(String.format("%02X", decimalValue));
+        }
+        return hexString;
     }
 
     /*** Get Hex Data String in Big Endian Mode ***/
