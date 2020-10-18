@@ -29,6 +29,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;*/
 
+
+
 public class MainActivity extends AppCompatActivity {
 
     TextView txtPath;
@@ -67,11 +69,54 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     /*** Insert all the FAT reading functions here ***/
                     testingText = (TextView)findViewById(R.id.testingText);
-                    testingText.setText("");
-                    testingText.append("Hex: ");
-                    testingText.append(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3)));
-                    testingText.append("\nDecimal: ");
-                    testingText.append(hexToDecimal(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3))).toString());
+                    MBR mbr = getMBR(uri, 0);
+
+                    if (mbr.chkMBRValidity()) {
+                        mbr.getPartition1().setEndOfPartition();
+                        mbr.getPartition2().setEndOfPartition();
+                        mbr.getPartition3().setEndOfPartition();
+                        mbr.getPartition4().setEndOfPartition();
+                        testingText.setText("");
+                        testingText.append("MBR detected.");
+                        testingText.append("\n");
+                        testingText.append("MBR Disk Identifier: " + mbr.getDiskIdentifer() + "\n");
+                        testingText.append("Partition 1: " + "\n");
+                        testingText.append("    Partition 1 BS: " + mbr.getPartition1().getBootableStatus() + "\n");
+                        testingText.append("    Partition 1 PT: " + mbr.getPartition1().getPartitionType() + "\n");
+                        testingText.append("    Partition 1 Start of Part: " + mbr.getPartition1().getStartOfPartition() + "\n");
+                        testingText.append("    Partition 1 End of Part: " + mbr.getPartition1().getEndOfPartition() + "\n");
+                        testingText.append("    Partition 1 Len of Part: " + mbr.getPartition1().getLenOfPartition() + "\n");
+                        testingText.append("Partition 2: " + "\n");
+                        testingText.append("    Partition 2 BS: " + mbr.getPartition2().getBootableStatus() + "\n");
+                        testingText.append("    Partition 2 PT: " + mbr.getPartition2().getPartitionType() + "\n");
+                        testingText.append("    Partition 2 Start of Part: " + mbr.getPartition2().getStartOfPartition() + "\n");
+                        testingText.append("    Partition 2 End of Part: " + mbr.getPartition2().getEndOfPartition() + "\n");
+                        testingText.append("    Partition 2 Len of Part: " + mbr.getPartition2().getLenOfPartition() + "\n\n\n\n\n\n\n\n\n");
+                        testingText.append("Partition 3: " + "\n");
+                        testingText.append("    Partition 3 BS: " + mbr.getPartition3().getBootableStatus() + "\n");
+                        testingText.append("    Partition 3 PT: " + mbr.getPartition3().getPartitionType() + "\n");
+                        testingText.append("    Partition 3 Start of Part: " + mbr.getPartition3().getStartOfPartition() + "\n");
+                        testingText.append("    Partition 3 End of Part: " + mbr.getPartition3().getEndOfPartition() + "\n");
+                        testingText.append("    Partition 3 Len of Part: " + mbr.getPartition3().getLenOfPartition() + "\n");
+                        testingText.append("Partition 4: " + "\n");
+                        testingText.append("    Partition 4 BS: " + mbr.getPartition4().getBootableStatus() + "\n");
+                        testingText.append("    Partition 4 PT: " + mbr.getPartition4().getPartitionType() + "\n");
+                        testingText.append("    Partition 4 Start of Part: " + mbr.getPartition4().getStartOfPartition() + "\n");
+                        testingText.append("    Partition 4 End of Part: " + mbr.getPartition4().getEndOfPartition() + "\n");
+                        testingText.append("    Partition 4 Len of Part: " + mbr.getPartition4().getLenOfPartition() + "\n");
+                        testingText.append("MBR Signature Type: " + mbr.getSignatureType());
+                    }
+                    else {
+                        testingText.setText("");
+                        testingText.append("Invalid MBR. Cannot detect.");
+                    }
+
+
+//                    testingText.setText("");
+//                    testingText.append("Hex: ");
+//                    testingText.append(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3)));
+//                    testingText.append("\nDecimal: ");
+//                    testingText.append(hexToDecimal(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3))).toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                     System.out.println("Unable to read file");
@@ -177,15 +222,27 @@ public class MainActivity extends AppCompatActivity {
     /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
     /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
 
-    public void getMBR_PartitionInfo (Uri uri, int startCount, int endCount) throws IOException {
+    public Partition getMBR_PartitionInfo (Uri uri, int startCount) throws IOException {
+        Partition partition = new Partition();
+        partition.setBootableStatus(getLEHexData(uri, startCount+0, startCount+0));
+        partition.setPartitionType(getLEHexData(uri, startCount+4, startCount+4));
+        partition.setStartOfPartition(hex_LE_Dec(uri, startCount+8, startCount+11));
+        partition.setLenOfPartition(hex_LE_Dec(uri, startCount+12, startCount+15));
 
+        return partition;
     }
 
-    public void getMBR(Uri uri, int startCount, int endCount) throws IOException {
-        String getDiskIdentifier = getLEHexData(uri, startCount+440, endCount+444).toString();
-        //getMBR_PartitionInfo =
-    }
+    public MBR getMBR(Uri uri, int startCount) throws IOException {
+        MBR mbr = new MBR(getLEHexData(uri, startCount + 440, startCount + 444).toString());
+        mbr.setSignatureType(getLEHexData(uri, startCount + 510, startCount + 511).toString());
 
+        mbr.setPartition1(getMBR_PartitionInfo(uri, 446));
+        mbr.setPartition2(getMBR_PartitionInfo(uri, 462));
+        mbr.setPartition3(getMBR_PartitionInfo(uri, 478));
+        mbr.setPartition4(getMBR_PartitionInfo(uri, 494));
+
+        return mbr;
+    }
 
 
     /**********Print hex with ASCII version**********/
