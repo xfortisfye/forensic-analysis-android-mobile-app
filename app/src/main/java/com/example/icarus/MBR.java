@@ -1,9 +1,5 @@
 package com.example.icarus;
 
-import android.net.Uri;
-
-import java.io.IOException;
-
 public class MBR {
     private String diskIdentifer;
     private Partition partition1;

@@ -111,12 +111,6 @@ public class MainActivity extends AppCompatActivity {
                         testingText.append("Invalid MBR. Cannot detect.");
                     }
 
-
-//                    testingText.setText("");
-//                    testingText.append("Hex: ");
-//                    testingText.append(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3)));
-//                    testingText.append("\nDecimal: ");
-//                    testingText.append(hexToDecimal(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3))).toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                     System.out.println("Unable to read file");
@@ -152,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 hexString.append(String.format("%02X", decimalValue));
             }
 
-            System.out.println("getBEHexData:" + hexString);
+            System.out.println("HEXXXXX ->->-> getBEHexData:" + hexString);
             file1.close();
             return hexString;
         } catch (FileNotFoundException e) {
@@ -184,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 hexLE.append(hexString.substring(j-2, j));
             }
 
-            System.out.println("getLEHexData:" + hexLE);
+            System.out.println("HEXXXXX ->->-> getLEHexData:" + hexLE);
             file1.close();
             return hexLE;
         } catch (FileNotFoundException e) {
@@ -198,9 +192,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
-    public Long hexToDecimal(StringBuilder hexString) {
+    public Long getHexToDecimal(StringBuilder hexString) {
         Long decValue = Long.parseLong(String.valueOf(hexString),16);
-        System.out.println("Convert Hex: " + hexString + " to Decimal: " + decValue);
+        System.out.println("HEXXXXX ->->-> Convert Hex: " + hexString + " to Decimal: " + decValue);
         return decValue;
     }
 
@@ -208,13 +202,13 @@ public class MainActivity extends AppCompatActivity {
     public StringBuilder concatHex(StringBuilder firstHex, StringBuilder secondHex) {
         StringBuilder concatHex = new StringBuilder();
         concatHex.append(firstHex).append(secondHex);
-        System.out.println("ConcatHex: " + concatHex);
+        System.out.println("HEXXXXX ->->-> ConcatHex: " + concatHex);
         return concatHex;
     }
 
     /*** Change Hex to LE to Decimal ***/
-    public Long hex_LE_Dec(Uri uri, int startCount, int endCount) throws IOException {
-        return hexToDecimal(getLEHexData(uri, startCount, endCount));
+    public Long getHexLEDec(Uri uri, int startCount, int endCount) throws IOException {
+        return getHexToDecimal(getLEHexData(uri, startCount, endCount));
     }
 
     /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
@@ -226,8 +220,8 @@ public class MainActivity extends AppCompatActivity {
         Partition partition = new Partition();
         partition.setBootableStatus(getLEHexData(uri, startCount+0, startCount+0));
         partition.setPartitionType(getLEHexData(uri, startCount+4, startCount+4));
-        partition.setStartOfPartition(hex_LE_Dec(uri, startCount+8, startCount+11));
-        partition.setLenOfPartition(hex_LE_Dec(uri, startCount+12, startCount+15));
+        partition.setStartOfPartition(getHexLEDec(uri, startCount+8, startCount+11));
+        partition.setLenOfPartition(getHexLEDec(uri, startCount+12, startCount+15));
 
         return partition;
     }
@@ -244,6 +238,11 @@ public class MainActivity extends AppCompatActivity {
         return mbr;
     }
 
+
+    /***** ***** ***** ***** MISCELLANEOUS OUTPUT ***** ***** ***** *****/
+    /***** ***** ***** ***** MISCELLANEOUS OUTPUT ***** ***** ***** *****/
+    /***** ***** ***** ***** MISCELLANEOUS OUTPUT ***** ***** ***** *****/
+    /***** ***** ***** ***** MISCELLANEOUS OUTPUT ***** ***** ***** *****/
 
     /**********Print hex with ASCII version**********/
     public void printHexEdit(Uri uri) throws IOException {

@@ -1,9 +1,5 @@
 package com.example.icarus;
 
-import android.net.Uri;
-
-import java.io.IOException;
-
 public class Partition {
     private String bootableStatus;
     private String partitionType;
@@ -25,6 +21,7 @@ public class Partition {
     }
 
     public void setPartitionType(StringBuilder hexData) {
+        /***** Someone may fill this up *****/
         if (hexData.toString().equals("00")) {
             this.partitionType = "Empty";
         }
