@@ -6,6 +6,8 @@ public class Partition {
     private Long startOfPartition;
     private Long endOfPartition;
     private Long lenOfPartition;
+    private VBR vbr;
+
     public Partition() {
     }
 
@@ -94,6 +96,7 @@ public class Partition {
         return lenOfPartition;
     }
 
+    public void setVBR(VBR vbr) { this.vbr = vbr; }
 }
 
 

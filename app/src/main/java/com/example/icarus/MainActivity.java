@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     /*** Insert all the FAT reading functions here ***/
                     testingText = (TextView)findViewById(R.id.testingText);
                     MBR mbr = getMBR(uri, 0);
-                    VBR vbr = getVBR(mbr);
+                    VBR vbr = getVBR(mbr.getPartition1(), uri, 0);
 
                     if (mbr.chkMBRValidity()) {
                         mbr.getPartition1().setEndOfPartition();
@@ -181,6 +181,17 @@ public class MainActivity extends AppCompatActivity {
         return decValue;
     }
 
+    /*** Convert Hex to ASCII String  ***/
+    public String getHexToASCII(StringBuilder hexString) {
+        StringBuilder temp = new StringBuilder();
+        for (int i = 0; i < hexString.length(); i+=2) {
+            String str = hexString.substring(i, i+2);
+            temp.append((char)Integer.parseInt(str, 16));
+        }
+
+        return temp.toString();
+    }
+
     /*** Concat two Strings of Hex ***/
     public StringBuilder concatHex(StringBuilder firstHex, StringBuilder secondHex) {
         StringBuilder concatHex = new StringBuilder();
@@ -199,16 +210,6 @@ public class MainActivity extends AppCompatActivity {
     /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
     /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
 
-    public Partition getMBR_PartitionInfo (Uri uri, int startCount) throws IOException {
-        Partition partition = new Partition();
-        partition.setBootableStatus(getLEHexData(uri, startCount+0, startCount+0));
-        partition.setPartitionType(getLEHexData(uri, startCount+4, startCount+4));
-        partition.setStartOfPartition(getHexLEDec(uri, startCount+8, startCount+11));
-        partition.setLenOfPartition(getHexLEDec(uri, startCount+12, startCount+15));
-
-        return partition;
-    }
-
     /*** Get MBR Status Information ***/
     public MBR getMBR(Uri uri, int startCount) throws IOException {
         MBR mbr = new MBR(getLEHexData(uri, startCount + 440, startCount + 444).toString());
@@ -222,9 +223,21 @@ public class MainActivity extends AppCompatActivity {
         return mbr;
     }
 
+    public Partition getMBR_PartitionInfo (Uri uri, int startCount) throws IOException {
+        Partition partition = new Partition();
+        partition.setBootableStatus(getLEHexData(uri, startCount+0, startCount+0));
+        partition.setPartitionType(getLEHexData(uri, startCount+4, startCount+4));
+        partition.setStartOfPartition(getHexLEDec(uri, startCount+8, startCount+11));
+        partition.setLenOfPartition(getHexLEDec(uri, startCount+12, startCount+15));
+
+        return partition;
+    }
+
     /*** Get VBR Status Information ***/
-    public VBR getVBR(MBR mbr) throws IOException {
-        VBR vbr = new VBR();
+    public VBR getVBR(Partition partition, Uri uri, int startCount) throws IOException {
+        VBR vbr = new VBR(partition);
+        vbr.setOEM(getHexToASCII(getBEHexData(uri, (int)( startCount + vbr.getVBRSector()*512 + 3), (int) (startCount + vbr.getVBRSector()*512 + 10))));
+        System.out.println(vbr.getOEM());
         return vbr;
     }
 
