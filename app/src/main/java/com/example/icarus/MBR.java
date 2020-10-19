@@ -12,7 +12,7 @@ public class MBR {
     }
 
     public MBR(String diskIdentifer) {
-        this.diskIdentifer = diskIdentifer;
+        setDiskIdentifer(diskIdentifer);
     }
 
     public void setDiskIdentifer(String diskIdentifer){
