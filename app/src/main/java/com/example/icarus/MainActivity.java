@@ -247,8 +247,11 @@ public class MainActivity extends AppCompatActivity {
 
     public VBR getVBRInfo(Partition partition, Uri uri) throws IOException {
         VBR vbr = new VBR();
-        int startCount = (int)(partition.getStartOfPartition()*512 + 3);
-        vbr.setOEM(getHexToASCII(getBEHexData(uri, startCount, startCount + 7)));
+        int startCount = (int)(partition.getStartOfPartition()*512);
+        vbr.setOEM(getHexToASCII(getBEHexData(uri, startCount + 3, startCount + 10)));
+        vbr.setBytesPerSector(getHexToDecimal(getLEHexData(uri, startCount + 11, startCount + 12)));
+        vbr.setSectorsPerCluster(getHexToDecimal(getLEHexData(uri, startCount + 13, startCount + 13)));
+        vbr.setReservedAreaSize(getHexToDecimal(getLEHexData(uri, startCount + 14, startCount + 15)));
 
         return vbr;
     }
