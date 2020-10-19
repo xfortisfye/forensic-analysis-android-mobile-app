@@ -253,15 +253,16 @@ public class MainActivity extends AppCompatActivity {
         return partition;
     }
 
-    public FSINFO getFSINFO(Uri uri, Partition partition) throws IOException {
-        FSINFO fsinfo = new FSINFO();
+    public FSInfo getFSINFO(Uri uri, Partition partition) throws IOException {
+        FSInfo fsinfo = new FSInfo();
         int startCount = (int)(partition.getStartOfPartition() + 1) * 512;
-        fsinfo.setFSINOSignature(getLEHexData(uri, startCount+0, startCount+0).toString());
-        fsinfo.setLastKnownFreeCluster(getLEHexData(uri, startCount+0, startCount+0).toString());
-        fsinfo.setLocalSignature(getLEHexData(uri, startCount+0, startCount+0).toString());
-        fsinfo.setNextFreeCluster(getLEHexData(uri, startCount+0, startCount+0).toString());
-        fsinfo.setTrailingSignature(getLEHexData(uri, startCount+0, startCount+0).toString());
+        fsinfo.setFSINOSignature(getLEHexData(uri, startCount+0, startCount+3).toString());
+        fsinfo.setLastKnownFreeCluster(getLEHexData(uri, startCount+484, startCount+487).toString());
+        fsinfo.setLocalSignature(getLEHexData(uri, startCount+488, startCount+491).toString());
+        fsinfo.setNextFreeCluster(getLEHexData(uri, startCount+492, startCount+495).toString());
+        fsinfo.setTrailingSignature(getLEHexData(uri, startCount+508, startCount+511).toString());
         return fsinfo;
+        mbr.getPartition1().setFSINFO()
     }
 
     public VBR getVBRInfo(Partition partition, Uri uri) throws IOException {

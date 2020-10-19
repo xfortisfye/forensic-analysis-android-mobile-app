@@ -8,6 +8,7 @@ public class Partition {
     private Long lenOfPartition;
     private VBR vbr;
     private Long VBRSector;
+    private FSInfo fsinfo;
 
     public Partition() {
     }
@@ -345,6 +346,10 @@ public class Partition {
         this.lenOfPartition = lenOfPartition;
     }
 
+    public void setFSInfo(FSInfo fsinfo) {
+        this.fsinfo = fsinfo;
+    }
+
     public String getBootableStatus() {
         return bootableStatus;
     }
@@ -370,6 +375,10 @@ public class Partition {
     }
     public VBR getVBR() {
         return vbr;
+    }
+
+    public FSInfo getFSInfo() {
+        return fsinfo;
     }
 
 }
