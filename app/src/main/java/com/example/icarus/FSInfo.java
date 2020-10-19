@@ -52,7 +52,7 @@ public class FSInfo {
         return trailingSignature;
     }
 
-    public Boolean chkFSINFOValidity(){
+    public Boolean chkFSINFOValidity(TextView testingText){
         if (this.getFSInfoSignature().equals("41615252") && this.getTrailingSignature().equals("0000AA55")) {
             return true;
         }

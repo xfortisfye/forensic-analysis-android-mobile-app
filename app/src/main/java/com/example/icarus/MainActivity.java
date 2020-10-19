@@ -57,19 +57,17 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     /*** Insert all the FAT reading functions here ***/
                     testingText = (TextView)findViewById(R.id.testingText);
+                    testingText.setText("");
                     MBR mbr = getMBR(uri, 0); // Instantiate new MBR object
 
-                    if (mbr.chkMBRValidity()) {
-                        
+                    if (mbr.chkMBRValidity(testingText)) {
+
                         /** Not really impt**/
                         mbr.getPartition1().setEndOfPartition();
                         mbr.getPartition2().setEndOfPartition();
                         mbr.getPartition3().setEndOfPartition();
                         mbr.getPartition4().setEndOfPartition();
-                        testingText.setText("");
-                        testingText.append("MBR detected.");
-                        testingText.append("\n");
-                        testingText.append("MBR Disk Identifier: " + mbr.getDiskIdentifer() + "\n");
+
                         if (!mbr.getPartition1().getPartitionType().equals("Empty")) {
                             mbr.getPartition1().toString(testingText);
                         }
@@ -86,10 +84,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         testingText.append("MBR Signature Type: " + mbr.getSignatureType());
 
-                    }
-                    else {
-                        testingText.setText("");
-                        testingText.append("Invalid MBR. Cannot detect.");
                     }
 
                 } catch (IOException e) {

@@ -1,5 +1,7 @@
 package com.example.icarus;
 
+import android.widget.TextView;
+
 public class MBR {
     private String diskIdentifer;
     private Partition partition1;
@@ -63,11 +65,14 @@ public class MBR {
         return signatureType;
     }
 
-    public Boolean chkMBRValidity() {
+    public Boolean chkMBRValidity(TextView testingText) {
         if (this.getSignatureType().equals("AA55")) {
+            testingText.append("MBR detected." + "\n");
+            testingText.append("MBR Disk Identifier: " + this.getDiskIdentifer() + "\n");
             return true;
         }
         else {
+            testingText.append("Invalid MBR. MBR cannot be detected.");
             return false;
         }
     }
