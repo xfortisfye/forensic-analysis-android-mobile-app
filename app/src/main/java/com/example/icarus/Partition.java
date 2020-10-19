@@ -10,6 +10,8 @@ public class Partition {
     private Long lenOfPartition;
     private VBR vbr;
     private Long VBRSector;
+    private FSInfo fsinfo;
+    private FATable fat;
 
 
     public Partition() {
@@ -352,6 +354,10 @@ public class Partition {
         this.vbr = vbr;
     }
 
+    public void setFSInfo(FSInfo fsinfo) { this.fsinfo = fsinfo; }
+
+    public void setFAT(FATable fat) {this.fat = fat;};
+
     public String getBootableStatus() {
         return bootableStatus;
     }
@@ -375,6 +381,12 @@ public class Partition {
     public VBR getVBR() {
         return vbr;
     }
+
+    public FSInfo getFSInfo() {
+        return this.fsinfo;
+    }
+
+    public FATable getFAT() {return this.fat; }
 
     public void toString(TextView testingText) {
         testingText.append("Partition: " + "\n");

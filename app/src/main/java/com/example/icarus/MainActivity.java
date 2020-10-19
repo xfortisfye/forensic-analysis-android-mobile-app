@@ -86,11 +86,17 @@ public class MainActivity extends AppCompatActivity {
                                 if (!partition.getPartitionType().equals("Empty")) {
                                     partition.toString(testingText);
                                     partitionCounter++;
-                                    partition.setVBR(getVBRInfo(uri, partition.getStartOfPartition()*512));
-                                    partition.getVBR().setFSInfo(getFSInfo(uri, (partition.getStartOfPartition() + partition.getVBR().getFSInfoSector())*512));
+                                    partition.setVBR(getVBRInfo(uri, partition.getStartOfPartition()*partition.getVBR().getBytesPerSector()));
+                                    partition.setFSInfo(getFSInfo(uri, (partition.getStartOfPartition() + partition.getVBR().getFSInfoSector())*partition.getVBR().getBytesPerSector()));
+                                    FATable fat0 = new FATable();
+                                    FATable fat1 = new FATable();
+                                    partition.setFAT(getFATInfo(uri, (partition.getStartOfPartition()+partition.getVBR().getReservedAreaSize())*partition.getVBR().getBytesPerSector()));
+
 
                                     System.out.println("Partition VBR: ");
                                     System.out.println(partition.getVBR().getVBRInfo());
+
+
                                 }
                                 else {
                                     //Ignore
@@ -249,6 +255,13 @@ public class MainActivity extends AppCompatActivity {
         fsinfo.setNextFreeCluster(getLEHexData(uri, startCount+492, startCount+495).toString());
         fsinfo.setTrailingSignature(getLEHexData(uri, startCount+508, startCount+511).toString());
         return fsinfo;
+    }
+
+    public FATable getFATInfo (Uri uri, Long startCount) throws IOException {
+        FATable fat = new FATable();
+        fat.setFatID(getLEHexData(uri, startCount+0, startCount+3).toString());
+        fat.setEndClusterMarker(getLEHexData(uri, startCount+4, startCount+7).toString());
+        return fat;
     }
 
     /*** Get VBR Status Information ***/
