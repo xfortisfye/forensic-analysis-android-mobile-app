@@ -201,23 +201,22 @@ public class MainActivity extends AppCompatActivity {
 
         mbr.setPartition1(getMBR_PartitionInfo(uri, + 446));
         mbr.getPartition1().setVBR(getVBRInfo(mbr.getPartition1(), uri));
-        System.out.println("Partition 1 OEM: ");
-        System.out.println(mbr.getPartition1().getVBR().getOEM());
+        System.out.println("Partition 1 VBR: ");
+        System.out.println(mbr.getPartition1().getVBR().getVBRInfo());
 
         mbr.setPartition2(getMBR_PartitionInfo(uri, + 462));
         mbr.getPartition2().setVBR(getVBRInfo(mbr.getPartition2(), uri));
-        System.out.println("Partition 2 OEM: ");
-        System.out.println(mbr.getPartition2().getVBR().getOEM());
+        System.out.println("Partition 2 VBR: ");
+        System.out.println(mbr.getPartition2().getVBR().getVBRInfo());
 
         mbr.setPartition3(getMBR_PartitionInfo(uri, + 478));
         mbr.getPartition3().setVBR(getVBRInfo(mbr.getPartition3(), uri));
-        System.out.println("Partition 3 OEM: ");
-        System.out.println(mbr.getPartition3().getVBR().getOEM());
+        System.out.println("Partition 3 VBR: ");
+        System.out.println(mbr.getPartition3().getVBR().getVBRInfo());
 
         mbr.setPartition4(getMBR_PartitionInfo(uri, + 494));
         mbr.getPartition4().setVBR(getVBRInfo(mbr.getPartition4(), uri));
-        System.out.println("Partition 4 OEM: ");
-        System.out.println(mbr.getPartition4().getVBR().getOEM());
+
 
         //Andy need to change here to grab VBR to grab
         //mbr.getPartition1().setFSInfo(getFSINFO(uri, (int)(mbr.getPartition1().getStartOfPartition() + 1) * 512));
@@ -252,7 +251,15 @@ public class MainActivity extends AppCompatActivity {
         vbr.setBytesPerSector(getHexToDecimal(getLEHexData(uri, startCount + 11, startCount + 12)));
         vbr.setSectorsPerCluster(getHexToDecimal(getLEHexData(uri, startCount + 13, startCount + 13)));
         vbr.setReservedAreaSize(getHexToDecimal(getLEHexData(uri, startCount + 14, startCount + 15)));
-        vbr.setNumOfFats(getHexToDecimal(getLEHexData(uri, startCount + 1, startCount + 16)));
+        vbr.setNumOfFats(getHexToDecimal(getLEHexData(uri, startCount + 16, startCount + 16)));
+        vbr.setMaxRootFiles(getHexToDecimal(getLEHexData(uri, startCount + 17, startCount + 18)));
+        vbr.setBit16Sectors(getHexToDecimal(getLEHexData(uri, startCount + 19, startCount + 20)));
+        vbr.setMediaType(getLEHexData(uri, startCount + 21, startCount + 21));
+        vbr.setOffset(getHexToDecimal(getLEHexData(uri, startCount + 28, startCount + 31)));
+        vbr.setBit32Sectors(getHexToDecimal(getLEHexData(uri, startCount + 32, startCount + 35)));
+        vbr.setBit32SectorsOfFat(getHexToDecimal(getLEHexData(uri, startCount + 36, startCount + 39)));
+        vbr.setRootCluster(getHexToDecimal(getLEHexData(uri, startCount + 44, startCount + 47)));
+        vbr.setFSInfoSector(getHexToDecimal(getLEHexData(uri, startCount + 48, startCount + 49)));
 
         return vbr;
     }
