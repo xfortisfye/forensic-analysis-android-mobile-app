@@ -365,6 +365,9 @@ public class Partition {
         return lenOfPartition;
     }
 
+    public void setVBR(VBR vbr) {
+        this.vbr = vbr;
+    }
     public VBR getVBR() {
         return vbr;
     }

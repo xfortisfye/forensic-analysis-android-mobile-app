@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 hexString.append(String.format("%02X", decimalValue));
             }
 
-            System.out.println("getBEHexData:" + hexString);
+            // System.out.println("getBEHexData:" + hexString);
             file1.close();
             return hexString;
         } catch (FileNotFoundException e) {
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 hexLE.append(hexString.substring(j-2, j));
             }
 
-            System.out.println("getLEHexData:" + hexLE);
+            // System.out.println("getLEHexData:" + hexLE);
             file1.close();
             return hexLE;
         } catch (FileNotFoundException e) {
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
     /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
     public Long getHexToDecimal(StringBuilder hexString) {
         Long decValue = Long.parseLong(String.valueOf(hexString),16);
-        System.out.println("Convert Hex: " + hexString + " to Decimal: " + decValue);
+        // System.out.println("Convert Hex: " + hexString + " to Decimal: " + decValue);
         return decValue;
     }
 
@@ -194,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
             String str = hexString.substring(i, i+2);
             temp.append((char)Integer.parseInt(str, 16));
         }
-
         return temp.toString();
     }
 
@@ -222,20 +221,24 @@ public class MainActivity extends AppCompatActivity {
         mbr.setSignatureType(getLEHexData(uri, startCount + 510, startCount + 511).toString());
 
         mbr.setPartition1(getMBR_PartitionInfo(uri, + 446));
-       // setVBR(mbr.getPartition1(), uri);
-        System.out.print("Partition 1 Sector: ");
-        System.out.println(mbr.getPartition1().getVBR().getVBRSector());
+        mbr.getPartition1().setVBR(getVBRInfo(mbr.getPartition1(), uri));
+        System.out.println("Partition 1 OEM: ");
+        System.out.println(mbr.getPartition1().getVBR().getOEM());
 
         mbr.setPartition2(getMBR_PartitionInfo(uri, + 462));
-       // setVBR(mbr.getPartition2(), uri);
-        System.out.print("Partition 2 Sector: ");
-        System.out.println(mbr.getPartition2().getVBR().getVBRSector());
+        mbr.getPartition2().setVBR(getVBRInfo(mbr.getPartition2(), uri));
+        System.out.println("Partition 2 OEM: ");
+        System.out.println(mbr.getPartition2().getVBR().getOEM());
 
         mbr.setPartition3(getMBR_PartitionInfo(uri, + 478));
-       // setVBR(mbr.getPartition3(), uri);
+        mbr.getPartition3().setVBR(getVBRInfo(mbr.getPartition3(), uri));
+        System.out.println("Partition 3 OEM: ");
+        System.out.println(mbr.getPartition3().getVBR().getOEM());
 
         mbr.setPartition4(getMBR_PartitionInfo(uri, + 494));
-       // setVBR(mbr.getPartition4(), uri);
+        mbr.getPartition4().setVBR(getVBRInfo(mbr.getPartition4(), uri));
+        System.out.println("Partition 4 OEM: ");
+        System.out.println(mbr.getPartition4().getVBR().getOEM());
 
         return mbr;
     }
@@ -261,20 +264,20 @@ public class MainActivity extends AppCompatActivity {
         return fsinfo;
     }
 
-//    public VBR setVBR(Partition partition, Uri uri) throws IOException {
-//        VBR vbr = new VBR(partition.getStartOfPartition());
-//        vbr.setOEM(getHexToASCII(getBEHexData(uri, (int)( vbr.getVBRSector()*512 + 3), (int) (vbr.getVBRSector()*512 + 10))));
-//
-//        return vbr;
-//    }
-
-    /*** Get VBR Status Information ***/
-    public VBR getVBR(Partition partition, Uri uri, int startCount) throws IOException {
+    public VBR getVBRInfo(Partition partition, Uri uri) throws IOException {
         VBR vbr = new VBR();
-        vbr.setOEM(getHexToASCII(getBEHexData(uri, (int)( startCount + vbr.getVBRSector()*512 + 3), (int) (startCount + vbr.getVBRSector()*512 + 10))));
-        System.out.println(vbr.getOEM());
+        int startCount = (int)(partition.getStartOfPartition()*512 + 3);
+        vbr.setOEM(getHexToASCII(getBEHexData(uri, startCount, startCount + 7)));
+
         return vbr;
     }
+
+    /*** Get VBR Status Information ***/
+//    public VBR getVBR(Partition partition, Uri uri, int startCount) throws IOException {
+//        VBR vbr = new VBR();
+//        vbr.setOEM(getHexToASCII(getBEHexData(uri, (int)( startCount + vbr.getVBRSector()*512 + 3), (int) (startCount + vbr.getVBRSector()*512 + 10))));
+//        return vbr;
+//    }
 
 
     /**********Print hex with ASCII version**********/
