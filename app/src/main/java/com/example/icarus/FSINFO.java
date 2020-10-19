@@ -1,7 +1,7 @@
 package com.example.icarus;
 
 public class FSInfo {
-    private String FSINOSignature;
+    private String FSInfoSignature;
     private String localSignature;
     private String lastKnownFreeCluster;
     private String nextFreeCluster;
@@ -10,8 +10,8 @@ public class FSInfo {
     public FSInfo() {
     }
 
-    public void setFSINOSignature(String FSINOSignature) {
-        this.FSINOSignature = FSINOSignature;
+    public void setFSInfoSignature(String FSInfoSignature) {
+        this.FSInfoSignature = FSInfoSignature;
     }
 
     public void setLastKnownFreeCluster(String lastKnownFreeCluster) {
@@ -30,8 +30,8 @@ public class FSInfo {
         this.trailingSignature = trailingSignature;
     }
 
-    public String getFSINOSignature() {
-        return FSINOSignature;
+    public String getFSInfoSignature() {
+        return FSInfoSignature;
     }
 
     public String getLastKnownFreeCluster() {
@@ -51,7 +51,7 @@ public class FSInfo {
     }
 
     public Boolean chkFSINFOValidity(){
-        if (this.getFSINOSignature().equals("41615252")&& this.getTrailingSignature().equals("0000AA55")) {
+        if (this.getFSInfoSignature().equals("41615252") && this.getTrailingSignature().equals("0000AA55")) {
             return true;
         }
         else {

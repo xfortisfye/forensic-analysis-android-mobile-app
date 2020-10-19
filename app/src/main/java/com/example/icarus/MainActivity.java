@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                             testingText.append("    Partition 1 Start of Part: " + mbr.getPartition1().getStartOfPartition() + "\n");
                             testingText.append("    Partition 1 End of Part: " + mbr.getPartition1().getEndOfPartition() + "\n");
                             testingText.append("    Partition 1 Len of Part: " + mbr.getPartition1().getLenOfPartition() + "\n");
+
                         }
                         if (!mbr.getPartition2().getPartitionType().equals("Empty")) {
                             testingText.append("Partition 2: " + "\n");
@@ -101,6 +102,19 @@ public class MainActivity extends AppCompatActivity {
                             testingText.append("    Partition 4 Len of Part: " + mbr.getPartition4().getLenOfPartition() + "\n");
                             testingText.append("MBR Signature Type: " + mbr.getSignatureType());
                         }
+
+                        testingText.append("FSINFO FSInfoSignature:" + mbr.getPartition1().getFSInfo().getFSInfoSignature()+ "\n");
+                        testingText.append("FSINFO LastKnownFreeCluster:" + mbr.getPartition1().getFSInfo().getLastKnownFreeCluster()+ "\n");
+                        testingText.append("FSINFO LocalSignature:" + mbr.getPartition1().getFSInfo().getLocalSignature()+ "\n");
+                        testingText.append("FSINFO NextFreeCluster:" + mbr.getPartition1().getFSInfo().getNextFreeCluster()+ "\n");
+                        testingText.append("FSINFO TrailingSignature:" + mbr.getPartition1().getFSInfo().getTrailingSignature()+ "\n");
+
+                        mbr.getPartition2().setFSInfo(getFSINFO(uri, (int)(mbr.getPartition2().getStartOfPartition() + 1) * 512));
+                        testingText.append("FSINFO FSInfoSignature:" + mbr.getPartition2().getFSInfo().getFSInfoSignature()+ "\n");
+                        testingText.append("FSINFO LastKnownFreeCluster:" + mbr.getPartition2().getFSInfo().getLastKnownFreeCluster()+ "\n");
+                        testingText.append("FSINFO LocalSignature:" + mbr.getPartition2().getFSInfo().getLocalSignature()+ "\n");
+                        testingText.append("FSINFO NextFreeCluster:" + mbr.getPartition2().getFSInfo().getNextFreeCluster()+ "\n");
+                        testingText.append("FSINFO TrailingSignature:" + mbr.getPartition2().getFSInfo().getTrailingSignature()+ "\n");
                     }
                     else {
                         testingText.setText("");
@@ -240,6 +254,9 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("Partition 4 OEM: ");
         System.out.println(mbr.getPartition4().getVBR().getOEM());
 
+        //ANdy need to change here to grab VBR to grab
+        mbr.getPartition1().setFSInfo(getFSINFO(uri, (int)(mbr.getPartition1().getStartOfPartition() + 1) * 512));
+
         return mbr;
     }
 
@@ -253,16 +270,14 @@ public class MainActivity extends AppCompatActivity {
         return partition;
     }
 
-    public FSInfo getFSINFO(Uri uri, Partition partition) throws IOException {
+    public FSInfo getFSINFO(Uri uri, int startCount) throws IOException {
         FSInfo fsinfo = new FSInfo();
-        int startCount = (int)(partition.getStartOfPartition() + 1) * 512;
-        fsinfo.setFSINOSignature(getLEHexData(uri, startCount+0, startCount+3).toString());
+        fsinfo.setFSInfoSignature(getLEHexData(uri, startCount+0, startCount+3).toString());
         fsinfo.setLastKnownFreeCluster(getLEHexData(uri, startCount+484, startCount+487).toString());
         fsinfo.setLocalSignature(getLEHexData(uri, startCount+488, startCount+491).toString());
         fsinfo.setNextFreeCluster(getLEHexData(uri, startCount+492, startCount+495).toString());
         fsinfo.setTrailingSignature(getLEHexData(uri, startCount+508, startCount+511).toString());
         return fsinfo;
-        mbr.getPartition1().setFSINFO()
     }
 
     public VBR getVBRInfo(Partition partition, Uri uri) throws IOException {
