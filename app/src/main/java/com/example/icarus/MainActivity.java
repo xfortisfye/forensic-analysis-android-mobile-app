@@ -1,6 +1,5 @@
 package com.example.icarus;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,8 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     /*** Insert all the FAT reading functions here ***/
                     testingText = (TextView)findViewById(R.id.testingText);
-                    MBR mbr = getMBR(uri, 0);
-                    VBR vbr = getVBR(mbr.getPartition1(), uri, 0);
+                    MBR mbr = getMBR(uri, 0); // Instantiate new MBR object
 
                     if (mbr.chkMBRValidity()) {
                         mbr.getPartition1().setEndOfPartition();
@@ -70,31 +68,39 @@ public class MainActivity extends AppCompatActivity {
                         testingText.append("MBR detected.");
                         testingText.append("\n");
                         testingText.append("MBR Disk Identifier: " + mbr.getDiskIdentifer() + "\n");
-                        testingText.append("Partition 1: " + "\n");
-                        testingText.append("    Partition 1 BS: " + mbr.getPartition1().getBootableStatus() + "\n");
-                        testingText.append("    Partition 1 PT: " + mbr.getPartition1().getPartitionType() + "\n");
-                        testingText.append("    Partition 1 Start of Part: " + mbr.getPartition1().getStartOfPartition() + "\n");
-                        testingText.append("    Partition 1 End of Part: " + mbr.getPartition1().getEndOfPartition() + "\n");
-                        testingText.append("    Partition 1 Len of Part: " + mbr.getPartition1().getLenOfPartition() + "\n");
-                        testingText.append("Partition 2: " + "\n");
-                        testingText.append("    Partition 2 BS: " + mbr.getPartition2().getBootableStatus() + "\n");
-                        testingText.append("    Partition 2 PT: " + mbr.getPartition2().getPartitionType() + "\n");
-                        testingText.append("    Partition 2 Start of Part: " + mbr.getPartition2().getStartOfPartition() + "\n");
-                        testingText.append("    Partition 2 End of Part: " + mbr.getPartition2().getEndOfPartition() + "\n");
-                        testingText.append("    Partition 2 Len of Part: " + mbr.getPartition2().getLenOfPartition() + "\n\n\n\n\n\n\n\n\n");
-                        testingText.append("Partition 3: " + "\n");
-                        testingText.append("    Partition 3 BS: " + mbr.getPartition3().getBootableStatus() + "\n");
-                        testingText.append("    Partition 3 PT: " + mbr.getPartition3().getPartitionType() + "\n");
-                        testingText.append("    Partition 3 Start of Part: " + mbr.getPartition3().getStartOfPartition() + "\n");
-                        testingText.append("    Partition 3 End of Part: " + mbr.getPartition3().getEndOfPartition() + "\n");
-                        testingText.append("    Partition 3 Len of Part: " + mbr.getPartition3().getLenOfPartition() + "\n");
-                        testingText.append("Partition 4: " + "\n");
-                        testingText.append("    Partition 4 BS: " + mbr.getPartition4().getBootableStatus() + "\n");
-                        testingText.append("    Partition 4 PT: " + mbr.getPartition4().getPartitionType() + "\n");
-                        testingText.append("    Partition 4 Start of Part: " + mbr.getPartition4().getStartOfPartition() + "\n");
-                        testingText.append("    Partition 4 End of Part: " + mbr.getPartition4().getEndOfPartition() + "\n");
-                        testingText.append("    Partition 4 Len of Part: " + mbr.getPartition4().getLenOfPartition() + "\n");
-                        testingText.append("MBR Signature Type: " + mbr.getSignatureType());
+                        if (!mbr.getPartition1().getPartitionType().equals("Empty")) {
+                            testingText.append("Partition 1: " + "\n");
+                            testingText.append("    Partition 1 BS: " + mbr.getPartition1().getBootableStatus() + "\n");
+                            testingText.append("    Partition 1 PT: " + mbr.getPartition1().getPartitionType() + "\n");
+                            testingText.append("    Partition 1 Start of Part: " + mbr.getPartition1().getStartOfPartition() + "\n");
+                            testingText.append("    Partition 1 End of Part: " + mbr.getPartition1().getEndOfPartition() + "\n");
+                            testingText.append("    Partition 1 Len of Part: " + mbr.getPartition1().getLenOfPartition() + "\n");
+                        }
+                        if (!mbr.getPartition2().getPartitionType().equals("Empty")) {
+                            testingText.append("Partition 2: " + "\n");
+                            testingText.append("    Partition 2 BS: " + mbr.getPartition2().getBootableStatus() + "\n");
+                            testingText.append("    Partition 2 PT: " + mbr.getPartition2().getPartitionType() + "\n");
+                            testingText.append("    Partition 2 Start of Part: " + mbr.getPartition2().getStartOfPartition() + "\n");
+                            testingText.append("    Partition 2 End of Part: " + mbr.getPartition2().getEndOfPartition() + "\n");
+                            testingText.append("    Partition 2 Len of Part: " + mbr.getPartition2().getLenOfPartition() + "\n\n\n\n\n\n\n\n\n");
+                        }
+                        if (!mbr.getPartition3().getPartitionType().equals("Empty")) {
+                            testingText.append("Partition 3: " + "\n");
+                            testingText.append("    Partition 3 BS: " + mbr.getPartition3().getBootableStatus() + "\n");
+                            testingText.append("    Partition 3 PT: " + mbr.getPartition3().getPartitionType() + "\n");
+                            testingText.append("    Partition 3 Start of Part: " + mbr.getPartition3().getStartOfPartition() + "\n");
+                            testingText.append("    Partition 3 End of Part: " + mbr.getPartition3().getEndOfPartition() + "\n");
+                            testingText.append("    Partition 3 Len of Part: " + mbr.getPartition3().getLenOfPartition() + "\n");
+                        }
+                        if (!mbr.getPartition4().getPartitionType().equals("Empty")) {
+                            testingText.append("Partition 4: " + "\n");
+                            testingText.append("    Partition 4 BS: " + mbr.getPartition4().getBootableStatus() + "\n");
+                            testingText.append("    Partition 4 PT: " + mbr.getPartition4().getPartitionType() + "\n");
+                            testingText.append("    Partition 4 Start of Part: " + mbr.getPartition4().getStartOfPartition() + "\n");
+                            testingText.append("    Partition 4 End of Part: " + mbr.getPartition4().getEndOfPartition() + "\n");
+                            testingText.append("    Partition 4 Len of Part: " + mbr.getPartition4().getLenOfPartition() + "\n");
+                            testingText.append("MBR Signature Type: " + mbr.getSignatureType());
+                        }
                     }
                     else {
                         testingText.setText("");
@@ -216,9 +222,20 @@ public class MainActivity extends AppCompatActivity {
         mbr.setSignatureType(getLEHexData(uri, startCount + 510, startCount + 511).toString());
 
         mbr.setPartition1(getMBR_PartitionInfo(uri, + 446));
+       // setVBR(mbr.getPartition1(), uri);
+        System.out.print("Partition 1 Sector: ");
+        System.out.println(mbr.getPartition1().getVBR().getVBRSector());
+
         mbr.setPartition2(getMBR_PartitionInfo(uri, + 462));
+       // setVBR(mbr.getPartition2(), uri);
+        System.out.print("Partition 2 Sector: ");
+        System.out.println(mbr.getPartition2().getVBR().getVBRSector());
+
         mbr.setPartition3(getMBR_PartitionInfo(uri, + 478));
+       // setVBR(mbr.getPartition3(), uri);
+
         mbr.setPartition4(getMBR_PartitionInfo(uri, + 494));
+       // setVBR(mbr.getPartition4(), uri);
 
         return mbr;
     }
@@ -244,9 +261,16 @@ public class MainActivity extends AppCompatActivity {
         return fsinfo;
     }
 
+//    public VBR setVBR(Partition partition, Uri uri) throws IOException {
+//        VBR vbr = new VBR(partition.getStartOfPartition());
+//        vbr.setOEM(getHexToASCII(getBEHexData(uri, (int)( vbr.getVBRSector()*512 + 3), (int) (vbr.getVBRSector()*512 + 10))));
+//
+//        return vbr;
+//    }
+
     /*** Get VBR Status Information ***/
     public VBR getVBR(Partition partition, Uri uri, int startCount) throws IOException {
-        VBR vbr = new VBR(partition);
+        VBR vbr = new VBR();
         vbr.setOEM(getHexToASCII(getBEHexData(uri, (int)( startCount + vbr.getVBRSector()*512 + 3), (int) (startCount + vbr.getVBRSector()*512 + 10))));
         System.out.println(vbr.getOEM());
         return vbr;

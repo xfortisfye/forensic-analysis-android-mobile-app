@@ -6,6 +6,9 @@ public class Partition {
     private Long startOfPartition;
     private Long endOfPartition;
     private Long lenOfPartition;
+    private VBR vbr;
+    private Long VBRSector;
+
     public Partition() {
     }
 
@@ -360,6 +363,10 @@ public class Partition {
 
     public Long getLenOfPartition(){
         return lenOfPartition;
+    }
+
+    public VBR getVBR() {
+        return vbr;
     }
 
 }
