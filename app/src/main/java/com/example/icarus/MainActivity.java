@@ -1,7 +1,5 @@
 package com.example.icarus;
 
-/*import org.apache.commons.codec.binary.*;*/
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,18 +15,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-//import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-import org.w3c.dom.Text;
-/*import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;*/
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -112,11 +101,6 @@ public class MainActivity extends AppCompatActivity {
                         testingText.append("Invalid MBR. Cannot detect.");
                     }
 
-//                    testingText.setText("");
-//                    testingText.append("Hex: ");
-//                    testingText.append(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3)));
-//                    testingText.append("\nDecimal: ");
-//                    testingText.append(hexToDecimal(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3))).toString());
                 } catch (IOException e) {
                     e.printStackTrace();
                     System.out.println("Unable to read file");
@@ -124,16 +108,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // CAN REMOVE THIS IF NOT NEEDED
-        /*
-        switch (requestCode) {
-            case 10:
-                if (resultCode == RESULT_OK) {
-                    String path = data.getData().getPath();
-                    txtPath.setText(path);
-                }
-                break;
-        } */
     }
 
     /***** ***** ***** ***** FUNCTIONS TO GRAB HEX ***** ***** ***** *****/
@@ -201,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
-    public Long hexToDecimal(StringBuilder hexString) {
+    public Long getHexToDecimal(StringBuilder hexString) {
         Long decValue = Long.parseLong(String.valueOf(hexString),16);
         System.out.println("Convert Hex: " + hexString + " to Decimal: " + decValue);
         return decValue;
@@ -216,8 +190,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*** Change Hex to LE to Decimal ***/
-    public Long hex_LE_Dec(Uri uri, int startCount, int endCount) throws IOException {
-        return hexToDecimal(getLEHexData(uri, startCount, endCount));
+    public Long getHexLEDec(Uri uri, int startCount, int endCount) throws IOException {
+        return getHexToDecimal(getLEHexData(uri, startCount, endCount));
     }
 
     /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
@@ -229,8 +203,8 @@ public class MainActivity extends AppCompatActivity {
         Partition partition = new Partition();
         partition.setBootableStatus(getLEHexData(uri, startCount+0, startCount+0));
         partition.setPartitionType(getLEHexData(uri, startCount+4, startCount+4));
-        partition.setStartOfPartition(hex_LE_Dec(uri, startCount+8, startCount+11));
-        partition.setLenOfPartition(hex_LE_Dec(uri, startCount+12, startCount+15));
+        partition.setStartOfPartition(getHexLEDec(uri, startCount+8, startCount+11));
+        partition.setLenOfPartition(getHexLEDec(uri, startCount+12, startCount+15));
 
         return partition;
     }

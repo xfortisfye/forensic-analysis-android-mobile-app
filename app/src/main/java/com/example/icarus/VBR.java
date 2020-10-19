@@ -1,7 +1,5 @@
 package com.example.icarus;
 
-import android.net.Uri;
-
 public class VBR {
 
     private long VBRSector;

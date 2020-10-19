@@ -1,23 +1,16 @@
 package com.example.icarus;
 
-import android.net.Uri;
-
-import java.io.IOException;
-
 public class Partition {
     private String bootableStatus;
     private String partitionType;
     private Long startOfPartition;
     private Long endOfPartition;
     private Long lenOfPartition;
-
-    private String hexDataString;
-
     public Partition() {
     }
 
     public void setBootableStatus(StringBuilder hexData) {
-
+        String hexDataString;
         switch(hexDataString = hexData.toString()) {
             case "80":
                 this.bootableStatus = "Bootable";
@@ -29,7 +22,7 @@ public class Partition {
     }
 
     public void setPartitionType(StringBuilder hexData) {
-
+        String hexDataString;
         switch(hexDataString = hexData.toString()) {
             case "00":
                 this.partitionType = "Empty";
