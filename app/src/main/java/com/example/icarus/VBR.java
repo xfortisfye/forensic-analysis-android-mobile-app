@@ -16,6 +16,8 @@ public class VBR {
     private long rootCluster;
     private long FSInfoSector;
 
+    private FSInfo fsinfo;
+
     public VBR() {
     }
 
@@ -55,6 +57,8 @@ public class VBR {
 
     public void setFSInfoSector(long FSInfoSector) { this.FSInfoSector = FSInfoSector; }
 
+    public void setFSInfo(FSInfo fsinfo) { this.fsinfo = fsinfo; }
+
     public String getOEM() { return this.OEM; }
 
     public long getBytesPerSector() { return bytesPerSector; }
@@ -80,6 +84,10 @@ public class VBR {
     public long getRootCluster() { return rootCluster; }
 
     public long getFSInfoSector() { return FSInfoSector; }
+
+    public FSInfo getFSInfo() {
+        return this.fsinfo;
+    }
 
     public String getVBRInfo() {
         String VBRInfo = ("OEM: " + this.OEM

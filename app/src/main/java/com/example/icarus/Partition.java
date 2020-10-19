@@ -348,6 +348,10 @@ public class Partition {
         this.lenOfPartition = lenOfPartition;
     }
 
+    public void setVBR(VBR vbr) {
+        this.vbr = vbr;
+    }
+
     public String getBootableStatus() {
         return bootableStatus;
     }
@@ -368,9 +372,6 @@ public class Partition {
         return lenOfPartition;
     }
 
-    public void setVBR(VBR vbr) {
-        this.vbr = vbr;
-    }
     public VBR getVBR() {
         return vbr;
     }
