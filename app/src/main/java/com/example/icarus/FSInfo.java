@@ -1,5 +1,7 @@
 package com.example.icarus;
 
+import android.widget.TextView;
+
 public class FSInfo {
     private String FSInfoSignature;
     private String localSignature;
@@ -58,4 +60,13 @@ public class FSInfo {
             return false;
         }
     }
+
+    public void toString(TextView testingText) {
+        testingText.append("FSINFO FSInfoSignature:" + this.getFSInfoSignature()+ "\n");
+        testingText.append("FSINFO LastKnownFreeCluster:" + this.getLastKnownFreeCluster()+ "\n");
+        testingText.append("FSINFO LocalSignature:" + this.getLocalSignature()+ "\n");
+        testingText.append("FSINFO NextFreeCluster:" + this.getNextFreeCluster()+ "\n");
+        testingText.append("FSINFO TrailingSignature:" + this.getTrailingSignature()+ "\n");
+    }
+
 }

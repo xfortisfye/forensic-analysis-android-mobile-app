@@ -1,5 +1,7 @@
 package com.example.icarus;
 
+import android.widget.TextView;
+
 public class Partition {
     private String bootableStatus;
     private String partitionType;
@@ -8,7 +10,7 @@ public class Partition {
     private Long lenOfPartition;
     private VBR vbr;
     private Long VBRSector;
-    private FSInfo fsinfo;
+
 
     public Partition() {
     }
@@ -346,10 +348,6 @@ public class Partition {
         this.lenOfPartition = lenOfPartition;
     }
 
-    public void setFSInfo(FSInfo fsinfo) {
-        this.fsinfo = fsinfo;
-    }
-
     public String getBootableStatus() {
         return bootableStatus;
     }
@@ -377,8 +375,13 @@ public class Partition {
         return vbr;
     }
 
-    public FSInfo getFSInfo() {
-        return fsinfo;
+    public void toString(TextView testingText) {
+        testingText.append("Partition: " + "\n");
+        testingText.append("    Partition BS: " + this.getBootableStatus() + "\n");
+        testingText.append("    Partition PT: " + this.getPartitionType() + "\n");
+        testingText.append("    Partition Start of Part: " + this.getStartOfPartition() + "\n");
+        testingText.append("    Partition End of Part: " + this.getEndOfPartition() + "\n");
+        testingText.append("    Partition Len of Part: " + this.getLenOfPartition() + "\n");
     }
 
 }

@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
                     MBR mbr = getMBR(uri, 0); // Instantiate new MBR object
 
                     if (mbr.chkMBRValidity()) {
+                        
+                        /** Not really impt**/
                         mbr.getPartition1().setEndOfPartition();
                         mbr.getPartition2().setEndOfPartition();
                         mbr.getPartition3().setEndOfPartition();
@@ -69,52 +71,21 @@ public class MainActivity extends AppCompatActivity {
                         testingText.append("\n");
                         testingText.append("MBR Disk Identifier: " + mbr.getDiskIdentifer() + "\n");
                         if (!mbr.getPartition1().getPartitionType().equals("Empty")) {
-                            testingText.append("Partition 1: " + "\n");
-                            testingText.append("    Partition 1 BS: " + mbr.getPartition1().getBootableStatus() + "\n");
-                            testingText.append("    Partition 1 PT: " + mbr.getPartition1().getPartitionType() + "\n");
-                            testingText.append("    Partition 1 Start of Part: " + mbr.getPartition1().getStartOfPartition() + "\n");
-                            testingText.append("    Partition 1 End of Part: " + mbr.getPartition1().getEndOfPartition() + "\n");
-                            testingText.append("    Partition 1 Len of Part: " + mbr.getPartition1().getLenOfPartition() + "\n");
-
+                            mbr.getPartition1().toString(testingText);
                         }
                         if (!mbr.getPartition2().getPartitionType().equals("Empty")) {
-                            testingText.append("Partition 2: " + "\n");
-                            testingText.append("    Partition 2 BS: " + mbr.getPartition2().getBootableStatus() + "\n");
-                            testingText.append("    Partition 2 PT: " + mbr.getPartition2().getPartitionType() + "\n");
-                            testingText.append("    Partition 2 Start of Part: " + mbr.getPartition2().getStartOfPartition() + "\n");
-                            testingText.append("    Partition 2 End of Part: " + mbr.getPartition2().getEndOfPartition() + "\n");
-                            testingText.append("    Partition 2 Len of Part: " + mbr.getPartition2().getLenOfPartition() + "\n\n\n\n\n\n\n\n\n");
+                            mbr.getPartition2().toString(testingText);
                         }
+
+                        testingText.append("\n\n\n\n\n\n\n\n\n");
                         if (!mbr.getPartition3().getPartitionType().equals("Empty")) {
-                            testingText.append("Partition 3: " + "\n");
-                            testingText.append("    Partition 3 BS: " + mbr.getPartition3().getBootableStatus() + "\n");
-                            testingText.append("    Partition 3 PT: " + mbr.getPartition3().getPartitionType() + "\n");
-                            testingText.append("    Partition 3 Start of Part: " + mbr.getPartition3().getStartOfPartition() + "\n");
-                            testingText.append("    Partition 3 End of Part: " + mbr.getPartition3().getEndOfPartition() + "\n");
-                            testingText.append("    Partition 3 Len of Part: " + mbr.getPartition3().getLenOfPartition() + "\n");
+                            mbr.getPartition3().toString(testingText);
                         }
                         if (!mbr.getPartition4().getPartitionType().equals("Empty")) {
-                            testingText.append("Partition 4: " + "\n");
-                            testingText.append("    Partition 4 BS: " + mbr.getPartition4().getBootableStatus() + "\n");
-                            testingText.append("    Partition 4 PT: " + mbr.getPartition4().getPartitionType() + "\n");
-                            testingText.append("    Partition 4 Start of Part: " + mbr.getPartition4().getStartOfPartition() + "\n");
-                            testingText.append("    Partition 4 End of Part: " + mbr.getPartition4().getEndOfPartition() + "\n");
-                            testingText.append("    Partition 4 Len of Part: " + mbr.getPartition4().getLenOfPartition() + "\n");
-                            testingText.append("MBR Signature Type: " + mbr.getSignatureType());
+                            mbr.getPartition4().toString(testingText);
                         }
+                        testingText.append("MBR Signature Type: " + mbr.getSignatureType());
 
-                        testingText.append("FSINFO FSInfoSignature:" + mbr.getPartition1().getFSInfo().getFSInfoSignature()+ "\n");
-                        testingText.append("FSINFO LastKnownFreeCluster:" + mbr.getPartition1().getFSInfo().getLastKnownFreeCluster()+ "\n");
-                        testingText.append("FSINFO LocalSignature:" + mbr.getPartition1().getFSInfo().getLocalSignature()+ "\n");
-                        testingText.append("FSINFO NextFreeCluster:" + mbr.getPartition1().getFSInfo().getNextFreeCluster()+ "\n");
-                        testingText.append("FSINFO TrailingSignature:" + mbr.getPartition1().getFSInfo().getTrailingSignature()+ "\n");
-
-                        mbr.getPartition2().setFSInfo(getFSINFO(uri, (int)(mbr.getPartition2().getStartOfPartition() + 1) * 512));
-                        testingText.append("FSINFO FSInfoSignature:" + mbr.getPartition2().getFSInfo().getFSInfoSignature()+ "\n");
-                        testingText.append("FSINFO LastKnownFreeCluster:" + mbr.getPartition2().getFSInfo().getLastKnownFreeCluster()+ "\n");
-                        testingText.append("FSINFO LocalSignature:" + mbr.getPartition2().getFSInfo().getLocalSignature()+ "\n");
-                        testingText.append("FSINFO NextFreeCluster:" + mbr.getPartition2().getFSInfo().getNextFreeCluster()+ "\n");
-                        testingText.append("FSINFO TrailingSignature:" + mbr.getPartition2().getFSInfo().getTrailingSignature()+ "\n");
                     }
                     else {
                         testingText.setText("");
@@ -254,8 +225,8 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("Partition 4 OEM: ");
         System.out.println(mbr.getPartition4().getVBR().getOEM());
 
-        //ANdy need to change here to grab VBR to grab
-        mbr.getPartition1().setFSInfo(getFSINFO(uri, (int)(mbr.getPartition1().getStartOfPartition() + 1) * 512));
+        //Andy need to change here to grab VBR to grab
+        //mbr.getPartition1().setFSInfo(getFSINFO(uri, (int)(mbr.getPartition1().getStartOfPartition() + 1) * 512));
 
         return mbr;
     }
