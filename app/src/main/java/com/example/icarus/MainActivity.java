@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         vbr.setBytesPerSector(getHexToDecimal(getLEHexData(uri, startCount + 11, startCount + 12)));
         vbr.setSectorsPerCluster(getHexToDecimal(getLEHexData(uri, startCount + 13, startCount + 13)));
         vbr.setReservedAreaSize(getHexToDecimal(getLEHexData(uri, startCount + 14, startCount + 15)));
+        vbr.setNumOfFats(getHexToDecimal(getLEHexData(uri, startCount + 1, startCount + 16)));
 
         return vbr;
     }
