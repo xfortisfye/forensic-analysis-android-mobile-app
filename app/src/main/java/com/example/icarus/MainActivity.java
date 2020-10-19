@@ -253,11 +253,11 @@ public class MainActivity extends AppCompatActivity {
         vbr.setReservedAreaSize(getHexToDecimal(getLEHexData(uri, startCount + 14, startCount + 15)));
         vbr.setNumOfFats(getHexToDecimal(getLEHexData(uri, startCount + 16, startCount + 16)));
         vbr.setMaxRootFiles(getHexToDecimal(getLEHexData(uri, startCount + 17, startCount + 18)));
-        vbr.setBit16Sectors(getHexToDecimal(getLEHexData(uri, startCount + 19, startCount + 20)));
+        vbr.setBit16Sectors((getLEHexData(uri, startCount + 19, startCount + 20)).toString());
         vbr.setMediaType(getLEHexData(uri, startCount + 21, startCount + 21));
         vbr.setOffset(getHexToDecimal(getLEHexData(uri, startCount + 28, startCount + 31)));
-        vbr.setBit32Sectors(getHexToDecimal(getLEHexData(uri, startCount + 32, startCount + 35)));
-        vbr.setBit32SectorsOfFat(getHexToDecimal(getLEHexData(uri, startCount + 36, startCount + 39)));
+        vbr.setBit32Sectors((getLEHexData(uri, startCount + 32, startCount + 35)).toString());
+        vbr.setBit32SectorsOfFat((getLEHexData(uri, startCount + 36, startCount + 39)).toString());
         vbr.setRootCluster(getHexToDecimal(getLEHexData(uri, startCount + 44, startCount + 47)));
         vbr.setFSInfoSector(getHexToDecimal(getLEHexData(uri, startCount + 48, startCount + 49)));
 

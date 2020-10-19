@@ -7,12 +7,12 @@ public class VBR {
     private long sectorsPerCluster;
     private long reservedAreaSize; // In sectors
     private long numOfFats;
-    private long bit16Sectors;
+    private String bit16Sectors;
     private long maxRootFiles;
     private String mediaType;
     private long offset; // Number of sectors before start of partition
-    private long bit32Sectors;
-    private long bit32SectorsOfFat;
+    private String bit32Sectors;
+    private String bit32SectorsOfFat;
     private long rootCluster;
     private long FSInfoSector;
 
@@ -29,7 +29,7 @@ public class VBR {
 
     public void setNumOfFats(long numOfFats) { this.numOfFats = numOfFats; }
 
-    public void setBit16Sectors(long bit16Sectors) { this.bit16Sectors = bit16Sectors; }
+    public void setBit16Sectors(String bit16Sectors) { this.bit16Sectors = bit16Sectors; }
 
     public void setMaxRootFiles(long maxRootFiles) { this.maxRootFiles = maxRootFiles; }
 
@@ -47,9 +47,9 @@ public class VBR {
 
     public void setOffset(long offset) { this.offset = offset; }
 
-    public void setBit32Sectors(long bit32Sectors) { this.bit32Sectors = bit32Sectors; }
+    public void setBit32Sectors(String bit32Sectors) { this.bit32Sectors = bit32Sectors; }
 
-    public void setBit32SectorsOfFat(long bit32SectorsOfFat) { this.bit32SectorsOfFat = bit32SectorsOfFat; }
+    public void setBit32SectorsOfFat(String bit32SectorsOfFat) { this.bit32SectorsOfFat = bit32SectorsOfFat; }
 
     public void setRootCluster(long rootCluster) { this.rootCluster = rootCluster; }
 
@@ -65,7 +65,7 @@ public class VBR {
 
     public long getNumOfFats() { return numOfFats; }
 
-    public long getBit16Sectors() { return bit16Sectors; }
+    public String getBit16Sectors() { return bit16Sectors; }
 
     public long getMaxRootFiles() { return maxRootFiles; }
 
@@ -73,9 +73,9 @@ public class VBR {
 
     public long getOffset() { return offset; }
 
-    public long getBit32Sectors() { return bit32Sectors; }
+    public String getBit32Sectors() { return bit32Sectors; }
 
-    public long getBit32SectorsOfFat() { return bit32SectorsOfFat; }
+    public String getBit32SectorsOfFat() { return bit32SectorsOfFat; }
 
     public long getRootCluster() { return rootCluster; }
 
@@ -85,7 +85,7 @@ public class VBR {
         String VBRInfo = ("OEM: " + this.OEM
                 + "\nBytes Per Sector: " + this.bytesPerSector
                 + "\nSectors Per Cluster: " + this.sectorsPerCluster
-                + "\nReserved Area Size (in sector)" + this.reservedAreaSize
+                + "\nReserved Area Size (in sector): " + this.reservedAreaSize
                 + "\nNumber of Fats: " + this.numOfFats
                 + "\n16-bit value of number of sectors: " + this.bit16Sectors
                 + "\nMedia Type: " + this.mediaType
