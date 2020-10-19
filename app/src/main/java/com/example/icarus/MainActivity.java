@@ -33,7 +33,7 @@ import androidx.navigation.ui.NavigationUI;*/
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView txtPath;
+    TextView txtPath; // CAN REMOVE IF NOT NEEDED
     Button startAnalyseButton;
     TextView testingText;
     Intent myFileIntent;
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                     /*** Insert all the FAT reading functions here ***/
                     testingText = (TextView)findViewById(R.id.testingText);
                     MBR mbr = getMBR(uri, 0);
+                    VBR vbr = getVBR(mbr);
 
                     if (mbr.chkMBRValidity()) {
                         mbr.getPartition1().setEndOfPartition();
@@ -111,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
                         testingText.append("Invalid MBR. Cannot detect.");
                     }
 
-
 //                    testingText.setText("");
 //                    testingText.append("Hex: ");
 //                    testingText.append(concatHex(getLEHexData(uri, 4, 5), getLEHexData(uri, 0, 3)));
@@ -123,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+        // CAN REMOVE THIS IF NOT NEEDED
+        /*
         switch (requestCode) {
             case 10:
                 if (resultCode == RESULT_OK) {
@@ -130,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     txtPath.setText(path);
                 }
                 break;
-        }
+        } */
     }
 
     /***** ***** ***** ***** FUNCTIONS TO GRAB HEX ***** ***** ***** *****/
@@ -232,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
         return partition;
     }
 
+    /*** Get MBR Status Information ***/
     public MBR getMBR(Uri uri, int startCount) throws IOException {
         MBR mbr = new MBR(getLEHexData(uri, startCount + 440, startCount + 444).toString());
         mbr.setSignatureType(getLEHexData(uri, startCount + 510, startCount + 511).toString());
@@ -242,6 +246,12 @@ public class MainActivity extends AppCompatActivity {
         mbr.setPartition4(getMBR_PartitionInfo(uri, 494));
 
         return mbr;
+    }
+
+    /*** Get VBR Status Information ***/
+    public VBR getVBR(MBR mbr) throws IOException {
+        VBR vbr = new VBR();
+        return vbr;
     }
 
 
