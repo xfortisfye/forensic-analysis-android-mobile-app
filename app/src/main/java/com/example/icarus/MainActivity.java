@@ -106,20 +106,27 @@ public class MainActivity extends AppCompatActivity {
 
                                     long startOfFirstFat, endOfFirstFat, endOfLastFat, startOfDataRegion, endOfDataRegion;
 
-                                    startOfFirstFat = (partition.getStartOfPartition() + partition.getVBR().getReservedAreaSize());
-                                    endOfFirstFat = startOfFirstFat + (partition.getVBR().getBit32SectorsOfFat());
+                                    startOfFirstFat = (partition.getStartOfPartition() + partition.getVBR().getReservedAreaSize())
+                                            * partition.getVBR().getBytesPerSector();
+                                    endOfFirstFat = startOfFirstFat + (partition.getVBR().getBit32SectorsOfFat())
+                                            * partition.getVBR().getBytesPerSector();
                                     startOfDataRegion = startOfFirstFat;
 
-                                    for (int index = 0; index < partition.getVBR().getNumOfFats(); index++) {
-                                        startOfDataRegion = +(partition.getVBR().getBit32SectorsOfFat());
+                                    for (int index = 1; index < partition.getVBR().getNumOfFats(); index++) {
+                                        startOfDataRegion =+(partition.getVBR().getBit32SectorsOfFat()
+                                                * partition.getVBR().getBytesPerSector());
                                     }
                                     endOfLastFat = startOfDataRegion - partition.getVBR().getBytesPerSector();
-                                    endOfDataRegion = startOfDataRegion + partition.getVBR().getBit32Sectors();
-                                    FATable faTable = new FATable(startOfFirstFat, endOfFirstFat, endOfLastFat);
+                                    endOfDataRegion = startOfDataRegion + partition.getVBR().getBit32Sectors()
+                                            * partition.getVBR().getBytesPerSector() + partition.getVBR().getBytesPerSector();
 
-                                    partition.setFAT(faTable);
+                                    FATable Fatable = new FATable(startOfFirstFat, endOfFirstFat, endOfLastFat);
+                                    partition.setFAT(Fatable);
+                                    partition.getFAT().toString(testingText);
+
                                     DataRegion dataRegion = new DataRegion(startOfDataRegion, endOfDataRegion);
                                     partition.setDataRegion(dataRegion);
+                                    partition.getDataRegion().toString(testingText);
                                 }
                                 else {
                                     //Ignore
@@ -201,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
     /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
     public long getHexToDecimal(StringBuilder hexString) {
-        long decValue = long.parseLong(String.valueOf(hexString),16);
+        long decValue = Long.parseLong(String.valueOf(hexString),16);
         // System.out.println("Convert Hex: " + hexString + " to Decimal: " + decValue);
         return decValue;
     }

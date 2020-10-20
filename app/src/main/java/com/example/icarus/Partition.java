@@ -392,7 +392,7 @@ public class Partition {
 
     public FATable getFAT() { return this.fat; }
 
-    public DataRegion dataRegion() { return this.dataRegion; }
+    public DataRegion getDataRegion() { return this.dataRegion; }
 
     public void toString(TextView testingText) {
         testingText.append("Partition: " + "\n");

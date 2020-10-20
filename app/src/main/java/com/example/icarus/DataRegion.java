@@ -30,4 +30,10 @@ public class DataRegion {
     public long getEndOfDataRegion() {
         return endOfDataRegion;
     }
+
+    public void toString(TextView testingText) {
+        testingText.append("DATA REGION: " + "\n");
+        testingText.append("    Start of Data Region:" + this.getStartOfDataRegion() + "\n");
+        testingText.append("    End  of Data Region:" + this.getEndOfDataRegion() + "\n");
+    }
 }
