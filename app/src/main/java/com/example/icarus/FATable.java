@@ -1,15 +1,34 @@
 package com.example.icarus;
 
+import android.widget.TextView;
+
 public class FATable {
-    private String startSector;
+    /** In decimal **/
+    private long startOfFirstFat;
+    private long endOfFirstFat;
+    private long endOfLastFat;
     private String FatID;
     private String endClusterMarker;
 
     public FATable () {
     }
 
-    public void setStartSector(){
-        this.startSector = startSector;
+    public FATable (long startOfFirstFat, long endOfFirstFat, long endOfLastFat) {
+        setStartOfFirstFat(startOfFirstFat);
+        setEndOfFirstFat(endOfFirstFat);
+        setEndOfLastFat(endOfLastFat);
+    }
+
+    public void setStartOfFirstFat(long startOfFirstFat) {
+        this.startOfFirstFat = startOfFirstFat;
+    }
+
+    public void setEndOfFirstFat(long endOfFirstFat) {
+        this.endOfFirstFat = endOfFirstFat;
+    }
+
+    public void setEndOfLastFat(long endOfLastFat) {
+        this.endOfLastFat = endOfLastFat;
     }
 
     public void setFatID(String fatID) {
@@ -20,8 +39,16 @@ public class FATable {
         this.endClusterMarker = endClusterMarker;
     }
 
-    public String getStartSector() {
-        return startSector;
+    public Long getStartOfFirstFat() {
+        return startOfFirstFat;
+    }
+
+    public Long getEndOfFirstFat() {
+        return endOfFirstFat;
+    }
+
+    public Long getEndOfLastFat() {
+        return endOfLastFat;
     }
 
     public String getFatID() {
@@ -30,6 +57,15 @@ public class FATable {
 
     public String getEndClusterMarker() {
         return endClusterMarker;
+    }
+
+    public void toString(TextView testingText) {
+        testingText.append("FATABLE INFORMATION: " + "\n");
+        testingText.append("    FATID:" + this.getFatID()+ "\n");
+        testingText.append("    End Cluster Mark:" + this.getEndClusterMarker()+ "\n");
+        testingText.append("    Start of FirstFAT:" + this.getStartOfFirstFat() + "\n");
+        testingText.append("    End of FirstFAT:" + this.getEndOfFirstFat() + "\n");
+        testingText.append("    End of LastFAT:" + this.getEndOfLastFat() + "\n");
     }
 }
 

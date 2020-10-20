@@ -5,13 +5,14 @@ import android.widget.TextView;
 public class Partition {
     private String bootableStatus;
     private String partitionType;
-    private Long startOfPartition;
-    private Long endOfPartition;
-    private Long lenOfPartition;
+    private long startOfPartition;
+    private long endOfPartition;
+    private long lenOfPartition;
     private VBR vbr;
-    private Long VBRSector;
+    private long VBRSector;
     private FSInfo fsinfo;
     private FATable fat;
+    private DataRegion dataRegion;
 
 
     public Partition() {
@@ -356,7 +357,10 @@ public class Partition {
 
     public void setFSInfo(FSInfo fsinfo) { this.fsinfo = fsinfo; }
 
-    public void setFAT(FATable fat) {this.fat = fat;};
+    public void setFAT(FATable fat) {this.fat = fat;}
+
+    public void setDataRegion(DataRegion dataRegion) { this.dataRegion = dataRegion; }
+
 
     public String getBootableStatus() {
         return bootableStatus;
@@ -366,15 +370,15 @@ public class Partition {
         return partitionType;
     }
 
-    public Long getStartOfPartition() {
+    public long getStartOfPartition() {
         return startOfPartition;
     }
 
-    public Long getEndOfPartition() {
+    public long getEndOfPartition() {
         return endOfPartition;
     }
 
-    public Long getLenOfPartition(){
+    public long getLenOfPartition(){
         return lenOfPartition;
     }
 
@@ -386,7 +390,9 @@ public class Partition {
         return this.fsinfo;
     }
 
-    public FATable getFAT() {return this.fat; }
+    public FATable getFAT() { return this.fat; }
+
+    public DataRegion dataRegion() { return this.dataRegion; }
 
     public void toString(TextView testingText) {
         testingText.append("Partition: " + "\n");

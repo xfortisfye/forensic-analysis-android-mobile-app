@@ -69,10 +69,11 @@ public class MBR {
         if (this.getSignatureType().equals("AA55")) {
             testingText.append("MBR detected." + "\n");
             testingText.append("MBR Disk Identifier: " + this.getDiskIdentifer() + "\n");
+            testingText.append("MBR Signature Type: " + this.getSignatureType() + "\n\n");
             return true;
         }
         else {
-            testingText.append("Invalid MBR. MBR cannot be detected.");
+            testingText.append("Invalid MBR. MBR cannot be detected." + "\n");
             return false;
         }
     }

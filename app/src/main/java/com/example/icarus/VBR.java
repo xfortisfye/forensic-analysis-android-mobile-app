@@ -85,19 +85,20 @@ public class VBR {
 
     public long getFSInfoSector() { return FSInfoSector; }
 
-    public String getVBRInfo() {
-        String VBRInfo = ("OEM: " + this.OEM
-                + "\nBytes Per Sector: " + this.bytesPerSector
-                + "\nSectors Per Cluster: " + this.sectorsPerCluster
-                + "\nReserved Area Size (in sector)" + this.reservedAreaSize
-                + "\nNumber of Fats: " + this.numOfFats
-                + "\n16-bit value of number of sectors: " + this.bit16Sectors
-                + "\nMedia Type: " + this.mediaType
-                + "\nNumber of sectors before start of partition: " + this.offset
-                + "\n32-bit value of number of sectors: " + this.bit32Sectors
-                + "\n32-bit value of 1 FAT: " + this.bit32SectorsOfFat
-                + "\nCluster of Root Director: " + this.rootCluster
-                + "\nSector of FSINFO: " + this.FSInfoSector
+    public String toString() {
+        String VBRInfo = ("VBR Info:"
+                + "     OEM: " + this.OEM
+                + "\n     Bytes Per Sector: " + this.bytesPerSector
+                + "\n     Sectors Per Cluster: " + this.sectorsPerCluster
+                + "\n     Reserved Area Size (in sector)" + this.reservedAreaSize
+                + "\n     Number of Fats: " + this.numOfFats
+                + "\n     16-bit value of number of sectors: " + this.bit16Sectors
+                + "\n     Media Type: " + this.mediaType
+                + "\n     Number of sectors before start of partition: " + this.offset
+                + "\n     32-bit value of number of sectors: " + this.bit32Sectors
+                + "\n     32-bit value of 1 FAT: " + this.bit32SectorsOfFat
+                + "\n     Cluster of Root Director: " + this.rootCluster
+                + "\n     Sector of FSINFO: " + this.FSInfoSector + "\n"
         );
 
         return VBRInfo;

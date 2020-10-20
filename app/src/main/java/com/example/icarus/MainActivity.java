@@ -20,10 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView txtPath; // CAN REMOVE IF NOT NEEDED
     Button startAnalyseButton;
     TextView testingText;
-    Intent myFileIntent;
     private static final int READ_REQUEST_CODE = 42;
     int partitionCounter = 0;
     Boolean extendedPartExist = false;
@@ -52,15 +50,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK){
-            if (data != null){
+            if (data != null) {
                 Uri uri = data.getData();
+
+                testingText = (TextView) findViewById(R.id.testingText);
+                testingText.setText("");
+                long startCount = 0L;
+                Boolean validMBR = false;
+                MBR mbr = new MBR();
 
                 try {
                     /*** Insert all the FAT reading functions here ***/
-                    testingText = (TextView)findViewById(R.id.testingText);
-                    testingText.setText("");
-                    Long startCount = 0L;
-                    MBR mbr = getMBR(uri, startCount +0); // Instantiate new MBR object
+                    mbr = getMBR(uri, startCount + 0); // Instantiate new MBR object
 
                     if (mbr.chkMBRValidity(testingText)) {
 
@@ -74,44 +75,65 @@ public class MainActivity extends AppCompatActivity {
                         mbr.getPartition3().setEndOfPartition();
                         mbr.getPartition4().setEndOfPartition();
 
+                        testingText.append("Extended found? : " + extendedPartExist + "\n\n");
+                        validMBR = true;
+                    } else {
+                        validMBR = false;
+                        testingText.append("No MBR found. " + "\n\n");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("Unable to read file");
+                }
+
+                if (validMBR == true) {
+                    try {
                         Partition[] partitionAvailability = {mbr.getPartition1(), mbr.getPartition2(),
                                 mbr.getPartition3(), mbr.getPartition4()};
-
                         for (Partition partition : partitionAvailability) {
                             if (partition.getPartitionType().equals("Extended")) {
                                 extendedPartExist = true;
                             }
-
                             else {
                                 if (!partition.getPartitionType().equals("Empty")) {
                                     partition.toString(testingText);
                                     partitionCounter++;
-                                    partition.setVBR(getVBRInfo(uri, partition.getStartOfPartition()*partition.getVBR().getBytesPerSector()));
-                                    partition.setFSInfo(getFSInfo(uri, (partition.getStartOfPartition() + partition.getVBR().getFSInfoSector())*partition.getVBR().getBytesPerSector()));
-                                    FATable fat0 = new FATable();
-                                    FATable fat1 = new FATable();
-                                    partition.setFAT(getFATInfo(uri, (partition.getStartOfPartition()+partition.getVBR().getReservedAreaSize())*partition.getVBR().getBytesPerSector()));
+                                    partition.setVBR(getVBRInfo(uri, partition.getStartOfPartition() * 512));
+//                                    partition.setFSInfo(getFSInfo(uri, (partition.getStartOfPartition() +
+//                                            partition.getVBR().getFSInfoSector()) * partition.getVBR().getBytesPerSector()));
 
+                                    testingText.append(partition.getVBR().toString());
 
-                                    System.out.println("Partition VBR: ");
-                                    System.out.println(partition.getVBR().getVBRInfo());
+                                    long startOfFirstFat, endOfFirstFat, endOfLastFat, startOfDataRegion, endOfDataRegion;
 
+                                    startOfFirstFat = (partition.getStartOfPartition() + partition.getVBR().getReservedAreaSize());
+                                    endOfFirstFat = startOfFirstFat + (partition.getVBR().getBit32SectorsOfFat());
+                                    startOfDataRegion = startOfFirstFat;
 
+                                    for (int index = 0; index < partition.getVBR().getNumOfFats(); index++) {
+                                        startOfDataRegion = +(partition.getVBR().getBit32SectorsOfFat());
+                                    }
+                                    endOfLastFat = startOfDataRegion - partition.getVBR().getBytesPerSector();
+                                    endOfDataRegion = startOfDataRegion + partition.getVBR().getBit32Sectors();
+                                    FATable faTable = new FATable(startOfFirstFat, endOfFirstFat, endOfLastFat);
+
+                                    partition.setFAT(faTable);
+                                    DataRegion dataRegion = new DataRegion(startOfDataRegion, endOfDataRegion);
+                                    partition.setDataRegion(dataRegion);
                                 }
                                 else {
                                     //Ignore
                                 }
                             }
                         }
-                        testingText.append("\nMBR Signature Type: " + mbr.getSignatureType() + "Extended found? : " + extendedPartExist);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("Unable to read file");
+                    catch(IOException e){
+                        e.printStackTrace();
+                        System.out.println("Unable to read file");
+                    }
                 }
             }
         }
-
     }
 
     /***** ***** ***** ***** FUNCTIONS TO GRAB HEX ***** ***** ***** *****/
@@ -120,14 +142,14 @@ public class MainActivity extends AppCompatActivity {
     /***** ***** ***** ***** FUNCTIONS TO GRAB HEX ***** ***** ***** *****/
 
     /*** Get Hex Data String in Big Endian Mode ***/
-    public StringBuilder getBEHexData(Uri uri, Long startCount, Long endCount) throws IOException {
+    public StringBuilder getBEHexData(Uri uri, long startCount, long endCount) throws IOException {
         int decimalValue;
         StringBuilder hexString = new StringBuilder();
 
         try {
             InputStream file1 = getContentResolver().openInputStream(uri);
             file1.skip(startCount);
-            for (Long i = startCount; i<= endCount; i++)
+            for (long i = startCount; i<= endCount; i++)
             {
                 decimalValue = file1.read();
                 hexString.append(String.format("%02X", decimalValue));
@@ -146,14 +168,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*** Get Hex Data String in Big Endian Mode ***/
-    public StringBuilder getLEHexData(Uri uri, Long startCount, Long endCount) throws IOException {
+    public StringBuilder getLEHexData(Uri uri, long startCount, long endCount) throws IOException {
         int decimalValue;
         StringBuilder hexString = new StringBuilder();
 
         try {
             InputStream file1 = getContentResolver().openInputStream(uri);
             file1.skip(startCount);
-            for (Long i = startCount; i<= endCount; i++)
+            for (long i = startCount; i<= endCount; i++)
             {
                 decimalValue = file1.read();
                 hexString.append(String.format("%02X", decimalValue));
@@ -178,8 +200,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
-    public Long getHexToDecimal(StringBuilder hexString) {
-        Long decValue = Long.parseLong(String.valueOf(hexString),16);
+    public long getHexToDecimal(StringBuilder hexString) {
+        long decValue = long.parseLong(String.valueOf(hexString),16);
         // System.out.println("Convert Hex: " + hexString + " to Decimal: " + decValue);
         return decValue;
     }
@@ -203,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*** Change Hex to LE to Decimal ***/
-    public Long getHexLEDec(Uri uri, Long startCount, Long endCount) throws IOException {
+    public long getHexLEDec(Uri uri, long startCount, long endCount) throws IOException {
         return getHexToDecimal(getLEHexData(uri, startCount, endCount));
     }
 
@@ -213,13 +235,13 @@ public class MainActivity extends AppCompatActivity {
     /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
 
     /*** Get MBR Status Information ***/
-    public MBR getMBR(Uri uri, Long startCount) throws IOException {
+    public MBR getMBR(Uri uri, long startCount) throws IOException {
         MBR mbr = new MBR(getLEHexData(uri, startCount + 440, startCount + 444).toString());
         mbr.setSignatureType(getLEHexData(uri, startCount + 510, startCount + 511).toString());
         return mbr;
     }
 
-    public Partition getMBR_PartitionInfo (Uri uri, Long startCount) throws IOException {
+    public Partition getMBR_PartitionInfo (Uri uri, long startCount) throws IOException {
         Partition partition = new Partition();
         partition.setBootableStatus(getLEHexData(uri, startCount+0, startCount+0));
         partition.setPartitionType(getLEHexData(uri, startCount+4, startCount+4));
@@ -228,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
         return partition;
     }
 
-    public VBR getVBRInfo(Uri uri, Long startCount) throws IOException {
+    public VBR getVBRInfo(Uri uri, long startCount) throws IOException {
         VBR vbr = new VBR();
         vbr.setOEM(getHexToASCII(getBEHexData(uri, startCount + 3, startCount + 10)));
         vbr.setBytesPerSector(getHexToDecimal(getLEHexData(uri, startCount + 11, startCount + 12)));
@@ -247,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
         return vbr;
     }
 
-    public FSInfo getFSInfo(Uri uri, Long startCount) throws IOException {
+    public FSInfo getFSInfo(Uri uri, long startCount) throws IOException {
         FSInfo fsinfo = new FSInfo();
         fsinfo.setFSInfoSignature(getLEHexData(uri, startCount+0, startCount+3).toString());
         fsinfo.setLastKnownFreeCluster(getLEHexData(uri, startCount+484, startCount+487).toString());
@@ -257,10 +279,9 @@ public class MainActivity extends AppCompatActivity {
         return fsinfo;
     }
 
-    public FATable getFATInfo (Uri uri, Long startCount) throws IOException {
+    public FATable getFATInfo (Uri uri, long startCount) throws IOException {
         FATable fat = new FATable();
-        fat.setFatID(getLEHexData(uri, startCount+0, startCount+3).toString());
-        fat.setEndClusterMarker(getLEHexData(uri, startCount+4, startCount+7).toString());
+
         return fat;
     }
 
