@@ -9,7 +9,6 @@ public class Partition {
     private long endOfPartition;
     private long lenOfPartition;
     private VBR vbr;
-    private long VBRSector;
     private FSInfo fsinfo;
     private FATable fat;
     private DataRegion dataRegion;
@@ -19,20 +18,21 @@ public class Partition {
     }
 
     public void setBootableStatus(StringBuilder hexData) {
-        String hexDataString;
-        switch(hexDataString = hexData.toString()) {
+        switch(hexData.toString()) {
             case "80":
                 this.bootableStatus = "Bootable";
                 break;
             case "00":
                 this.bootableStatus = "Non-Bootable";
                 break;
+            default:
+                this.bootableStatus = "Invalid Bootable State";
+                break;
         }
     }
 
     public void setPartitionType(StringBuilder hexData) {
-        String hexDataString;
-        switch(hexDataString = hexData.toString()) {
+        switch(hexData.toString()) {
             case "00":
                 this.partitionType = "Empty";
                 break;
@@ -339,7 +339,7 @@ public class Partition {
         }
     }
 
-    public void setStartOfPartition(Long startOfPartition) {
+    public void setStartOfPartition(long startOfPartition) {
         this.startOfPartition = startOfPartition;
     }
 
@@ -347,7 +347,7 @@ public class Partition {
         this.endOfPartition = this.startOfPartition + this.lenOfPartition - 1;
     }
 
-    public void setLenOfPartition(Long lenOfPartition){
+    public void setLenOfPartition(long lenOfPartition){
         this.lenOfPartition = lenOfPartition;
     }
 

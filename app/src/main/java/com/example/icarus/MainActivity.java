@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 //                                    partition.setFSInfo(getFSInfo(uri, (partition.getStartOfPartition() +
 //                                            partition.getVBR().getFSInfoSector()) * partition.getVBR().getBytesPerSector()));
 
-                                    testingText.append(partition.getVBR().toString());
+                                    partition.getVBR().toString(testingText);
 
                                     long startOfFirstFat, endOfFirstFat, endOfLastFat, startOfDataRegion, endOfDataRegion;
 
@@ -110,18 +110,19 @@ public class MainActivity extends AppCompatActivity {
                                             * partition.getVBR().getBytesPerSector();
                                     endOfFirstFat = startOfFirstFat + (partition.getVBR().getBit32SectorsOfFat())
                                             * partition.getVBR().getBytesPerSector();
+
                                     startOfDataRegion = startOfFirstFat;
 
                                     for (int index = 1; index < partition.getVBR().getNumOfFats(); index++) {
-                                        startOfDataRegion =+(partition.getVBR().getBit32SectorsOfFat()
+                                        startOfDataRegion = startOfDataRegion + (partition.getVBR().getBit32SectorsOfFat()
                                                 * partition.getVBR().getBytesPerSector());
                                     }
                                     endOfLastFat = startOfDataRegion - partition.getVBR().getBytesPerSector();
                                     endOfDataRegion = startOfDataRegion + partition.getVBR().getBit32Sectors()
                                             * partition.getVBR().getBytesPerSector() + partition.getVBR().getBytesPerSector();
 
-                                    FATable Fatable = new FATable(startOfFirstFat, endOfFirstFat, endOfLastFat);
-                                    partition.setFAT(Fatable);
+                                    FATable fat = new FATable(startOfFirstFat, endOfFirstFat, endOfLastFat);
+                                    partition.setFAT(getFATInfo(uri, fat.getStartOfFirstFat(), fat));
                                     partition.getFAT().toString(testingText);
 
                                     DataRegion dataRegion = new DataRegion(startOfDataRegion, endOfDataRegion);
@@ -260,18 +261,18 @@ public class MainActivity extends AppCompatActivity {
     public VBR getVBRInfo(Uri uri, long startCount) throws IOException {
         VBR vbr = new VBR();
         vbr.setOEM(getHexToASCII(getBEHexData(uri, startCount + 3, startCount + 10)));
-        vbr.setBytesPerSector(getHexToDecimal(getLEHexData(uri, startCount + 11, startCount + 12)));
-        vbr.setSectorsPerCluster(getHexToDecimal(getLEHexData(uri, startCount + 13, startCount + 13)));
-        vbr.setReservedAreaSize(getHexToDecimal(getLEHexData(uri, startCount + 14, startCount + 15)));
-        vbr.setNumOfFats(getHexToDecimal(getLEHexData(uri, startCount + 16, startCount + 16)));
-        vbr.setMaxRootFiles(getHexToDecimal(getLEHexData(uri, startCount + 17, startCount + 18)));
-        vbr.setBit16Sectors(getHexToDecimal(getLEHexData(uri, startCount + 19, startCount + 20)));
+        vbr.setBytesPerSector(getHexLEDec(uri, startCount + 11, startCount + 12));
+        vbr.setSectorsPerCluster(getHexLEDec(uri, startCount + 13, startCount + 13));
+        vbr.setReservedAreaSize(getHexLEDec(uri, startCount + 14, startCount + 15));
+        vbr.setNumOfFats(getHexLEDec(uri, startCount + 16, startCount + 16));
+        vbr.setMaxRootFiles(getHexLEDec(uri, startCount + 17, startCount + 18));
+        vbr.setBit16Sectors(getHexLEDec(uri, startCount + 19, startCount + 20));
         vbr.setMediaType(getLEHexData(uri, startCount + 21, startCount + 21));
-        vbr.setOffset(getHexToDecimal(getLEHexData(uri, startCount + 28, startCount + 31)));
-        vbr.setBit32Sectors(getHexToDecimal(getLEHexData(uri, startCount + 32, startCount + 35)));
-        vbr.setBit32SectorsOfFat(getHexToDecimal(getLEHexData(uri, startCount + 36, startCount + 39)));
-        vbr.setRootCluster(getHexToDecimal(getLEHexData(uri, startCount + 44, startCount + 47)));
-        vbr.setFSInfoSector(getHexToDecimal(getLEHexData(uri, startCount + 48, startCount + 49)));
+        vbr.setOffset(getHexLEDec(uri, startCount + 28, startCount + 31));
+        vbr.setBit32Sectors(getHexLEDec(uri, startCount + 32, startCount + 35));
+        vbr.setBit32SectorsOfFat(getHexLEDec(uri, startCount + 36, startCount + 39));
+        vbr.setRootCluster(getHexLEDec(uri, startCount + 44, startCount + 47));
+        vbr.setFSInfoSector(getHexLEDec(uri, startCount + 48, startCount + 49));
 
         return vbr;
     }
@@ -286,8 +287,9 @@ public class MainActivity extends AppCompatActivity {
         return fsinfo;
     }
 
-    public FATable getFATInfo (Uri uri, long startCount) throws IOException {
-        FATable fat = new FATable();
+    public FATable getFATInfo (Uri uri, long startCount, FATable fat) throws IOException {
+        fat.setFatID(getLEHexData(uri, startCount+0, startCount+3).toString());
+        fat.setEndClusterMarker(getLEHexData(uri, startCount+4, startCount+7).toString());
 
         return fat;
     }
