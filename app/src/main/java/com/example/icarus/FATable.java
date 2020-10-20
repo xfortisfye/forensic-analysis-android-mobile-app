@@ -63,8 +63,8 @@ public class FATable {
         testingText.append("FATABLE INFORMATION: " + "\n");
         testingText.append("    FATID: " + this.getFatID()+ "\n");
         testingText.append("    End Cluster Mark: " + this.getEndClusterMarker()+ "\n");
-        testingText.append("    Start of First FAT: " + this.getStartOfFirstFat() + "\n");
-        testingText.append("    End of First FAT:" + this.getEndOfFirstFat() + "\n");
+        testingText.append("    Start of First FAT (First byte): " + this.getStartOfFirstFat() + "\n");
+        testingText.append("    End of First FAT (Last byte):" + this.getEndOfFirstFat() + "\n");
         testingText.append("    End of Last FAT:" + this.getEndOfLastFat() + "\n");
     }
 }

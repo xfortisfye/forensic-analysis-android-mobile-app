@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
                         mbr.getPartition3().setEndOfPartition();
                         mbr.getPartition4().setEndOfPartition();
 
-                        testingText.append("Extended found? : " + extendedPartExist + "\n\n");
                         validMBR = true;
                     } else {
                         validMBR = false;
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                         for (Partition partition : partitionAvailability) {
                             if (partition.getPartitionType().equals("Extended")) {
                                 extendedPartExist = true;
+                                testingText.append("Extended found! : " + extendedPartExist + "\n\n");
                             }
                             else {
                                 if (!partition.getPartitionType().equals("Empty")) {
@@ -108,18 +108,18 @@ public class MainActivity extends AppCompatActivity {
 
                                     startOfFirstFat = (partition.getStartOfPartition() + partition.getVBR().getReservedAreaSize())
                                             * partition.getVBR().getBytesPerSector();
-                                    endOfFirstFat = startOfFirstFat + (partition.getVBR().getBit32SectorsOfFat())
-                                            * partition.getVBR().getBytesPerSector();
+                                    endOfFirstFat = startOfFirstFat + (partition.getVBR().getBit32SectorsOfFat()
+                                            * partition.getVBR().getBytesPerSector()) - 1;
 
                                     startOfDataRegion = startOfFirstFat;
 
-                                    for (int index = 1; index < partition.getVBR().getNumOfFats(); index++) {
+                                    for (int index = 0; index < partition.getVBR().getNumOfFats(); index++) {
                                         startOfDataRegion = startOfDataRegion + (partition.getVBR().getBit32SectorsOfFat()
                                                 * partition.getVBR().getBytesPerSector());
                                     }
-                                    endOfLastFat = startOfDataRegion - partition.getVBR().getBytesPerSector();
-                                    endOfDataRegion = startOfDataRegion + partition.getVBR().getBit32Sectors()
-                                            * partition.getVBR().getBytesPerSector() + partition.getVBR().getBytesPerSector();
+                                    endOfLastFat = startOfDataRegion - 1;
+                                    endOfDataRegion = ((partition.getStartOfPartition() + partition.getVBR().getBit32Sectors())
+                                            * partition.getVBR().getBytesPerSector()) - 1;
 
                                     FATable fat = new FATable(startOfFirstFat, endOfFirstFat, endOfLastFat);
                                     partition.setFAT(getFATInfo(uri, fat.getStartOfFirstFat(), fat));

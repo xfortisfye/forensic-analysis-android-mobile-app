@@ -142,13 +142,13 @@ public class VBR {
         testingText.append("    OEM: " + this.getOEM() + "\n");
         testingText.append("    Bytes Per Sector: " + this.getBytesPerSector() + "\n");
         testingText.append("    Sectors Per Cluster: " + this.getSectorsPerCluster() + "\n");
-        testingText.append("    Reserved Area Size (in sector)" + this.getReservedAreaSize() + "\n");
-        testingText.append("    Number of Fats: " + this.getNumOfFats() + "\n");
-        testingText.append("    16-bit value of number of sectors: " + this.getBit16Sectors() + "\n");
+        testingText.append("    Reserved Area Size (in sectors): " + this.getReservedAreaSize() + "\n");
+        testingText.append("    Number of FATs: " + this.getNumOfFats() + "\n");
+        testingText.append("    16-bit value of total number of sectors: " + this.getBit16Sectors() + "\n");
         testingText.append("    Media Type: " + this.getMediaType() + "\n");
         testingText.append("    Number of sectors before start of partition: " + this.getOffset() + "\n");
-        testingText.append("    32-bit value of number of sectors: " + this.getBit32Sectors() + "\n");
-        testingText.append("    32-bit value of 1 FAT: " + this.getBit32SectorsOfFat() + "\n");
+        testingText.append("    32-bit value of total number of sectors: " + this.getBit32Sectors() + "\n");
+        testingText.append("    32-bit value of 1 FAT (in sectors): " + this.getBit32SectorsOfFat() + "\n");
         testingText.append("    Cluster of Root Directory: " + this.getRootCluster() + "\n");
         testingText.append("    Sector of FSINFO: " + this.getFSInfoSector() + "\n");
     }
