@@ -5,7 +5,7 @@ import android.widget.TextView;
 public class FATable {
     /** In decimal **/
     private long startOfFirstFat;
-    private long endOfFirstFat;
+    private long endOfFirstFat; // Start of Second FAT
     private long endOfLastFat;
     private String FatID;
     private String endClusterMarker;
@@ -61,11 +61,11 @@ public class FATable {
 
     public void toString(TextView testingText) {
         testingText.append("FATABLE INFORMATION: " + "\n");
-        testingText.append("    FATID:" + this.getFatID()+ "\n");
-        testingText.append("    End Cluster Mark:" + this.getEndClusterMarker()+ "\n");
-        testingText.append("    Start of FirstFAT:" + this.getStartOfFirstFat() + "\n");
-        testingText.append("    End of FirstFAT:" + this.getEndOfFirstFat() + "\n");
-        testingText.append("    End of LastFAT:" + this.getEndOfLastFat() + "\n");
+        testingText.append("    FATID: " + this.getFatID()+ "\n");
+        testingText.append("    End Cluster Mark: " + this.getEndClusterMarker()+ "\n");
+        testingText.append("    Start of First FAT: " + this.getStartOfFirstFat() + "\n");
+        testingText.append("    End of First FAT:" + this.getEndOfFirstFat() + "\n");
+        testingText.append("    End of Last FAT:" + this.getEndOfLastFat() + "\n");
     }
 }
 
