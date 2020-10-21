@@ -53,10 +53,10 @@ public class DataRegion {
     }
 
     public void toString(TextView testingText) {
-        testingText.append("DATA REGION: " + "\n");
-        testingText.append("    Start of Data Region (sectors): " + this.getStartDataRegionSect() + "\n");
-        testingText.append("    End of Data Region (sectors): " + this.getEndDataRegionSect() + "\n");
-        testingText.append("    Start of Data Region (bytes): " + this.getStartDataRegionDec() + "\n");
-        testingText.append("    End of Data Region (bytes): " + this.getEndDataRegionDec() + "\n");
+        testingText.append("[     DATA REGION     " + "\n");
+        testingText.append("Start of Data Region (sectors): " + this.getStartDataRegionSect() + "\n");
+        testingText.append("End of Data Region (sectors): " + this.getEndDataRegionSect() + "\n");
+        testingText.append("Start of Data Region (bytes): " + this.getStartDataRegionDec() + "\n");
+        testingText.append("End of Data Region (bytes): " + this.getEndDataRegionDec() + "\n");
     }
 }

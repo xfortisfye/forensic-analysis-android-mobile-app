@@ -67,9 +67,8 @@ public class MBR {
 
     public Boolean chkMBRValidity(TextView testingText) {
         if (this.getSignatureType().equals("AA55")) {
-            testingText.append("MBR detected." + "\n");
-            testingText.append("MBR Disk Identifier: " + this.getDiskIdentifer() + "\n");
-            testingText.append("MBR Signature Type: " + this.getSignatureType() + "\n\n");
+            testingText.append("MBR detected. Signature Type: " + this.getSignatureType() + "\n");
+            testingText.append("MBR Disk Identifier: " + this.getDiskIdentifer() + "\n\n");
             return true;
         }
         else {

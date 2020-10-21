@@ -91,15 +91,15 @@ public class FATable {
     }
 
     public void toString(TextView testingText) {
-        testingText.append("FAT TABLE INFORMATION: " + "\n");
-        testingText.append("    FATID: " + this.getFatID()+ "\n");
-        testingText.append("    End Cluster Mark: " + this.getEndClusterMarker()+ "\n");
-        testingText.append("    Start of First FAT (First sect): " + this.getStartFirstFatSect() + "\n");
-        testingText.append("    End of First FAT (Last sect): " + this.getEndFirstFatSect() + "\n");
-        testingText.append("    End of Last FAT (Last sect): " + this.getEndLastFatSect() + "\n");
-        testingText.append("    Start of First FAT (First byte): " + this.getStartFirstFatDec() + "\n");
-        testingText.append("    End of First FAT (Last byte): " + this.getEndFirstFatDec() + "\n");
-        testingText.append("    End of Last FAT (Last byte): " + this.getEndLastFatDec() + "\n");
+        testingText.append("[     FAT TABLE INFORMATION     ]" + "\n");
+        testingText.append("FATID: " + this.getFatID()+ "\n");
+        testingText.append("End Cluster Mark: " + this.getEndClusterMarker()+ "\n");
+        testingText.append("Start of First FAT (First sect): " + this.getStartFirstFatSect() + "\n");
+        testingText.append("End of First FAT (Last sect): " + this.getEndFirstFatSect() + "\n");
+        testingText.append("End of Last FAT (Last sect): " + this.getEndLastFatSect() + "\n");
+        testingText.append("Start of First FAT (First byte): " + this.getStartFirstFatDec() + "\n");
+        testingText.append("End of First FAT (Last byte): " + this.getEndFirstFatDec() + "\n");
+        testingText.append("End of Last FAT (Last byte): " + this.getEndLastFatDec() + "\n");
     }
 }
 

@@ -2,7 +2,7 @@ package com.example.icarus;
 
 import android.widget.TextView;
 
-public class Partition {
+public class ExtPartition {
     private String partitionName;
     private String bootableStatus;
     private String partitionType;
@@ -14,14 +14,14 @@ public class Partition {
     private DataRegion dataRegion;
 
 
-    public Partition() {
+    public ExtPartition() {
     }
 
     public void setPartitionName(String partitionName) {
         this.partitionName = partitionName;
     }
 
-    public void setBootableStatus(StringBuilder hexData) {
+    public void setExtBootableStatus(StringBuilder hexData) {
         switch(hexData.toString()) {
             case "80":
                 this.bootableStatus = "Bootable";

@@ -31,11 +31,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         /*** Detect Start Analyse Button ***/
-        startAnalyseButton = (Button)findViewById(R.id.startAnalyseButton);
+        startAnalyseButton = (Button) findViewById(R.id.startAnalyseButton);
         startAnalyseButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            public void onClick(View v){
-                Intent openFileIntent= new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            public void onClick(View v) {
+                Intent openFileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 openFileIntent.addCategory(Intent.CATEGORY_OPENABLE);
                 openFileIntent.setType("*/*");
                 startActivityForResult(openFileIntent, READ_REQUEST_CODE);
@@ -49,16 +49,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 Uri uri = data.getData();
 
                 testingText = (TextView) findViewById(R.id.testingText);
                 testingText.setText("");
                 int partitionCounter = 0;
-                Boolean extendedPartExist = false;
                 long startCount = 0L;
                 Boolean validMBR = false;
+                Boolean extendedPartExist = false;
                 MBR mbr = new MBR();
 
                 try {
@@ -95,17 +95,85 @@ public class MainActivity extends AppCompatActivity {
                                 mbr.getPartition3(), mbr.getPartition4()};
                         for (Partition partition : partitionAvailability) {
                             if (partition.getPartitionType().equals("Extended")) {
+
                                 extendedPartExist = true;
                                 testingText.append("Extended found! : " + extendedPartExist + "\n\n");
-                            }
-                            else {
+                                Boolean loopedAllExtPartitions = false;
+                                long startPriExtPartition = partition.getStartOfPartition();
+
+                                do {
+                                    Boolean validExtMBR = false;
+                                    ExtMBR extmbr = new ExtMBR();
+                                    try {
+                                            extmbr = getExtMBR(uri, partition.getStartOfPartition() + 0);
+
+                                        if (extmbr.chkExtMBRValidity(testingText)) {
+                                            extmbr.setExtPartition1(getExtMBR_PartitionInfo(uri, startCount + 446));
+                                            extmbr.setExtPartition2(getExtMBR_PartitionInfo(uri, startCount + 462));
+                                            extmbr.getExtPartition1().setEndOfPartition();
+                                            extmbr.getExtPartition2().setEndOfPartition();
+                                            validExtMBR = true;
+                                        } else {
+                                            testingText.append("No Ext MBR found. " + "\n\n");
+                                            validExtMBR = false;
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                        System.out.println("Unable to read file");
+                                    }
+
+                                    if (validExtMBR == true) {
+                                        try {
+                                            if (!extmbr.getExtPartition1().getPartitionType().equals("Empty")) {
+                                                partitionCounter++;
+                                                extmbr.getExtPartition1().setVBR(getVBRInfo(uri, extmbr.getExtPartition1().getStartOfPartition() * 512));
+                                                extmbr.getExtPartition1().setPartitionName("[     PARTITION " + partitionCounter + ": " +
+                                                        extmbr.getExtPartition1().getVBR().getVolumeLabel() + " (" + extmbr.getExtPartition1().getVBR().getFileSystemLabel() + ")     ]");
+
+                                                long startFirstFatSect, endFirstFatSect, endLastFatSect, startDataRegionSect, endDataRegionSect;
+
+                                                startFirstFatSect = extmbr.getExtPartition1().getStartOfPartition() + extmbr.getExtPartition1().getVBR().getReservedAreaSize();
+                                                endFirstFatSect = startFirstFatSect + extmbr.getExtPartition1().getVBR().getBit32SectorsOfFat() - 1;
+
+                                                startDataRegionSect = startFirstFatSect;
+
+                                                for (int index = 0; index < extmbr.getExtPartition1().getVBR().getNumOfFats(); index++) {
+                                                    startDataRegionSect = startDataRegionSect + extmbr.getExtPartition1().getVBR().getBit32SectorsOfFat();
+                                                }
+                                                endLastFatSect = startDataRegionSect - 1;
+                                                endDataRegionSect = extmbr.getExtPartition1().getStartOfPartition() + extmbr.getExtPartition1().getVBR().getBit32Sectors() - 1;
+
+                                                FATable fat = new FATable(startFirstFatSect, endFirstFatSect, endLastFatSect, extmbr.getExtPartition1().getVBR().getBytesPerSector());
+                                                extmbr.getExtPartition1().setFAT(getFATInfo(uri, fat.getStartFirstFatDec(), fat));
+
+                                                DataRegion dataRegion = new DataRegion(startDataRegionSect, endDataRegionSect, extmbr.getExtPartition1().getVBR().getBytesPerSector());
+                                                extmbr.getExtPartition1().setDataRegion(dataRegion);
+
+                                                /*** Generation of Report ***/
+                                                extmbr.getExtPartition1().toString(testingText);
+                                                extmbr.getExtPartition1().getVBR().toString(testingText);
+                                                extmbr.getExtPartition1().getFAT().toString(testingText);
+                                                extmbr.getExtPartition1().getDataRegion().toString(testingText);
+
+                                                partition.setStartOfPartition(extmbr.getExtPartition2().getStartOfPartition());
+                                            } else {
+                                                loopedAllExtPartitions = true;
+                                                partition.setStartOfPartition(startPriExtPartition);
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                            System.out.println("Unable to read file");
+                                        }
+                                    }
+                                } while (loopedAllExtPartitions == false);
+                            } else {
                                 if (!partition.getPartitionType().equals("Empty")) {
 
                                     partitionCounter++;
-                                    partition.setVBR(getVBRInfo(uri, partition.getStartOfPartition() * 512));
-                                    partition.setPartitionName("PARTITION " + partitionCounter + " (" +
-                                            partition.getVBR().getVolumeLabel() + ")");
 
+                                    partition.setVBR(getVBRInfo(uri, partition.getStartOfPartition() * 512));
+                                    partition.setPartitionName("[     PARTITION " + partitionCounter + ": " +
+                                            partition.getVBR().getVolumeLabel() + " (" + partition.getVBR().getFileSystemLabel() + ")     ]");
 
                                     long startFirstFatSect, endFirstFatSect, endLastFatSect, startDataRegionSect, endDataRegionSect;
 
@@ -131,14 +199,12 @@ public class MainActivity extends AppCompatActivity {
                                     partition.getVBR().toString(testingText);
                                     partition.getFAT().toString(testingText);
                                     partition.getDataRegion().toString(testingText);
-                                }
-                                else {
+                                } else {
                                     //Ignore
                                 }
                             }
                         }
-                    }
-                    catch(IOException e){
+                    } catch (IOException e) {
                         e.printStackTrace();
                         System.out.println("Unable to read file");
                     }
@@ -160,8 +226,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             InputStream file1 = getContentResolver().openInputStream(uri);
             file1.skip(startCount);
-            for (long i = startCount; i<= endCount; i++)
-            {
+            for (long i = startCount; i <= endCount; i++) {
                 decimalValue = file1.read();
                 hexString.append(String.format("%02X", decimalValue));
             }
@@ -186,15 +251,14 @@ public class MainActivity extends AppCompatActivity {
         try {
             InputStream file1 = getContentResolver().openInputStream(uri);
             file1.skip(startCount);
-            for (long i = startCount; i<= endCount; i++)
-            {
+            for (long i = startCount; i <= endCount; i++) {
                 decimalValue = file1.read();
                 hexString.append(String.format("%02X", decimalValue));
             }
 
             StringBuilder hexLE = new StringBuilder();
-            for (int j = hexString.length(); j != 0; j-=2) {
-                hexLE.append(hexString.substring(j-2, j));
+            for (int j = hexString.length(); j != 0; j -= 2) {
+                hexLE.append(hexString.substring(j - 2, j));
             }
 
             // System.out.println("getLEHexData:" + hexLE);
@@ -212,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
     /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
     public long getHexToDecimal(StringBuilder hexString) {
-        long decValue = Long.parseLong(String.valueOf(hexString),16);
+        long decValue = Long.parseLong(String.valueOf(hexString), 16);
         // System.out.println("Convert Hex: " + hexString + " to Decimal: " + decValue);
         return decValue;
     }
@@ -220,9 +284,9 @@ public class MainActivity extends AppCompatActivity {
     /*** Convert Hex to ASCII String  ***/
     public String getHexToASCII(StringBuilder hexString) {
         StringBuilder temp = new StringBuilder();
-        for (int i = 0; i < hexString.length(); i+=2) {
-            String str = hexString.substring(i, i+2);
-            temp.append((char)Integer.parseInt(str, 16));
+        for (int i = 0; i < hexString.length(); i += 2) {
+            String str = hexString.substring(i, i + 2);
+            temp.append((char) Integer.parseInt(str, 16));
         }
         return temp.toString();
     }
@@ -253,12 +317,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*** Create new Partition object with its' information ***/
-    public Partition getMBR_PartitionInfo (Uri uri, long startCount) throws IOException {
+    public Partition getMBR_PartitionInfo(Uri uri, long startCount) throws IOException {
         Partition partition = new Partition();
-        partition.setBootableStatus(getLEHexData(uri, startCount+0, startCount+0));
-        partition.setPartitionType(getLEHexData(uri, startCount+4, startCount+4));
-        partition.setStartOfPartition(getHexLEDec(uri, startCount+8, startCount+11));
-        partition.setLenOfPartition(getHexLEDec(uri, startCount+12, startCount+15));
+        partition.setBootableStatus(getLEHexData(uri, startCount + 0, startCount + 0));
+        partition.setPartitionType(getLEHexData(uri, startCount + 4, startCount + 4));
+        partition.setStartOfPartition(getHexLEDec(uri, startCount + 8, startCount + 11));
+        partition.setLenOfPartition(getHexLEDec(uri, startCount + 12, startCount + 15));
         return partition;
     }
 
@@ -278,24 +342,41 @@ public class MainActivity extends AppCompatActivity {
         vbr.setBit32SectorsOfFat(getHexLEDec(uri, startCount + 36, startCount + 39));
         vbr.setRootCluster(getHexLEDec(uri, startCount + 44, startCount + 47));
         vbr.setVolumeLabel(getHexToASCII(getBEHexData(uri, startCount + 71, startCount + 81)));
+        vbr.setFileSystemLabel(getHexToASCII(getBEHexData(uri, startCount + 82, startCount + 89)));
         return vbr;
     }
 
     /*** Create new FAT object with its' information ***/
-    public FATable getFATInfo (Uri uri, long startCount, FATable fat) throws IOException {
-        fat.setFatID(getLEHexData(uri, startCount+0, startCount+3).toString());
-        fat.setEndClusterMarker(getLEHexData(uri, startCount+4, startCount+7).toString());
+    public FATable getFATInfo(Uri uri, long startCount, FATable fat) throws IOException {
+        fat.setFatID(getLEHexData(uri, startCount + 0, startCount + 3).toString());
+        fat.setEndClusterMarker(getLEHexData(uri, startCount + 4, startCount + 7).toString());
         return fat;
     }
 
-    /*** Create new FAT object with its' information ***/
-    public Data getData (Uri uri, long startCount) throws IOException {
+    /*** Create new Data object with its' information ***/
+    public Data getData(Uri uri, long startCount) throws IOException {
         Data data = new Data();
 //        data.setFatID(getLEHexData(uri, startCount+0, startCount+3).toString());
 //        data.setEndClusterMarker(getLEHexData(uri, startCount+4, startCount+7).toString());
         return data;
     }
 
+    /*** Create new ExtMBR object with its' information ***/
+    public ExtMBR getExtMBR(Uri uri, long startCount) throws IOException {
+        ExtMBR extmbr = new ExtMBR();
+        extmbr.setSignatureType(getLEHexData(uri, startCount + 510, startCount + 511).toString());
+        return extmbr;
+    }
+
+    /*** Create new ExtPartition object with its' information ***/
+    public ExtPartition getExtMBR_PartitionInfo(Uri uri, long startCount) throws IOException {
+        ExtPartition extPartition = new ExtPartition();
+        extPartition.setExtBootableStatus(getLEHexData(uri, startCount + 0, startCount + 0));
+        extPartition.setPartitionType(getLEHexData(uri, startCount + 4, startCount + 4));
+        extPartition.setStartOfPartition(getHexLEDec(uri, startCount + 8, startCount + 11));
+        extPartition.setLenOfPartition(getHexLEDec(uri, startCount + 12, startCount + 15));
+        return extPartition;
+    }
 
 
     /***** OBSOLETE: NOT USED AS IT IS INCOMPATIBLE AND SLOW *****/
