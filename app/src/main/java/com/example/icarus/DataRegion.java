@@ -4,36 +4,59 @@ import android.widget.TextView;
 
 public class DataRegion {
     /** In decimal **/
-    private long startOfDataRegion;
-    private long endOfDataRegion;
+    private long startDataRegionSect;
+    private long endDataRegionSect;
+    private long startDataRegionDec;
+    private long endDataRegionDec;
     public DataRegion(){
 
     }
 
-    public DataRegion(long startOfDataRegion, long endOfDataRegion){
-        this.setStartOfDataRegion(startOfDataRegion);
-        this.setEndOfDataRegion(endOfDataRegion);
+    public DataRegion(long startDataRegionSect, long endDataRegionSect, long bytesPerSector){
+        this.setStartDataRegionSect(startDataRegionSect);
+        this.setEndDataRegionSect(endDataRegionSect);
+
+        this.setStartDataRegionDec(bytesPerSector);
+        this.setEndDataRegionDec(bytesPerSector);
     }
 
-    public void setStartOfDataRegion(long startOfDataRegion) {
-        this.startOfDataRegion = startOfDataRegion;
+    public void setStartDataRegionSect(long startDataRegionSect) {
+        this.startDataRegionSect = startDataRegionSect;
     }
 
-    public void setEndOfDataRegion(long endOfDataRegion) {
-        this.endOfDataRegion = endOfDataRegion;
+    public void setEndDataRegionSect(long endDataRegionSect) {
+        this.endDataRegionSect = endDataRegionSect;
     }
 
-    public long getStartOfDataRegion() {
-        return startOfDataRegion;
+    public void setStartDataRegionDec(long bytesPerSector) {
+        this.startDataRegionDec = getStartDataRegionSect() * bytesPerSector;
     }
 
-    public long getEndOfDataRegion() {
-        return endOfDataRegion;
+    public void setEndDataRegionDec(long bytesPerSector) {
+        this.endDataRegionDec = (getEndDataRegionSect() * bytesPerSector) + bytesPerSector - 1;
+    }
+
+    public long getStartDataRegionSect() {
+        return startDataRegionSect;
+    }
+
+    public long getEndDataRegionSect() {
+        return endDataRegionSect;
+    }
+
+    public long getStartDataRegionDec() {
+        return startDataRegionDec;
+    }
+
+    public long getEndDataRegionDec() {
+        return endDataRegionDec;
     }
 
     public void toString(TextView testingText) {
         testingText.append("DATA REGION: " + "\n");
-        testingText.append("    Start of Data Region: " + this.getStartOfDataRegion() + "\n");
-        testingText.append("    End of Data Region: " + this.getEndOfDataRegion() + "\n");
+        testingText.append("    Start of Data Region (sectors): " + this.getStartDataRegionSect() + "\n");
+        testingText.append("    End of Data Region (sectors): " + this.getEndDataRegionSect() + "\n");
+        testingText.append("    Start of Data Region (bytes): " + this.getStartDataRegionDec() + "\n");
+        testingText.append("    End of Data Region (bytes): " + this.getEndDataRegionDec() + "\n");
     }
 }

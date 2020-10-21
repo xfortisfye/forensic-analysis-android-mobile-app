@@ -4,31 +4,50 @@ import android.widget.TextView;
 
 public class FATable {
     /** In decimal **/
-    private long startOfFirstFat;
-    private long endOfFirstFat; // Start of Second FAT
-    private long endOfLastFat;
+    private long startFirstFatSect;
+    private long endFirstFatSect; // Start of Second FAT
+    private long endLastFatSect;
+    private long startFirstFatDec;
+    private long endFirstFatDec; // Start of Second FAT
+    private long endLastFatDec;
     private String FatID;
     private String endClusterMarker;
 
     public FATable () {
     }
 
-    public FATable (long startOfFirstFat, long endOfFirstFat, long endOfLastFat) {
-        setStartOfFirstFat(startOfFirstFat);
-        setEndOfFirstFat(endOfFirstFat);
-        setEndOfLastFat(endOfLastFat);
+    public FATable (long startFirstFatSect, long endFirstFatSect, long endLastFatSect, long bytesPerSector) {
+        setStartFirstFatSect(startFirstFatSect);
+        setEndFirstFatSect(endFirstFatSect);
+        setEndLastFatSect(endLastFatSect);
+
+        setStartFirstFatDec(bytesPerSector);
+        setEndFirstFatDec(bytesPerSector);
+        setEndLastFatDec(bytesPerSector);
     }
 
-    public void setStartOfFirstFat(long startOfFirstFat) {
-        this.startOfFirstFat = startOfFirstFat;
+    public void setStartFirstFatSect(long startFirstFatSect) {
+        this.startFirstFatSect = startFirstFatSect;
     }
 
-    public void setEndOfFirstFat(long endOfFirstFat) {
-        this.endOfFirstFat = endOfFirstFat;
+    public void setEndFirstFatSect(long endFirstFatSect) {
+        this.endFirstFatSect = endFirstFatSect;
     }
 
-    public void setEndOfLastFat(long endOfLastFat) {
-        this.endOfLastFat = endOfLastFat;
+    public void setEndLastFatSect(long endLastFatSect) {
+        this.endLastFatSect = endLastFatSect;
+    }
+
+    public void setStartFirstFatDec(long bytesPerSector) {
+        this.startFirstFatDec = getStartFirstFatSect() * bytesPerSector;
+    }
+
+    public void setEndFirstFatDec(long bytesPerSector) {
+        this.endFirstFatDec = (getEndFirstFatSect() * bytesPerSector) + bytesPerSector - 1;
+    }
+
+    public void setEndLastFatDec(long bytesPerSector) {
+        this.endLastFatDec = (getEndLastFatSect() * bytesPerSector) + bytesPerSector - 1;
     }
 
     public void setFatID(String fatID) {
@@ -39,16 +58,28 @@ public class FATable {
         this.endClusterMarker = endClusterMarker;
     }
 
-    public Long getStartOfFirstFat() {
-        return startOfFirstFat;
+    public Long getStartFirstFatSect() {
+        return startFirstFatSect;
     }
 
-    public Long getEndOfFirstFat() {
-        return endOfFirstFat;
+    public Long getEndFirstFatSect() {
+        return endFirstFatSect;
     }
 
-    public Long getEndOfLastFat() {
-        return endOfLastFat;
+    public Long getEndLastFatSect() {
+        return endLastFatSect;
+    }
+
+    public Long getStartFirstFatDec() {
+        return startFirstFatDec;
+    }
+
+    public Long getEndFirstFatDec() {
+        return endFirstFatDec;
+    }
+
+    public Long getEndLastFatDec() {
+        return endLastFatDec;
     }
 
     public String getFatID() {
@@ -60,12 +91,15 @@ public class FATable {
     }
 
     public void toString(TextView testingText) {
-        testingText.append("FATABLE INFORMATION: " + "\n");
+        testingText.append("FAT TABLE INFORMATION: " + "\n");
         testingText.append("    FATID: " + this.getFatID()+ "\n");
         testingText.append("    End Cluster Mark: " + this.getEndClusterMarker()+ "\n");
-        testingText.append("    Start of First FAT (First byte): " + this.getStartOfFirstFat() + "\n");
-        testingText.append("    End of First FAT (Last byte):" + this.getEndOfFirstFat() + "\n");
-        testingText.append("    End of Last FAT:" + this.getEndOfLastFat() + "\n");
+        testingText.append("    Start of First FAT (First sect): " + this.getStartFirstFatSect() + "\n");
+        testingText.append("    End of First FAT (Last sect): " + this.getEndFirstFatSect() + "\n");
+        testingText.append("    End of Last FAT (Last sect): " + this.getEndLastFatSect() + "\n");
+        testingText.append("    Start of First FAT (First byte): " + this.getStartFirstFatDec() + "\n");
+        testingText.append("    End of First FAT (Last byte): " + this.getEndFirstFatDec() + "\n");
+        testingText.append("    End of Last FAT (Last byte): " + this.getEndLastFatDec() + "\n");
     }
 }
 

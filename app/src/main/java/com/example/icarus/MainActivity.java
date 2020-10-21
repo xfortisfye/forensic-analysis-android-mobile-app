@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,8 +22,6 @@ public class MainActivity extends AppCompatActivity {
     Button startAnalyseButton;
     TextView testingText;
     private static final int READ_REQUEST_CODE = 42;
-    int partitionCounter = 0;
-    Boolean extendedPartExist = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    /*** Detect File input ***/
+    /*** Detect File input ***/
     /*** Detect File input ***/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -55,12 +55,16 @@ public class MainActivity extends AppCompatActivity {
 
                 testingText = (TextView) findViewById(R.id.testingText);
                 testingText.setText("");
+                int partitionCounter = 0;
+                Boolean extendedPartExist = false;
                 long startCount = 0L;
                 Boolean validMBR = false;
                 MBR mbr = new MBR();
 
                 try {
-                    /*** Insert all the FAT reading functions here ***/
+                    /*** Insert all partition reading functions here ***/
+                    /*** Insert all partition reading functions here ***/
+                    /*** Insert all partition reading functions here ***/
                     mbr = getMBR(uri, startCount + 0); // Instantiate new MBR object
 
                     if (mbr.chkMBRValidity(testingText)) {
@@ -96,37 +100,36 @@ public class MainActivity extends AppCompatActivity {
                             }
                             else {
                                 if (!partition.getPartitionType().equals("Empty")) {
-                                    partition.toString(testingText);
+
                                     partitionCounter++;
                                     partition.setVBR(getVBRInfo(uri, partition.getStartOfPartition() * 512));
-//                                    partition.setFSInfo(getFSInfo(uri, (partition.getStartOfPartition() +
-//                                            partition.getVBR().getFSInfoSector()) * partition.getVBR().getBytesPerSector()));
+                                    partition.setPartitionName("PARTITION " + partitionCounter + " (" +
+                                            partition.getVBR().getVolumeLabel() + ")");
 
-                                    partition.getVBR().toString(testingText);
 
-                                    long startOfFirstFat, endOfFirstFat, endOfLastFat, startOfDataRegion, endOfDataRegion;
+                                    long startFirstFatSect, endFirstFatSect, endLastFatSect, startDataRegionSect, endDataRegionSect;
 
-                                    startOfFirstFat = (partition.getStartOfPartition() + partition.getVBR().getReservedAreaSize())
-                                            * partition.getVBR().getBytesPerSector();
-                                    endOfFirstFat = startOfFirstFat + (partition.getVBR().getBit32SectorsOfFat()
-                                            * partition.getVBR().getBytesPerSector()) - 1;
+                                    startFirstFatSect = partition.getStartOfPartition() + partition.getVBR().getReservedAreaSize();
+                                    endFirstFatSect = startFirstFatSect + partition.getVBR().getBit32SectorsOfFat() - 1;
 
-                                    startOfDataRegion = startOfFirstFat;
+                                    startDataRegionSect = startFirstFatSect;
 
                                     for (int index = 0; index < partition.getVBR().getNumOfFats(); index++) {
-                                        startOfDataRegion = startOfDataRegion + (partition.getVBR().getBit32SectorsOfFat()
-                                                * partition.getVBR().getBytesPerSector());
+                                        startDataRegionSect = startDataRegionSect + partition.getVBR().getBit32SectorsOfFat();
                                     }
-                                    endOfLastFat = startOfDataRegion - 1;
-                                    endOfDataRegion = ((partition.getStartOfPartition() + partition.getVBR().getBit32Sectors())
-                                            * partition.getVBR().getBytesPerSector()) - 1;
+                                    endLastFatSect = startDataRegionSect - 1;
+                                    endDataRegionSect = partition.getStartOfPartition() + partition.getVBR().getBit32Sectors();
 
-                                    FATable fat = new FATable(startOfFirstFat, endOfFirstFat, endOfLastFat);
-                                    partition.setFAT(getFATInfo(uri, fat.getStartOfFirstFat(), fat));
-                                    partition.getFAT().toString(testingText);
+                                    FATable fat = new FATable(startFirstFatSect, endFirstFatSect, endLastFatSect, partition.getVBR().getBytesPerSector());
+                                    partition.setFAT(getFATInfo(uri, fat.getStartFirstFatDec(), fat));
 
-                                    DataRegion dataRegion = new DataRegion(startOfDataRegion, endOfDataRegion);
+                                    DataRegion dataRegion = new DataRegion(startDataRegionSect, endDataRegionSect, partition.getVBR().getBytesPerSector());
                                     partition.setDataRegion(dataRegion);
+
+                                    /*** Generation of Report ***/
+                                    partition.toString(testingText);
+                                    partition.getVBR().toString(testingText);
+                                    partition.getFAT().toString(testingText);
                                     partition.getDataRegion().toString(testingText);
                                 }
                                 else {
@@ -237,18 +240,19 @@ public class MainActivity extends AppCompatActivity {
         return getHexToDecimal(getLEHexData(uri, startCount, endCount));
     }
 
-    /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
-    /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
-    /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
-    /***** ***** ***** ***** START OF MASTER BOOT RECORD ***** ***** ***** *****/
+    /***** ***** ***** ***** START OF GRABBING RECORDS ***** ***** ***** *****/
+    /***** ***** ***** ***** START OF GRABBING RECORDS ***** ***** ***** *****/
+    /***** ***** ***** ***** START OF GRABBING RECORDS ***** ***** ***** *****/
+    /***** ***** ***** ***** START OF GRABBING RECORDS ***** ***** ***** *****/
 
-    /*** Get MBR Status Information ***/
+    /*** Create new MBR object with its' information ***/
     public MBR getMBR(Uri uri, long startCount) throws IOException {
         MBR mbr = new MBR(getLEHexData(uri, startCount + 440, startCount + 444).toString());
         mbr.setSignatureType(getLEHexData(uri, startCount + 510, startCount + 511).toString());
         return mbr;
     }
 
+    /*** Create new Partition object with its' information ***/
     public Partition getMBR_PartitionInfo (Uri uri, long startCount) throws IOException {
         Partition partition = new Partition();
         partition.setBootableStatus(getLEHexData(uri, startCount+0, startCount+0));
@@ -258,6 +262,7 @@ public class MainActivity extends AppCompatActivity {
         return partition;
     }
 
+    /*** Create new Volume Boot Record object with its' information ***/
     public VBR getVBRInfo(Uri uri, long startCount) throws IOException {
         VBR vbr = new VBR();
         vbr.setOEM(getHexToASCII(getBEHexData(uri, startCount + 3, startCount + 10)));
@@ -272,36 +277,30 @@ public class MainActivity extends AppCompatActivity {
         vbr.setBit32Sectors(getHexLEDec(uri, startCount + 32, startCount + 35));
         vbr.setBit32SectorsOfFat(getHexLEDec(uri, startCount + 36, startCount + 39));
         vbr.setRootCluster(getHexLEDec(uri, startCount + 44, startCount + 47));
-        vbr.setFSInfoSector(getHexLEDec(uri, startCount + 48, startCount + 49));
-
+        vbr.setVolumeLabel(getHexToASCII(getBEHexData(uri, startCount + 71, startCount + 81)));
         return vbr;
     }
 
-    public FSInfo getFSInfo(Uri uri, long startCount) throws IOException {
-        FSInfo fsinfo = new FSInfo();
-        fsinfo.setFSInfoSignature(getLEHexData(uri, startCount+0, startCount+3).toString());
-        fsinfo.setLastKnownFreeCluster(getLEHexData(uri, startCount+484, startCount+487).toString());
-        fsinfo.setLocalSignature(getLEHexData(uri, startCount+488, startCount+491).toString());
-        fsinfo.setNextFreeCluster(getLEHexData(uri, startCount+492, startCount+495).toString());
-        fsinfo.setTrailingSignature(getLEHexData(uri, startCount+508, startCount+511).toString());
-        return fsinfo;
-    }
-
+    /*** Create new FAT object with its' information ***/
     public FATable getFATInfo (Uri uri, long startCount, FATable fat) throws IOException {
         fat.setFatID(getLEHexData(uri, startCount+0, startCount+3).toString());
         fat.setEndClusterMarker(getLEHexData(uri, startCount+4, startCount+7).toString());
-
         return fat;
     }
 
-    /*** Get VBR Status Information ***/
-//    public VBR getVBR(Partition partition, Uri uri, int startCount) throws IOException {
-//        VBR vbr = new VBR();
-//        vbr.setOEM(getHexToASCII(getBEHexData(uri, (int)( startCount + vbr.getVBRSector()*512 + 3), (int) (startCount + vbr.getVBRSector()*512 + 10))));
-//        return vbr;
-//    }
+    /*** Create new FAT object with its' information ***/
+    public Data getData (Uri uri, long startCount) throws IOException {
+        Data data = new Data();
+//        data.setFatID(getLEHexData(uri, startCount+0, startCount+3).toString());
+//        data.setEndClusterMarker(getLEHexData(uri, startCount+4, startCount+7).toString());
+        return data;
+    }
 
 
+
+    /***** OBSOLETE: NOT USED AS IT IS INCOMPATIBLE AND SLOW *****/
+    /***** OBSOLETE: NOT USED AS IT IS INCOMPATIBLE AND SLOW *****/
+    /***** OBSOLETE: NOT USED AS IT IS INCOMPATIBLE AND SLOW *****/
     /**********Print hex with ASCII version**********/
     public void printHexEdit(Uri uri) throws IOException {
         int bytesCount = 0;

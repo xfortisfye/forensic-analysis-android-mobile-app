@@ -16,8 +16,7 @@ public class VBR {
     private long bit32Sectors; // Number of total sectors in the partition
     private long bit32SectorsOfFat; // Number of total sectors in the FAT
     private long rootCluster;
-    private long FSInfoSector;
-
+    private String volumeLabel;
 
     public VBR() {
     }
@@ -80,10 +79,9 @@ public class VBR {
         this.rootCluster = rootCluster;
     }
 
-    public void setFSInfoSector(long FSInfoSector) {
-        this.FSInfoSector = FSInfoSector;
+    public void setVolumeLabel(String hexData) {
+        this.volumeLabel = hexData;
     }
-
 
     public String getOEM() {
         return this.OEM;
@@ -133,12 +131,12 @@ public class VBR {
         return rootCluster;
     }
 
-    public long getFSInfoSector() {
-        return FSInfoSector;
+    public String getVolumeLabel() {
+        return this.volumeLabel;
     }
 
     public void toString(TextView testingText) {
-        testingText.append("VBR Info: " + "\n");
+        testingText.append("VOLUME BOOT RECORD: " + "\n");
         testingText.append("    OEM: " + this.getOEM() + "\n");
         testingText.append("    Bytes Per Sector: " + this.getBytesPerSector() + "\n");
         testingText.append("    Sectors Per Cluster: " + this.getSectorsPerCluster() + "\n");
@@ -150,7 +148,7 @@ public class VBR {
         testingText.append("    32-bit value of total number of sectors: " + this.getBit32Sectors() + "\n");
         testingText.append("    32-bit value of 1 FAT (in sectors): " + this.getBit32SectorsOfFat() + "\n");
         testingText.append("    Cluster of Root Directory: " + this.getRootCluster() + "\n");
-        testingText.append("    Sector of FSINFO: " + this.getFSInfoSector() + "\n");
+        testingText.append("    Volume Label: " + this.getVolumeLabel() + "\n");
     }
 }
 

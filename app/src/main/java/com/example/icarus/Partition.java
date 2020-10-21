@@ -3,18 +3,22 @@ package com.example.icarus;
 import android.widget.TextView;
 
 public class Partition {
+    private String partitionName;
     private String bootableStatus;
     private String partitionType;
     private long startOfPartition;
     private long endOfPartition;
     private long lenOfPartition;
     private VBR vbr;
-    private FSInfo fsinfo;
     private FATable fat;
     private DataRegion dataRegion;
 
 
     public Partition() {
+    }
+
+    public void setPartitionName(String partitionName) {
+        this.partitionName = partitionName;
     }
 
     public void setBootableStatus(StringBuilder hexData) {
@@ -355,12 +359,11 @@ public class Partition {
         this.vbr = vbr;
     }
 
-    public void setFSInfo(FSInfo fsinfo) { this.fsinfo = fsinfo; }
-
     public void setFAT(FATable fat) {this.fat = fat;}
 
     public void setDataRegion(DataRegion dataRegion) { this.dataRegion = dataRegion; }
 
+    public String getPartitionName() {return partitionName; }
 
     public String getBootableStatus() {
         return bootableStatus;
@@ -386,21 +389,17 @@ public class Partition {
         return vbr;
     }
 
-    public FSInfo getFSInfo() {
-        return this.fsinfo;
-    }
-
     public FATable getFAT() { return this.fat; }
 
     public DataRegion getDataRegion() { return this.dataRegion; }
 
     public void toString(TextView testingText) {
-        testingText.append("Partition: " + "\n");
-        testingText.append("    Partition BS: " + this.getBootableStatus() + "\n");
-        testingText.append("    Partition PT: " + this.getPartitionType() + "\n");
-        testingText.append("    Partition Start of Part: " + this.getStartOfPartition() + "\n");
-        testingText.append("    Partition End of Part: " + this.getEndOfPartition() + "\n");
-        testingText.append("    Partition Len of Part: " + this.getLenOfPartition() + "\n");
+        testingText.append(this.getPartitionName() + ": " + "\n");
+        testingText.append("    Bootable Status: " + this.getBootableStatus() + "\n");
+        testingText.append("    Partition Type: " + this.getPartitionType() + "\n");
+        testingText.append("    Start of Partition (Sectors): " + this.getStartOfPartition() + "\n");
+        testingText.append("    End of Partition (Sectors): " + this.getEndOfPartition() + "\n");
+        testingText.append("    Len of Partition (Sectors): " + this.getLenOfPartition() + "\n");
     }
 
 }
