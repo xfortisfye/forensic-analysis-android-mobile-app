@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                                         startDataRegionSect = startDataRegionSect + partition.getVBR().getBit32SectorsOfFat();
                                     }
                                     endLastFatSect = startDataRegionSect - 1;
-                                    endDataRegionSect = partition.getStartOfPartition() + partition.getVBR().getBit32Sectors();
+                                    endDataRegionSect = partition.getStartOfPartition() + partition.getVBR().getBit32Sectors() - 1;
 
                                     FATable fat = new FATable(startFirstFatSect, endFirstFatSect, endLastFatSect, partition.getVBR().getBytesPerSector());
                                     partition.setFAT(getFATInfo(uri, fat.getStartFirstFatDec(), fat));
