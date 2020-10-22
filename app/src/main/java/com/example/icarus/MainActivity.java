@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                         Partition[] partitionAvailability = {mbr.getPartition1(), mbr.getPartition2(),
                                 mbr.getPartition3(), mbr.getPartition4()};
                         for (Partition partition : partitionAvailability) {
-                            if (partition.getPartitionType().equals("Extended")) {
+                            if (partition.getPartitionType().equals("Extended") || partition.getPartitionType().equals("W95 Ext'd (LBA)")) {
 
                                 extendedPartExist = true;
                                 testingText.append("Extended found! : " + extendedPartExist + "\n\n");
