@@ -3,31 +3,22 @@ package com.example.icarus;
 import android.widget.TextView;
 
 public class ExtMBR {
-    private ExtPartition extPartition1;
-    private ExtPartition extPartition2;
+    private ExtPartition extPartition;
     private String signatureType;
 
     public ExtMBR() {
     }
 
-    public void setExtPartition1(ExtPartition extPartition1) {
-        this.extPartition1 = extPartition1;
-    }
-
-    public void setExtPartition2(ExtPartition extPartition2) {
-        this.extPartition2 = extPartition2;
+    public void setExtPartition(ExtPartition extPartition) {
+        this.extPartition = extPartition;
     }
 
     public void setSignatureType(String signatureType) {
         this.signatureType = signatureType;
     }
 
-    public ExtPartition getExtPartition1() {
-        return extPartition1;
-    }
-
-    public ExtPartition getExtPartition2() {
-        return extPartition2;
+    public ExtPartition getExtPartition() {
+        return extPartition;
     }
 
     public String getSignatureType() {

@@ -9,12 +9,21 @@ public class ExtPartition {
     private long startOfPartition;
     private long endOfPartition;
     private long lenOfPartition;
+    private long priExtPartitionStart;
+    private long startExtMBR;
+    private long ext2Offset;
+    private long calExt2MBR;
     private VBR vbr;
     private FATable fat;
     private DataRegion dataRegion;
 
 
     public ExtPartition() {
+    }
+
+    public ExtPartition(long startExtMBR) {
+
+        this.setStartExtMBR(startExtMBR);
     }
 
     public void setPartitionName(String partitionName) {
@@ -344,7 +353,7 @@ public class ExtPartition {
     }
 
     public void setStartOfPartition(long startOfPartition) {
-        this.startOfPartition = startOfPartition;
+        this.startOfPartition = startOfPartition + this.getStartExtMBR();
     }
 
     public void setEndOfPartition() {
@@ -355,6 +364,14 @@ public class ExtPartition {
         this.lenOfPartition = lenOfPartition;
     }
 
+    public void setPriExtPartitionStart(long priExtPartitionStart) { this.priExtPartitionStart = priExtPartitionStart; }
+
+    public void setStartExtMBR(long startExtMBR) { this.startExtMBR = startExtMBR;}
+
+    public void setExt2Offset (long ext2Offset) { this.ext2Offset = ext2Offset; }
+
+    public void setCalExt2MBR() { this.calExt2MBR = this.getPriExtPartitionStart() + this.getExt2Offset(); }
+
     public void setVBR(VBR vbr) {
         this.vbr = vbr;
     }
@@ -363,7 +380,7 @@ public class ExtPartition {
 
     public void setDataRegion(DataRegion dataRegion) { this.dataRegion = dataRegion; }
 
-    public String getPartitionName() {return partitionName; }
+    public String getPartitionName() { return partitionName; }
 
     public String getBootableStatus() {
         return bootableStatus;
@@ -383,6 +400,22 @@ public class ExtPartition {
 
     public long getLenOfPartition(){
         return lenOfPartition;
+    }
+
+    public long getPriExtPartitionStart() {
+        return priExtPartitionStart;
+    }
+
+    public long getStartExtMBR() {
+        return startExtMBR;
+    }
+
+    public long getExt2Offset () {
+        return ext2Offset;
+    }
+
+    public long getCalExt2MBR() {
+        return calExt2MBR;
     }
 
     public VBR getVBR() {
