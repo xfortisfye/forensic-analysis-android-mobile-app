@@ -105,13 +105,15 @@ public class MainActivity extends AppCompatActivity {
                                     Boolean validExtMBR = false;
                                     ExtMBR extmbr = new ExtMBR();
                                     try {
-                                            extmbr = getExtMBR(uri, partition.getStartOfPartition() + 0);
-
+                                            extmbr = getExtMBR(uri, partition.getStartOfPartition() * 512);
+                                            System.out.println("Mbr making start of part" + partition.getStartOfPartition());
                                         if (extmbr.chkExtMBRValidity(testingText)) {
-                                            extmbr.setExtPartition1(getExtMBR_PartitionInfo(uri, startCount + 446));
-                                            extmbr.setExtPartition2(getExtMBR_PartitionInfo(uri, startCount + 462));
+                                            extmbr.setExtPartition1(getExtMBR_PartitionInfo(uri, ((partition.getStartOfPartition() * 512) + 446), partition.getStartOfPartition()));
+                                            extmbr.setExtPartition2(getExtMBR_PartitionInfo(uri, ((partition.getStartOfPartition() * 512) + 462), partition.getStartOfPartition()));
                                             extmbr.getExtPartition1().setEndOfPartition();
                                             extmbr.getExtPartition2().setEndOfPartition();
+
+                                            testingText.append("Ext MBR found. " + "\n\n");
                                             validExtMBR = true;
                                         } else {
                                             testingText.append("No Ext MBR found. " + "\n\n");
@@ -122,12 +124,13 @@ public class MainActivity extends AppCompatActivity {
                                         System.out.println("Unable to read file");
                                     }
 
-                                    if (validExtMBR == true) {
+                                    if (validExtMBR == true && !extmbr.getExtPartition2().getPartitionType().equals("Empty")) {
                                         try {
                                             if (!extmbr.getExtPartition1().getPartitionType().equals("Empty")) {
                                                 partitionCounter++;
+                                                System.out.println("start of part" + extmbr.getExtPartition1().getStartOfPartition());
                                                 extmbr.getExtPartition1().setVBR(getVBRInfo(uri, extmbr.getExtPartition1().getStartOfPartition() * 512));
-                                                extmbr.getExtPartition1().setPartitionName("[     PARTITION " + partitionCounter + ": " +
+                                                extmbr.getExtPartition1().setPartitionName("[     EXT PARTITION " + partitionCounter + ": " +
                                                         extmbr.getExtPartition1().getVBR().getVolumeLabel() + " (" + extmbr.getExtPartition1().getVBR().getFileSystemLabel() + ")     ]");
 
                                                 long startFirstFatSect, endFirstFatSect, endLastFatSect, startDataRegionSect, endDataRegionSect;
@@ -164,6 +167,11 @@ public class MainActivity extends AppCompatActivity {
                                             e.printStackTrace();
                                             System.out.println("Unable to read file");
                                         }
+                                    }
+                                    else {
+                                        loopedAllExtPartitions = true;
+                                        partition.setStartOfPartition(startPriExtPartition);
+                                        System.out.println("looped is true");
                                     }
                                 } while (loopedAllExtPartitions == false);
                             } else {
@@ -277,7 +285,6 @@ public class MainActivity extends AppCompatActivity {
     /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
     public long getHexToDecimal(StringBuilder hexString) {
         long decValue = Long.parseLong(String.valueOf(hexString), 16);
-        // System.out.println("Convert Hex: " + hexString + " to Decimal: " + decValue);
         return decValue;
     }
 
@@ -369,11 +376,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*** Create new ExtPartition object with its' information ***/
-    public ExtPartition getExtMBR_PartitionInfo(Uri uri, long startCount) throws IOException {
+    public ExtPartition getExtMBR_PartitionInfo(Uri uri, long startCount, long partitionStart) throws IOException {
         ExtPartition extPartition = new ExtPartition();
         extPartition.setExtBootableStatus(getLEHexData(uri, startCount + 0, startCount + 0));
         extPartition.setPartitionType(getLEHexData(uri, startCount + 4, startCount + 4));
-        extPartition.setStartOfPartition(getHexLEDec(uri, startCount + 8, startCount + 11));
+        extPartition.setStartOfPartition(getHexLEDec(uri, startCount + 8, startCount + 11) + partitionStart);
+        System.out.println("Partition start set as: " + extPartition.getStartOfPartition());
         extPartition.setLenOfPartition(getHexLEDec(uri, startCount + 12, startCount + 15));
         return extPartition;
     }
