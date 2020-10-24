@@ -3,6 +3,9 @@ package com.example.icarus;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLOutput;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -197,6 +200,129 @@ public class MainActivity extends AppCompatActivity {
                                     DataRegion dataRegion = new DataRegion(startDataRegionSect, endDataRegionSect, partition.getVBR().getBytesPerSector());
                                     partition.setDataRegion(dataRegion);
 
+
+                                    /*** Carving of file ***/
+                                    System.out.println("===============================================================");
+                                    System.out.println("Fat table 1 " + partition.getFAT().getStartFirstFatDec());
+                                    System.out.println("Fat table 2 " + partition.getFAT().getEndFirstFatDec());
+                                    System.out.println("Root Dir " + partition.getDataRegion().getStartDataRegionDec());
+                                    System.out.println("===============================================================");
+                                    long rootDirDec = partition.getDataRegion().getStartDataRegionDec();
+                                    long sectPerCluster = partition.getVBR().getSectorsPerCluster();
+                                    long bytesPerSector = partition.getVBR().getBytesPerSector();
+                                    long rootDirSect = partition.getDataRegion().getStartDataRegionSect();
+                                    long startClusterDec, fileSizeDec;
+                                    long startDirBlockDec;
+                                    String DirName;
+
+//                                    System.out.println(partition.getVBR().getSectorsPerCluster());
+//                                    System.out.println(test);
+//                                    System.out.println(test+partition.getVBR().getSectorsPerCluster()*512);
+                                    long sectDec = sectPerCluster * 512;
+                                    ArrayList<String> fileInfo;
+                                    ArrayList<String> fileDateTime;
+                                    long test = rootDirDec+sectDec;
+                                    while(rootDirDec != test){
+
+                                        startClusterDec = getHexToDecimal(getLEHexData(uri, rootDirDec+26, rootDirDec + 27));
+                                        fileSizeDec = getHexToDecimal(getLEHexData(uri, rootDirDec+28, rootDirDec + 31));
+//                                        System.out.println(getLEHexData(uri, rootDirDec + 11, rootDirDec + 11).toString());
+//                                        if(getLEHexData(uri, rootDirDec + 11, rootDirDec + 11).toString().equals("0F")){
+//                                            System.out.println("Long file name found");
+//                                            System.out.println(getHexToASCII(getBEHexData(uri, rootDirDec, rootDirDec + 10)));
+//                                        }
+                                        if(getLEHexData(uri, rootDirDec + 11, rootDirDec + 11).toString().equals("10")){
+                                            System.out.println("===============================================================");
+                                            System.out.println("Directory found");
+                                            System.out.println("===============================================================");
+
+                                            DirName = getHexToASCII(getBEHexData(uri, rootDirDec, rootDirDec + 7));
+
+                                            fileDateTime = getFileDateTime(uri, rootDirDec);
+
+                                            System.out.println("===============================================================");
+                                            System.out.println("Time Directory created (24hr) " + fileDateTime.get(0));
+                                            System.out.println("Date Directory created " + fileDateTime.get(1));
+                                            System.out.println("Last Accessed Date " +  fileDateTime.get(2));
+                                            System.out.println("Last Write Time " +  fileDateTime.get(3));
+
+                                            startDirBlockDec = Long.parseLong(getStartLocOfBlock(rootDirSect, startClusterDec, sectPerCluster, bytesPerSector));
+
+                                            System.out.println("Start Location of Directory Block " + startDirBlockDec);
+                                            System.out.println("===============================================================");
+                                            System.out.println("===============================================================");
+                                            System.out.println("Jumping to " + DirName + " Directory ");
+                                            System.out.println("===============================================================");
+
+
+
+                                            long startDirBlockSect = startDirBlockDec/512;
+                                            long test2 = startDirBlockDec+sectDec;
+
+
+                                            while(startDirBlockDec != test2) {
+
+                                                long startDirClusterDec = getHexToDecimal(getLEHexData(uri, startDirBlockDec+26, startDirBlockDec + 27));
+                                                long fileSizeInDirDec = getHexToDecimal(getLEHexData(uri, startDirBlockDec+28, startDirBlockDec + 31));
+
+                                                if (getLEHexData(uri, startDirBlockDec + 11, startDirBlockDec + 11).toString().equals("20")) {
+                                                    System.out.println("===============================================================");
+                                                    System.out.println("File found in " + DirName);
+                                                    System.out.println("===============================================================");
+
+                                                    fileDateTime = getFileDateTime(uri, rootDirDec);
+
+                                                    System.out.println("===============================================================");
+                                                    System.out.println("Time File created (24hr) " + fileDateTime.get(0));
+                                                    System.out.println("Date File created " + fileDateTime.get(1));
+                                                    System.out.println("Last Accessed Date " + fileDateTime.get(2));
+                                                    System.out.println("Last Write Time " + fileDateTime.get(3));
+                                                    System.out.println("===============================================================");
+
+                                                    fileInfo = getFileInfo(uri, startDirBlockDec, rootDirSect, startDirClusterDec, sectPerCluster, bytesPerSector, fileSizeInDirDec);
+
+                                                    System.out.println("===============================================================");
+                                                    System.out.println("File Name " + fileInfo.get(0));
+                                                    System.out.println("File extension " + fileInfo.get(1));
+                                                    System.out.println("Start Location of File Block " + fileInfo.get(2));
+                                                    System.out.println("End Location of File Block " + fileInfo.get(3));
+                                                    System.out.println("===============================================================");
+
+                                                }
+                                                startDirBlockDec += 16;
+                                            }
+                                        }
+
+                                        if(getLEHexData(uri, rootDirDec + 11, rootDirDec + 11).toString().equals("20")){
+                                            System.out.println("===============================================================");
+                                            System.out.println("File found in root dir");
+                                            System.out.println("===============================================================");
+
+                                            fileDateTime = getFileDateTime(uri, rootDirDec);
+
+                                            System.out.println("===============================================================");
+                                            System.out.println("Time File created (24hr) " + fileDateTime.get(0));
+                                            System.out.println("Date File created " + fileDateTime.get(1));
+                                            System.out.println("Last Accessed Date " +  fileDateTime.get(2));
+                                            System.out.println("Last Write Time " +  fileDateTime.get(3));
+                                            System.out.println("===============================================================");
+
+                                            fileInfo = getFileInfo(uri, rootDirDec, rootDirSect, startClusterDec, sectPerCluster, bytesPerSector, fileSizeDec);
+
+                                            System.out.println("===============================================================");
+                                            System.out.println("File name " + fileInfo.get(0));
+                                            System.out.println("File extension " + fileInfo.get(1));
+                                            System.out.println("Start Location of File Block " + fileInfo.get(2));
+                                            System.out.println("End Location of File Block " + fileInfo.get(3));
+                                            System.out.println("===============================================================");
+
+                                        }
+
+                                        rootDirDec+=16;
+
+                                    }
+
+
                                     /*** Generation of Report ***/
                                     partition.toString(testingText);
                                     partition.getVBR().toString(testingText);
@@ -214,6 +340,145 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+    /***** ***** ***** ***** FUNCTIONS TO CARVE DATA ***** ***** ***** *****/
+    /***** ***** ***** ***** FUNCTIONS TO CARVE DATA ***** ***** ***** *****/
+    /***** ***** ***** ***** FUNCTIONS TO CARVE DATA ***** ***** ***** *****/
+    /***** ***** ***** ***** FUNCTIONS TO CARVE DATA ***** ***** ***** *****/
+
+    /*** Getting File Name / extension / block  ***/
+    public ArrayList<String> getFileInfo(Uri uri, long rootDirDec, long rootDirSect, long startClusterDec, long sectPerCluster, long bytesPerSector, long fileSizeDec) throws IOException {
+
+        String fileName, fileExt, StartLockOfFileBlock, EndLocOfFileBlock;
+
+        ArrayList<String> fileInfo = new ArrayList<String>();
+
+        fileName = getHexToASCII(getBEHexData(uri, rootDirDec, rootDirDec + 7));
+        fileExt = getHexToASCII(getBEHexData(uri, rootDirDec+8, rootDirDec + 10));
+
+        StartLockOfFileBlock = getStartLocOfBlock(rootDirSect,startClusterDec,sectPerCluster,bytesPerSector); // Element 0 = start Loc, Element 1 = end Loc
+
+        EndLocOfFileBlock = getEndLocOfBlock(Long.parseLong(StartLockOfFileBlock),fileSizeDec);
+
+        fileInfo.add(fileName);
+        fileInfo.add(fileExt);
+        fileInfo.add(StartLockOfFileBlock);
+        fileInfo.add(EndLocOfFileBlock);
+
+        return fileInfo;
+    }
+
+
+    /*** Getting Date & Time from either file or directory  ***/ //Long is used in scenario when number is too huge.
+    public ArrayList<String> getFileDateTime(Uri uri, long rootDirDec) throws IOException {
+
+        String timeCreated,dateCreated,lastAccDate,lastWriteTime,timeCreatedBin,dateCreatedBin,lastAccDateBin,lastWriteTimeBin;
+        ArrayList<String> fileDateTime = new ArrayList<String>();
+
+        timeCreatedBin = getDecToBin(getHexToDecimal(getLEHexData(uri, rootDirDec+14, rootDirDec + 15)));
+        dateCreatedBin = getDecToBin(getHexToDecimal(getLEHexData(uri, rootDirDec+16, rootDirDec + 17)));
+        lastAccDateBin = getDecToBin(getHexToDecimal(getLEHexData(uri, rootDirDec+18, rootDirDec + 19)));
+        lastWriteTimeBin = getDecToBin(getHexToDecimal(getLEHexData(uri, rootDirDec+20, rootDirDec + 21)));
+
+        timeCreated = getBinToTime(timeCreatedBin);
+        lastWriteTime = getBinToTime(lastWriteTimeBin);
+        lastAccDate = getBinToDate(lastAccDateBin);
+        dateCreated = getBinToDate(dateCreatedBin);
+
+        fileDateTime.add(timeCreated);
+        fileDateTime.add(dateCreated);
+        fileDateTime.add(lastAccDate);
+        fileDateTime.add(lastWriteTime);
+
+        return fileDateTime;
+    }
+
+    /*** Change Decimal to Binary ***/ //Long is used in scenario when number is too huge.
+    public String getDecToBin(long decValue) {
+
+        String binValue = Long.toBinaryString(decValue);
+
+        if (binValue.length() != 16) {
+            int pad = 16 - binValue.length();               // Padding binary to allow conversion for date/time
+            StringBuilder sb = new StringBuilder();
+
+            while (sb.length() < pad) {
+                sb.append('0');
+            }
+
+            sb.append(binValue);
+
+            return sb.toString();
+
+        } else {
+
+            return binValue;
+
+        }
+    }
+
+    /*** Change Binary to Date ***/ //Long is used in scenario when number is too huge.
+
+    public String getBinToDate(String binDate){
+
+        String Date,Year,Month,Day,yearBin,monthBin,dayBin;
+
+        yearBin = binDate.substring(0,7);
+        monthBin = binDate.substring(7,11);
+        dayBin = binDate.substring(11,16);
+
+        Year = String.valueOf(Integer.parseInt(yearBin,2) + 1980);
+        Month = String.valueOf(Integer.parseInt(monthBin,2));
+        Day = String.valueOf(Integer.parseInt(dayBin,2));
+
+        Date = String.join("-", Day, Month, Year);
+
+        return Date;
+    }
+
+    /*** Change Binary to Date ***/ //Long is used in scenario when number is too huge.
+
+    public String getBinToTime(String binTime){
+
+        String Time,Hour,Min,Sec,hourBin,minBin,secBin;
+        if(binTime.equals("0000000000000000")){
+            return "Nil";
+        }
+
+        hourBin = binTime.substring(0,5);
+        minBin = binTime.substring(5,11);
+        secBin = binTime.substring(11,16);
+
+        Hour = String.valueOf(Integer.parseInt(hourBin,2));
+        Min = String.valueOf(Integer.parseInt(minBin,2));
+        Sec = String.valueOf(Integer.parseInt(secBin,2) * 2);
+
+        Time = String.join(":", Hour, Min, Sec);
+
+        return Time;
+    }
+
+    /*** Get the Starting location of block ***/ //Long is used in scenario when number is too huge.
+
+    public String getStartLocOfBlock(long rootDirSec, long startCluster, long clusterSize, long bytesPerSec){
+        String startLocDec;
+
+        startLocDec = Long.toString(((rootDirSec + ((startCluster - 2) * clusterSize)) * bytesPerSec));
+//        System.out.println(rootDirSec);
+//        System.out.println(startCluster);
+//        System.out.println(clusterSize);
+//        System.out.println(bytesPerSec);
+        return startLocDec;
+    }
+
+    /*** Get the Ending location of block ***/ //Long is used in scenario when number is too huge.
+
+    public String getEndLocOfBlock(long startLocDec, long fileSizeDec){
+        String endLocDec;
+
+        endLocDec = Long.toString(startLocDec + fileSizeDec);
+
+        return endLocDec;
     }
 
     /***** ***** ***** ***** FUNCTIONS TO GRAB HEX ***** ***** ***** *****/
