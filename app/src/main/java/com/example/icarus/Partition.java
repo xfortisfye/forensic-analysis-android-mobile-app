@@ -1,5 +1,6 @@
 package com.example.icarus;
 
+import android.provider.DocumentsContract;
 import android.widget.TextView;
 
 public class Partition {
@@ -12,6 +13,7 @@ public class Partition {
     private VBR vbr;
     private FATable fat;
     private DataRegion dataRegion;
+    private RootDirectory rootDirectory;
 
 
     public Partition() {
@@ -342,15 +344,8 @@ public class Partition {
                 this.partitionType = "Invalid Partition Type";
         }
     }
-
-    public void setStartOfPartition(long startOfPartition) {
-        this.startOfPartition = startOfPartition;
-    }
-
-    public void setEndOfPartition() {
-        this.endOfPartition = this.startOfPartition + this.lenOfPartition - 1;
-    }
-
+    public void setStartOfPartition(long startOfPartition) { this.startOfPartition = startOfPartition; }
+    public void setEndOfPartition() { this.endOfPartition = this.startOfPartition + this.lenOfPartition - 1; }
     public void setLenOfPartition(long lenOfPartition){
         this.lenOfPartition = lenOfPartition;
     }
@@ -358,17 +353,14 @@ public class Partition {
     public void setVBR(VBR vbr) {
         this.vbr = vbr;
     }
-
     public void setFAT(FATable fat) {this.fat = fat;}
-
     public void setDataRegion(DataRegion dataRegion) { this.dataRegion = dataRegion; }
 
+    public void setRootDirectory(RootDirectory rootDirectory) {this.rootDirectory = rootDirectory; }
     public String getPartitionName() {return partitionName; }
-
     public String getBootableStatus() {
         return bootableStatus;
     }
-
     public String getPartitionType() {
         return partitionType;
     }
@@ -376,22 +368,17 @@ public class Partition {
     public long getStartOfPartition() {
         return startOfPartition;
     }
-
     public long getEndOfPartition() {
         return endOfPartition;
     }
-
-    public long getLenOfPartition(){
-        return lenOfPartition;
-    }
+    public long getLenOfPartition(){ return lenOfPartition; }
 
     public VBR getVBR() {
         return vbr;
     }
-
     public FATable getFAT() { return this.fat; }
-
     public DataRegion getDataRegion() { return this.dataRegion; }
+    public RootDirectory getRootDirectory() { return this.rootDirectory; }
 
     public void toString(TextView testingText) {
         testingText.append(this.getPartitionName() + "\n");

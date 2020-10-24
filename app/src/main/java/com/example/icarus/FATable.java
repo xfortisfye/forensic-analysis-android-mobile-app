@@ -2,7 +2,7 @@ package com.example.icarus;
 
 import android.widget.TextView;
 
-public class FATable {
+public class FATable extends Grab{
     /** In decimal **/
     private long startFirstFatSect;
     private long endFirstFatSect; // Start of Second FAT
@@ -26,58 +26,35 @@ public class FATable {
         setEndLastFatDec(bytesPerSector);
     }
 
-    public void setStartFirstFatSect(long startFirstFatSect) {
-        this.startFirstFatSect = startFirstFatSect;
-    }
-
+    public void setStartFirstFatSect(long startFirstFatSect) { this.startFirstFatSect = startFirstFatSect; }
     public void setEndFirstFatSect(long endFirstFatSect) {
         this.endFirstFatSect = endFirstFatSect;
     }
-
     public void setEndLastFatSect(long endLastFatSect) {
         this.endLastFatSect = endLastFatSect;
     }
-
-    public void setStartFirstFatDec(long bytesPerSector) {
-        this.startFirstFatDec = getStartFirstFatSect() * bytesPerSector;
-    }
-
-    public void setEndFirstFatDec(long bytesPerSector) {
-        this.endFirstFatDec = (getEndFirstFatSect() * bytesPerSector) + bytesPerSector - 1;
-    }
-
-    public void setEndLastFatDec(long bytesPerSector) {
-        this.endLastFatDec = (getEndLastFatSect() * bytesPerSector) + bytesPerSector - 1;
-    }
+    public void setStartFirstFatDec(long bytesPerSector) { this.startFirstFatDec = getStartFirstFatSect() * bytesPerSector; }
+    public void setEndFirstFatDec(long bytesPerSector) { this.endFirstFatDec = (getEndFirstFatSect() * bytesPerSector) + bytesPerSector - 1; }
+    public void setEndLastFatDec(long bytesPerSector) { this.endLastFatDec = (getEndLastFatSect() * bytesPerSector) + bytesPerSector - 1; }
 
     public void setFatID(String fatID) {
         this.FatID = fatID;
     }
-
-    public void setEndClusterMarker(String endClusterMarker) {
-        this.endClusterMarker = endClusterMarker;
-    }
+    public void setEndClusterMarker(String endClusterMarker) { this.endClusterMarker = endClusterMarker; }
 
     public Long getStartFirstFatSect() {
         return startFirstFatSect;
     }
-
     public Long getEndFirstFatSect() {
         return endFirstFatSect;
     }
-
     public Long getEndLastFatSect() {
         return endLastFatSect;
     }
-
     public Long getStartFirstFatDec() {
         return startFirstFatDec;
     }
-
-    public Long getEndFirstFatDec() {
-        return endFirstFatDec;
-    }
-
+    public Long getEndFirstFatDec() { return endFirstFatDec; }
     public Long getEndLastFatDec() {
         return endLastFatDec;
     }
@@ -85,7 +62,6 @@ public class FATable {
     public String getFatID() {
         return FatID;
     }
-
     public String getEndClusterMarker() {
         return endClusterMarker;
     }
@@ -100,6 +76,27 @@ public class FATable {
         testingText.append("Start of First FAT (First byte): " + this.getStartFirstFatDec() + "\n");
         testingText.append("End of First FAT (Last byte): " + this.getEndFirstFatDec() + "\n");
         testingText.append("End of Last FAT (Last byte): " + this.getEndLastFatDec() + "\n");
+    }
+
+    public Boolean chkDmgCluster(long dmgCluster) {
+        if (dmgCluster == 268435447) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+
+    public Boolean chkEOFCluster(long eofCluster) {
+        if (eofCluster == 268435448 || eofCluster == 268435449 || eofCluster == 268435450 || eofCluster == 268435451
+                || eofCluster == 268435452 || eofCluster == 268435453 || eofCluster == 268435454 || eofCluster == 268435455) {
+            return true;
+        }
+
+        else {
+            return false;
+        }
     }
 }
 

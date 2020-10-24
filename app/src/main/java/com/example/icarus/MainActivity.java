@@ -1,5 +1,6 @@
 package com.example.icarus;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -199,6 +201,23 @@ public class MainActivity extends AppCompatActivity {
 
                                     DataRegion dataRegion = new DataRegion(startDataRegionSect, endDataRegionSect, partition.getVBR().getBytesPerSector());
                                     partition.setDataRegion(dataRegion);
+                                    System.out.println("uri" + uri);
+                                    RootDirectory rootDirectory = new RootDirectory(partition.getVBR().getRootCluster(),
+                                            partition.getVBR().getSectorsPerCluster(), partition.getVBR().getBytesPerSector(),
+                                            partition.getDataRegion().getStartDataRegionDec(), uri, partition.getFAT(),
+                                            clusterTraverse(uri, fat, partition.getVBR().getRootCluster()));
+                                    partition.setRootDirectory(rootDirectory);
+                                    ArrayList<ArrayList> fullList = new ArrayList<>();
+                                    ArrayList<FileEntry> fileList = new ArrayList<>();
+                                    fileList = traverseDirectory(uri, fat, rootDirectory, rootDirectory.getStartRootDirDec(), fullList);
+//                                    ArrayList<ShortFile> shortFileList = new ArrayList<>();
+//                                    ArrayList<ArrayList> directoryList = new ArrayList<>();
+//                                    shortFileList = fullList.get(0);
+//                                    directoryList = fullList.get(1);
+                                    for (int i = 0; i < fileList.size(); i++) {
+                                        fileList.get(i).toString(testingText);
+                                    }
+
 
 
                                     /*** Carving of file ***/
@@ -328,6 +347,7 @@ public class MainActivity extends AppCompatActivity {
                                     partition.getVBR().toString(testingText);
                                     partition.getFAT().toString(testingText);
                                     partition.getDataRegion().toString(testingText);
+                                    partition.getRootDirectory().toString(testingText);
                                 } else {
                                     //Ignore
                                 }
@@ -541,6 +561,15 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+    public StringBuilder getLEHexData(String hexString) throws IOException {
+        StringBuilder hexLE = new StringBuilder();
+        for (int j = hexString.length(); j != 0; j -= 2) {
+            hexLE.append(hexString.substring(j - 2, j));
+        }
+
+        return hexLE;
+    }
+
     /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
     public long getHexToDecimal(StringBuilder hexString) {
         long decValue = Long.parseLong(String.valueOf(hexString), 16);
@@ -567,6 +596,11 @@ public class MainActivity extends AppCompatActivity {
     /*** Change Hex to LE to Decimal ***/
     public long getHexLEDec(Uri uri, long startCount, long endCount) throws IOException {
         return getHexToDecimal(getLEHexData(uri, startCount, endCount));
+    }
+
+    /*** Change Hex to LE to Decimal ***/
+    public long getHexLEDec(String hexString) throws IOException {
+        return getHexToDecimal(getLEHexData(hexString));
     }
 
     /***** ***** ***** ***** START OF GRABBING RECORDS ***** ***** ***** *****/
@@ -618,14 +652,6 @@ public class MainActivity extends AppCompatActivity {
         return fat;
     }
 
-    /*** Create new Data object with its' information ***/
-    public Data getData(Uri uri, long startCount) throws IOException {
-        Data data = new Data();
-//        data.setFatID(getLEHexData(uri, startCount+0, startCount+3).toString());
-//        data.setEndClusterMarker(getLEHexData(uri, startCount+4, startCount+7).toString());
-        return data;
-    }
-
     /*** Create new ExtMBR object with its' information ***/
     public ExtMBR getExtMBR(Uri uri, long startCount) throws IOException {
         ExtMBR extmbr = new ExtMBR();
@@ -644,6 +670,181 @@ public class MainActivity extends AppCompatActivity {
         extPartition.setExt2Offset(getHexLEDec(uri, startCount + 24, startCount + 27));
         extPartition.setCalExt2MBR();
         return extPartition;
+    }
+
+    public ArrayList clusterTraverse(Uri uri, FATable fat, Long clusterNoNum) throws IOException {
+        ArrayList<Long> list = new ArrayList();
+        boolean endOfFileReach = false;
+        do {
+            long clusterHex = getHexLEDec(uri, (fat.getStartFirstFatDec() + (4*(clusterNoNum))), (fat.getStartFirstFatDec() + ((4*(clusterNoNum))+3)));
+
+            if ((!fat.chkDmgCluster(clusterHex)) && !fat.chkEOFCluster(clusterHex)) {
+                list.add(clusterHex);
+                clusterNoNum = list.get(list.size() - 1);
+            }
+
+            else {
+                list.add(clusterHex);
+                endOfFileReach = true;
+            }
+
+        } while (endOfFileReach == false);
+
+        return list;
+    }
+
+    public ArrayList traverseDirectory(Uri uri, FATable fat, RootDirectory rootDirectory, long startCount, ArrayList<ArrayList> fullList) throws IOException {
+        ArrayList<ShortFile> shortFileList = new ArrayList();
+        ArrayList<Directory> directoryList = new ArrayList();
+        ArrayList<FileEntry> fileEntryList = new ArrayList<>();
+        int numOfLFNentries = 0;
+
+        while (startCount < rootDirectory.getEndRootDirDec() - 32) {
+
+                numOfLFNentries = 0;
+
+            if (getHexLEDec(uri, startCount + 11, startCount + 11) == 0) {
+                // READ ONLY
+                startCount = startCount + 32;
+            }
+
+            if (getHexLEDec(uri, startCount + 11, startCount + 11) == 1) {
+                // READ ONLY
+                startCount = startCount + 32;
+            }
+
+            if (getHexLEDec(uri, startCount + 11, startCount + 11) == 2) {
+                // HIDDEN
+                startCount = startCount + 32;
+            }
+
+            if (getHexLEDec(uri, startCount + 11, startCount + 11) == 4) {
+                // SYSTEM
+                startCount = startCount + 32;
+            }
+
+            if (getHexLEDec(uri, startCount + 11, startCount + 11) == 8) {
+                System.out.println("VOLUME LABEL DETECTED");
+                // VOLUME_ID
+                startCount = startCount + 32;
+            }
+
+            if (getHexLEDec(uri, startCount + 11, startCount + 11) == 15) {
+                // FILE
+
+                if (getHexLEDec(uri, startCount, startCount) == 0 ||
+                        getHexLEDec(uri, startCount, startCount) == 46) {
+                    // Skip as entry is 0 OR a '.' Directory;
+                    startCount = startCount + 32;
+                }
+
+                else if (getHexLEDec(uri, startCount, startCount) == 229) {
+                    // File is deleted.
+                    System.out.println("DELETED FILE DETECTED @ " + startCount);
+                    startCount = startCount + 32;
+                    FileEntry fileEntry = new FileEntry();
+                    fileEntry.setName(getHexToASCII(getBEHexData(uri, startCount, startCount+10)));
+                    fileEntry.setNameExt(getHexToASCII(getBEHexData(uri, startCount+8, startCount+10)));
+                    fileEntry.setFileAttribute(getHexLEDec(uri, startCount+11, startCount+11));
+                    // 13th is time in tenths of seconds.
+                    fileEntry.setCreatedTime(getHexLEDec(uri, startCount+14, startCount+15));
+                    fileEntry.setCreatedDate(getHexLEDec(uri, startCount+16, startCount+17));
+                    fileEntry.setAccessedDate(getHexLEDec(uri, startCount+18, startCount+19));
+                    fileEntry.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(uri, startCount+20, startCount+21),
+                            getLEHexData(uri, startCount+26, startCount+27))));
+                    fileEntry.setWrittenTime(getHexLEDec(uri, startCount+22, startCount+23));
+                    fileEntry.setWrittenDate(getHexLEDec(uri, startCount+24, startCount+25));
+                    fileEntry.setSizeOfFile(getHexLEDec(uri, startCount+28, startCount+31));
+                    fileEntryList.add(fileEntry);
+
+                    startCount = startCount + 32;
+                }
+
+                else {
+                    System.out.println("NORMAL FILE DETECTED @ " + startCount);
+                    numOfLFNentries = Integer.parseInt(getLEHexData(uri, startCount, startCount).toString());
+                    System.out.println("numOfEntries" + numOfLFNentries);
+                    numOfLFNentries = numOfLFNentries - 40;
+                    System.out.println("numOfEntries" + numOfLFNentries);
+                    startCount = startCount + (numOfLFNentries) * 32;
+                    System.out.println("current start count" + startCount);
+                    FileEntry fileEntry = new FileEntry();
+
+                    fileEntry.setName(getHexToASCII(getBEHexData(uri, startCount, startCount+10)));
+                    fileEntry.setNameExt(getHexToASCII(getBEHexData(uri, startCount+8, startCount+10)));
+                    fileEntry.setFileAttribute(getHexLEDec(uri, startCount+11, startCount+11));
+                    // 13th is time in tenths of seconds.
+                    fileEntry.setCreatedTime(getHexLEDec(uri, startCount+14, startCount+15));
+                    fileEntry.setCreatedDate(getHexLEDec(uri, startCount+16, startCount+17));
+                    fileEntry.setAccessedDate(getHexLEDec(uri, startCount+18, startCount+19));
+                    fileEntry.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(uri, startCount+20, startCount+21),
+                            getLEHexData(uri, startCount+26, startCount+27))));
+                    fileEntry.setWrittenTime(getHexLEDec(uri, startCount+22, startCount+23));
+                    fileEntry.setWrittenDate(getHexLEDec(uri, startCount+24, startCount+25));
+                    fileEntry.setSizeOfFile(getHexLEDec(uri, startCount+28, startCount+31));
+                    fileEntryList.add(fileEntry);
+
+                    startCount = startCount + 32;
+                }
+            }
+
+            if (getHexLEDec(uri, startCount + 11, startCount + 11) == 16) {
+                // DIRECTORY
+                if (getHexLEDec(uri, startCount, startCount) == 229) {
+                    // Directory is deleted.
+                    System.out.println("Directory deleted DETECTED @ " + startCount);
+                    startCount = startCount + 32;
+                    FileEntry fileEntry = new FileEntry();
+
+                    fileEntry.setName(getHexToASCII(getBEHexData(uri, startCount, startCount+10)));
+                    fileEntry.setNameExt(getHexToASCII(getBEHexData(uri, startCount+8, startCount+10)));
+                    fileEntry.setFileAttribute(getHexLEDec(uri, startCount+11, startCount+11));
+                    // 13th is time in tenths of seconds.
+                    fileEntry.setCreatedTime(getHexLEDec(uri, startCount+14, startCount+15));
+                    fileEntry.setCreatedDate(getHexLEDec(uri, startCount+16, startCount+17));
+                    fileEntry.setAccessedDate(getHexLEDec(uri, startCount+18, startCount+19));
+                    fileEntry.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(uri, startCount+20, startCount+21),
+                            getLEHexData(uri, startCount+26, startCount+27))));
+                    fileEntry.setWrittenTime(getHexLEDec(uri, startCount+22, startCount+23));
+                    fileEntry.setWrittenDate(getHexLEDec(uri, startCount+24, startCount+25));
+                    fileEntry.setSizeOfFile(getHexLEDec(uri, startCount+28, startCount+31));
+                    fileEntryList.add(fileEntry);
+
+                    startCount = startCount + 32;
+                }
+
+                else {
+                    System.out.println("Directory DETECTED @ " + startCount);
+                    numOfLFNentries = Integer.parseInt(getLEHexData(uri, startCount, startCount).toString());
+                    numOfLFNentries = numOfLFNentries - 40;
+                    startCount = startCount + (numOfLFNentries) * 32;
+                    FileEntry fileEntry = new FileEntry();
+
+                    fileEntry.setName(getHexToASCII(getBEHexData(uri, startCount, startCount+10)));
+                    fileEntry.setNameExt(getHexToASCII(getBEHexData(uri, startCount+8, startCount+10)));
+                    fileEntry.setFileAttribute(getHexLEDec(uri, startCount+11, startCount+11));
+                    // 13th is time in tenths of seconds.
+                    fileEntry.setCreatedTime(getHexLEDec(uri, startCount+14, startCount+15));
+                    fileEntry.setCreatedDate(getHexLEDec(uri, startCount+16, startCount+17));
+                    fileEntry.setAccessedDate(getHexLEDec(uri, startCount+18, startCount+19));
+                    fileEntry.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(uri, startCount+20, startCount+21),
+                            getLEHexData(uri, startCount+26, startCount+27))));
+                    fileEntry.setWrittenTime(getHexLEDec(uri, startCount+22, startCount+23));
+                    fileEntry.setWrittenDate(getHexLEDec(uri, startCount+24, startCount+25));
+                    fileEntry.setSizeOfFile(getHexLEDec(uri, startCount+28, startCount+31));
+                    fileEntryList.add(fileEntry);
+
+                    startCount = startCount + 32;
+                }
+            }
+
+            if (getHexLEDec(uri, startCount + 11, startCount + 11) == 32) {
+                // ARCHIVE
+                startCount = startCount + 32;
+            }
+
+        }
+        return fileEntryList;
     }
 
 
@@ -700,5 +901,133 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    //                if (getHexLEDec(uri, startCount + 11, startCount + 11) == 1) {
+//                    // READ ONLY
+//                    startCount = startCount + 32;
+//                }
+//
+//                if (getHexLEDec(uri, startCount + 11, startCount + 11) == 2) {
+//                    // HIDDEN
+//                    startCount = startCount + 32;
+//                }
+//
+//                if (getHexLEDec(uri, startCount + 11, startCount + 11) == 4) {
+//                    // SYSTEM
+//                    startCount = startCount + 32;
+//                }
+//
+//                if (getHexLEDec(uri, startCount + 11, startCount + 11) == 8) {
+//                    // VOLUME_ID
+//                    startCount = startCount + 32;
+//                }
+//
+//                if (getHexLEDec(uri, startCount + 11, startCount + 11) == 15) {
+//                    // FILE
+//
+//                    if (getHexLEDec(uri, startCount, startCount) == 0 ||
+//                            getHexLEDec(uri, startCount, startCount) == 46) {
+//                        // Skip as entry is 0 OR a '.' Directory;
+//                        startCount = startCount + 32;
+//                    }
+//
+//                    else if (getHexLEDec(uri, startCount, startCount) == 229) {
+//                        // File is deleted.
+//                        startCount = startCount + 32;
+//                        ShortFile shortFile = new ShortFile();
+//
+//                        shortFile.setName(getHexToASCII(getBEHexData(uri, startCount, startCount+10)));
+//                        shortFile.setNameExt(getHexToASCII(getBEHexData(uri, startCount+8, startCount+10)));
+//                        shortFile.setFileAttribute(getHexLEDec(uri, startCount+11, startCount+11));
+//                        // 13th is time in tenths of seconds.
+//                        shortFile.setCreatedTime(getHexLEDec(uri, startCount+14, startCount+15));
+//                        shortFile.setCreatedDate(getHexLEDec(uri, startCount+16, startCount+17));
+//                        shortFile.setAccessedDate(getHexLEDec(uri, startCount+18, startCount+19));
+//                        shortFile.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(uri, startCount+20, startCount+21),
+//                                getLEHexData(uri, startCount+26, startCount+27))));
+//                        shortFile.setWrittenTime(getHexLEDec(uri, startCount+22, startCount+23));
+//                        shortFile.setWrittenDate(getHexLEDec(uri, startCount+24, startCount+25));
+//                        shortFile.setSizeOfFile(getHexLEDec(uri, startCount+28, startCount+31));
+//                        shortFileList.add(shortFile);
+//
+//                        startCount = startCount + 32;
+//                    }
+//
+//                    else {
+//                        numOfLFNentries = (int) getHexLEDec(uri, startCount, startCount);
+//                        numOfLFNentries = numOfLFNentries | 40;
+//                        startCount = startCount + (numOfLFNentries) * 32;
+//                        ShortFile shortFile = new ShortFile();
+//
+//                        shortFile.setName(getHexToASCII(getBEHexData(uri, startCount, startCount+10)));
+//                        shortFile.setNameExt(getHexToASCII(getBEHexData(uri, startCount+8, startCount+10)));
+//                        shortFile.setFileAttribute(getHexLEDec(uri, startCount+11, startCount+11));
+//                        // 13th is time in tenths of seconds.
+//                        shortFile.setCreatedTime(getHexLEDec(uri, startCount+14, startCount+15));
+//                        shortFile.setCreatedDate(getHexLEDec(uri, startCount+16, startCount+17));
+//                        shortFile.setAccessedDate(getHexLEDec(uri, startCount+18, startCount+19));
+//                        shortFile.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(uri, startCount+20, startCount+21),
+//                                getLEHexData(uri, startCount+26, startCount+27))));
+//                        shortFile.setWrittenTime(getHexLEDec(uri, startCount+22, startCount+23));
+//                        shortFile.setWrittenDate(getHexLEDec(uri, startCount+24, startCount+25));
+//                        shortFile.setSizeOfFile(getHexLEDec(uri, startCount+28, startCount+31));
+//                        shortFileList.add(shortFile);
+//
+//                        startCount = startCount + 32;
+//                    }
+//                }
+//
+//                if (getHexLEDec(uri, startCount + 11, startCount + 11) == 16) {
+//                    // DIRECTORY
+//                    if (getHexLEDec(uri, startCount, startCount) == 229) {
+//                        // Directory is deleted.
+//                        startCount = startCount + 32;
+//                        Directory directory = new Directory();
+//
+//                        directory.setName(getHexToASCII(getBEHexData(uri, startCount, startCount+10)));
+//                        directory.setNameExt(getHexToASCII(getBEHexData(uri, startCount+8, startCount+10)));
+//                        directory.setFileAttribute(getHexLEDec(uri, startCount+11, startCount+11));
+//                        // 13th is time in tenths of seconds.
+//                        directory.setCreatedTime(getHexLEDec(uri, startCount+14, startCount+15));
+//                        directory.setCreatedDate(getHexLEDec(uri, startCount+16, startCount+17));
+//                        directory.setAccessedDate(getHexLEDec(uri, startCount+18, startCount+19));
+//                        directory.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(uri, startCount+20, startCount+21),
+//                                getLEHexData(uri, startCount+26, startCount+27))));
+//                        directory.setWrittenTime(getHexLEDec(uri, startCount+22, startCount+23));
+//                        directory.setWrittenDate(getHexLEDec(uri, startCount+24, startCount+25));
+//                        directory.setSizeOfFile(getHexLEDec(uri, startCount+28, startCount+31));
+//                        directoryList.add(directory);
+//
+//                        startCount = startCount + 32;
+//                    }
+//
+//                    else {
+//                        numOfLFNentries = (int) getHexLEDec(uri, startCount, startCount);
+//                        numOfLFNentries = numOfLFNentries | 40;
+//                        startCount = startCount + (numOfLFNentries) * 32;
+//                        Directory directory = new Directory();
+//
+//                        directory.setName(getHexToASCII(getBEHexData(uri, startCount, startCount+10)));
+//                        directory.setNameExt(getHexToASCII(getBEHexData(uri, startCount+8, startCount+10)));
+//                        directory.setFileAttribute(getHexLEDec(uri, startCount+11, startCount+11));
+//                        // 13th is time in tenths of seconds.
+//                        directory.setCreatedTime(getHexLEDec(uri, startCount+14, startCount+15));
+//                        directory.setCreatedDate(getHexLEDec(uri, startCount+16, startCount+17));
+//                        directory.setAccessedDate(getHexLEDec(uri, startCount+18, startCount+19));
+//                        directory.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(uri, startCount+20, startCount+21),
+//                                getLEHexData(uri, startCount+26, startCount+27))));
+//                        directory.setWrittenTime(getHexLEDec(uri, startCount+22, startCount+23));
+//                        directory.setWrittenDate(getHexLEDec(uri, startCount+24, startCount+25));
+//                        directory.setSizeOfFile(getHexLEDec(uri, startCount+28, startCount+31));
+//                        directoryList.add(directory);
+//
+//                        startCount = startCount + 32;
+//                    }
+//                }
+//
+//                if (getHexLEDec(uri, startCount + 11, startCount + 11) == 32) {
+//                    // ARCHIVE
+//                    startCount = startCount + 32;
+//                }
 }
 

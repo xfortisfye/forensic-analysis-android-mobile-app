@@ -25,30 +25,18 @@ public class VBR {
     public void setOEM(String hexData) {
         this.OEM = hexData;
     }
-
     public void setBytesPerSector(long bytesPerSector) {
         this.bytesPerSector = bytesPerSector;
     }
-
-    public void setSectorsPerCluster(long sectorsPerCluster) {
-        this.sectorsPerCluster = sectorsPerCluster;
-    }
-
-    public void setReservedAreaSize(long reservedAreaSize) {
-        this.reservedAreaSize = reservedAreaSize;
-    }
-
+    public void setSectorsPerCluster(long sectorsPerCluster) { this.sectorsPerCluster = sectorsPerCluster; }
+    public void setReservedAreaSize(long reservedAreaSize) { this.reservedAreaSize = reservedAreaSize; }
     public void setNumOfFats(long numOfFats) {
         this.numOfFats = numOfFats;
     }
-
     public void setBit16Sectors(long bit16Sectors) {
         this.bit16Sectors = bit16Sectors;
     }
-
-    public void setMaxRootFiles(long maxRootFiles) {
-        this.maxRootFiles = maxRootFiles;
-    }
+    public void setMaxRootFiles(long maxRootFiles) { this.maxRootFiles = maxRootFiles; }
 
     public void setMediaType(StringBuilder hexData) {
         switch (hexData.toString()) {
@@ -64,22 +52,14 @@ public class VBR {
         }
     }
 
-    public void setOffset(long offset) {
-        this.offset = offset;
-    }
-
+    public void setOffset(long offset) { this.offset = offset; }
     public void setBit32Sectors(long bit32Sectors) {
         this.bit32Sectors = bit32Sectors;
     }
-
-    public void setBit32SectorsOfFat(long bit32SectorsOfFat) {
-        this.bit32SectorsOfFat = bit32SectorsOfFat;
-    }
-
+    public void setBit32SectorsOfFat(long bit32SectorsOfFat) { this.bit32SectorsOfFat = bit32SectorsOfFat; }
     public void setRootCluster(long rootCluster) {
         this.rootCluster = rootCluster;
     }
-
     public void setVolumeLabel(String hexData) {
         this.volumeLabel = hexData;
     }
@@ -90,51 +70,39 @@ public class VBR {
     public String getOEM() {
         return this.OEM;
     }
-
     public long getBytesPerSector() {
         return bytesPerSector;
     }
-
     public long getSectorsPerCluster() {
         return sectorsPerCluster;
     }
-
     public long getReservedAreaSize() {
         return reservedAreaSize;
     }
-
     public long getNumOfFats() {
         return numOfFats;
     }
-
     public long getBit16Sectors() {
         return bit16Sectors;
     }
-
     public long getMaxRootFiles() {
         return maxRootFiles;
     }
-
     public String getMediaType() {
         return mediaType;
     }
-
     public long getOffset() {
         return offset;
     }
-
     public long getBit32Sectors() {
         return bit32Sectors;
     }
-
     public long getBit32SectorsOfFat() {
         return bit32SectorsOfFat;
     }
-
     public long getRootCluster() {
         return rootCluster;
     }
-
     public String getVolumeLabel() {
         return this.volumeLabel;
     }

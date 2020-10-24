@@ -12,15 +12,12 @@ public class ExtMBR {
     public void setExtPartition(ExtPartition extPartition) {
         this.extPartition = extPartition;
     }
-
     public void setSignatureType(String signatureType) {
         this.signatureType = signatureType;
     }
-
     public ExtPartition getExtPartition() {
         return extPartition;
     }
-
     public String getSignatureType() {
         return signatureType;
     }
