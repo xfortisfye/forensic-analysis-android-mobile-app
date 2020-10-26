@@ -2,7 +2,7 @@ package com.example.icarus;
 
 import android.widget.TextView;
 
-public class VBR {
+public class VBR extends Grab {
 
     private String OEM;
     private long bytesPerSector;
@@ -18,6 +18,7 @@ public class VBR {
     private long rootCluster;
     private String volumeLabel;
     private String fileSystemLabel;
+    private long bytesPerCluster;
 
     public VBR() {
     }
@@ -66,6 +67,7 @@ public class VBR {
     public void setFileSystemLabel(String hexData) {
         this.fileSystemLabel = hexData;
     }
+    public void setBytesPerCluster() { this.bytesPerCluster = getBytesPerSector() * getSectorsPerCluster(); }
 
     public String getOEM() {
         return this.OEM;
@@ -109,6 +111,7 @@ public class VBR {
     public String getFileSystemLabel() {
         return this.fileSystemLabel;
     }
+    public long getBytesPerCluster() {return this.bytesPerCluster; }
 
     public void toString(TextView testingText) {
         testingText.append("[     VOLUME BOOT RECORD     ]" + "\n");

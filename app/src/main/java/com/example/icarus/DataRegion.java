@@ -2,7 +2,7 @@ package com.example.icarus;
 
 import android.widget.TextView;
 
-public class DataRegion{
+public class DataRegion extends VBR{
     /** In decimal **/
     private long startDataRegionSect;
     private long endDataRegionSect;
