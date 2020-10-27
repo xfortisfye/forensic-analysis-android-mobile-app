@@ -255,11 +255,11 @@ public class MainActivity extends AppCompatActivity {
 
                                         startClusterDec = getHexToDecimal(getLEHexData(uri, rootDirDec+26, rootDirDec + 27));
                                         fileSizeDec = getHexToDecimal(getLEHexData(uri, rootDirDec+28, rootDirDec + 31));
-//                                        System.out.println(getLEHexData(uri, rootDirDec + 11, rootDirDec + 11).toString());
+                                        System.out.println(getLEHexData(uri, rootDirDec + 11, rootDirDec + 11).toString());
 //                                        if(getLEHexData(uri, rootDirDec + 11, rootDirDec + 11).toString().equals("0F")){
 //                                            System.out.println("Long file name found");
 //                                            System.out.println(getHexToASCII(getBEHexData(uri, rootDirDec, rootDirDec + 10)));
-                                        }
+//                                        }
                                         if(getLEHexData(uri, rootDirDec + 11, rootDirDec + 11).toString().equals("10")){
                                             System.out.println("===============================================================");
                                             System.out.println("Directory found");
@@ -349,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
 
                                         rootDirDec+=16;
 
-//                                    }
+                                    }
 
 
                                     /*** Generation of Report ***/
