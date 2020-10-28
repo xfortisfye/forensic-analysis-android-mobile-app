@@ -355,8 +355,8 @@ public class Partition {
     }
     public void setFAT(FATable fat) {this.fat = fat;}
     public void setDataRegion(DataRegion dataRegion) { this.dataRegion = dataRegion; }
-
     public void setRootDirectory(FileEntry rootDirectory) {this.rootDirectory = rootDirectory; }
+
     public String getPartitionName() {return partitionName; }
     public String getBootableStatus() {
         return bootableStatus;

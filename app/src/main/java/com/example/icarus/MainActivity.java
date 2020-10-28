@@ -154,12 +154,31 @@ public class MainActivity extends AppCompatActivity {
                                                         extmbr.getExtPartition().getVBR().getBytesPerSector());
                                                 extmbr.getExtPartition().setDataRegion(dataRegion);
 
+                                                ArrayList<StringBuilder> listOfRootDirData = new ArrayList<StringBuilder>();
+                                                listOfRootDirData = getListOfDirDataTraverse(uri, fat, dataRegion,
+                                                        getListOfClusterTraverse(uri, fat, extmbr.getExtPartition().getVBR().getRootCluster()),
+                                                        extmbr.getExtPartition().getVBR().getBytesPerCluster());
+                                                FileEntry rootDirectory = new FileEntry(getListOfClusterTraverse(uri, fat,
+                                                        extmbr.getExtPartition().getVBR().getRootCluster()), getListOfDirDataTraverse(uri, fat, dataRegion,
+                                                                getListOfClusterTraverse(uri, fat, extmbr.getExtPartition().getVBR().getRootCluster()),
+                                                                extmbr.getExtPartition().getVBR().getBytesPerCluster()));
+                                                //acc
+
+                                                ArrayList<FileEntry> listOfFileAndDir = new ArrayList<FileEntry>();
+                                                rootDirectory.setListOfFileAndDir(traverseDirectory(uri, fat, dataRegion, extmbr.getExtPartition()
+                                                        .getVBR().getBytesPerCluster(), listOfRootDirData, listOfFileAndDir));
+                                                extmbr.getExtPartition().setRootDirectory(rootDirectory);
+
+
+
                                                 /*** Generation of Report ***/
                                                 extmbr.getExtPartition().toString(testingText);
                                                 extmbr.getExtPartition().getVBR().toString(testingText);
                                                 extmbr.getExtPartition().getFAT().toString(testingText);
                                                 extmbr.getExtPartition().getDataRegion().toString(testingText);
+                                                printAllFileAndDir(extmbr.getExtPartition().getRootDirectory().getListOfFileAndDir(), testingText);
                                                 partition.setStartOfPartition(extmbr.getExtPartition().getCalExt2MBR());
+
                                             } else {
                                                 loopedAllExtPartitions = true;
                                                 partition.setStartOfPartition(priExtPartitionStart);
@@ -213,7 +232,6 @@ public class MainActivity extends AppCompatActivity {
                                     ArrayList<FileEntry> listOfFileAndDir = new ArrayList<FileEntry>();
                                     rootDirectory.setListOfFileAndDir(traverseDirectory(uri, fat, dataRegion, partition.getVBR().getBytesPerCluster(), listOfRootDirData, listOfFileAndDir));
                                     partition.setRootDirectory(rootDirectory);
-
 
 
 
@@ -360,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void printAllFileAndDir (ArrayList<FileEntry> listOfFileAndDir, TextView testingText) {
-        for (int i = 0; i < listOfFileAndDir.size()-1; i++) {
+        for (int i = 0; i < listOfFileAndDir.size(); i++) {
             listOfFileAndDir.get(i).toString(testingText);
             if (listOfFileAndDir.get(i).getFileAttribute() == 16) {
                 printAllFileAndDir(listOfFileAndDir.get(i).getListOfFileAndDir(), testingText);
@@ -764,7 +782,7 @@ public class MainActivity extends AppCompatActivity {
         long startCount = 0;
         long endCount = listOfDirData.size()-1;
 
-        while (startCount < endCount - 32) {
+        while (startCount < endCount) {
             numOfLFNentries = 0;
 
             if (getHexLEDec(listOfDirData, startCount + 11, startCount + 11) == 0) {
@@ -836,9 +854,10 @@ public class MainActivity extends AppCompatActivity {
                     if (getHexLEDec(listOfDirData, startCount + 11, startCount + 11) == 32) {
                         // FILE ONLY
                         FileEntry fileEntry = new FileEntry();
-                        fileEntry.setLFname(fullLFname);
+                        fileEntry.setLFname(fullLFname.replace("ÿ", ""));
                         fileEntry.setSFname(getHexToASCII(getBEHexData(listOfDirData, startCount, startCount + 7)));
-                        fileEntry.setNameExt(getHexToASCII(getBEHexData(listOfDirData, startCount + 8, startCount + 10)));
+                        fileEntry.setNameExt(getHexToASCII(getBEHexData(listOfDirData, startCount + 8, startCount + 10))
+                                .replace("ÿ", "").replace(" ", ""));
                         fileEntry.setFileAttribute(getHexLEDec(listOfDirData, startCount + 11, startCount + 11));
                         // 13th is time in tenths of seconds.
                         fileEntry.setCreatedTime(getHexLEDec(listOfDirData, startCount + 14, startCount + 15));
@@ -849,19 +868,17 @@ public class MainActivity extends AppCompatActivity {
                         fileEntry.setWrittenTime(getHexLEDec(listOfDirData, startCount + 22, startCount + 23));
                         fileEntry.setWrittenDate(getHexLEDec(listOfDirData, startCount + 24, startCount + 25));
                         fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
-
-                        if (fileEntry.getFileAttribute() != 22) {
-                            fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
-                        }
+                        fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
                         listOfFileAndDir.add(fileEntry);
                         startCount = startCount + 32;
                     }
                     else if (getHexLEDec(listOfDirData, startCount + 11, startCount + 11) == 16){
                         //DIRECTORY ONLY
                         FileEntry fileEntry = new FileEntry();
-                        fileEntry.setLFname(fullLFname);
+                        fileEntry.setLFname(fullLFname.replace("ÿ", ""));
                         fileEntry.setSFname(getHexToASCII(getBEHexData(listOfDirData, startCount, startCount + 7)));
-                        fileEntry.setNameExt(getHexToASCII(getBEHexData(listOfDirData, startCount + 8, startCount + 10)));
+                        fileEntry.setNameExt(getHexToASCII(getBEHexData(listOfDirData, startCount + 8, startCount + 10))
+                                .replace("ÿ", "").replace(" ", ""));
                         fileEntry.setFileAttribute(getHexLEDec(listOfDirData, startCount + 11, startCount + 11));
                         // 13th is time in tenths of seconds.
                         fileEntry.setCreatedTime(getHexLEDec(listOfDirData, startCount + 14, startCount + 15));
@@ -872,19 +889,33 @@ public class MainActivity extends AppCompatActivity {
                         fileEntry.setWrittenTime(getHexLEDec(listOfDirData, startCount + 22, startCount + 23));
                         fileEntry.setWrittenDate(getHexLEDec(listOfDirData, startCount + 24, startCount + 25));
                         fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
-                        if (fileEntry.getFileAttribute() != 22) {
-                            fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
-                            fileEntry.setListOfData(getListOfDirDataTraverse(uri, fat, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster));
-                            ArrayList<FileEntry> listOfAnotherFileAndDir = new ArrayList<FileEntry>();
-                            fileEntry.setListOfFileAndDir(traverseDirectory(uri, fat, dataRegion, bytesPerCluster,
-                                    fileEntry.getListOfData(), listOfAnotherFileAndDir));
-                        }
+                        fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
+                        fileEntry.setListOfData(getListOfDirDataTraverse(uri, fat, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster));
+                        ArrayList<FileEntry> listOfAnotherFileAndDir = new ArrayList<FileEntry>();
+                        fileEntry.setListOfFileAndDir(traverseDirectory(uri, fat, dataRegion, bytesPerCluster, fileEntry.getListOfData(), listOfAnotherFileAndDir));
                         listOfFileAndDir.add(fileEntry);
                         startCount = startCount + 32;
 
                     }
                     else {
                         //INVALID FILE
+//                        FileEntry fileEntry = new FileEntry();
+//                        fileEntry.setLFname(fullLFname);
+//                        fileEntry.setSFname(getHexToASCII(getBEHexData(listOfDirData, startCount, startCount + 7)));
+//                        fileEntry.setNameExt(getHexToASCII(getBEHexData(listOfDirData, startCount + 8, startCount + 10)));
+//                        fileEntry.setFileAttribute(getHexLEDec(listOfDirData, startCount + 11, startCount + 11));
+//                        // 13th is time in tenths of seconds.
+//                        fileEntry.setCreatedTime(getHexLEDec(listOfDirData, startCount + 14, startCount + 15));
+//                        fileEntry.setCreatedDate(getHexLEDec(listOfDirData, startCount + 16, startCount + 17));
+//                        fileEntry.setAccessedDate(getHexLEDec(listOfDirData, startCount + 18, startCount + 19));
+//                        fileEntry.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(listOfDirData, startCount + 20, startCount + 21),
+//                                getLEHexData(listOfDirData, startCount + 26, startCount + 27))));
+//                        fileEntry.setWrittenTime(getHexLEDec(listOfDirData, startCount + 22, startCount + 23));
+//                        fileEntry.setWrittenDate(getHexLEDec(listOfDirData, startCount + 24, startCount + 25));
+//                        fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
+//                        fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
+
+ //                       System.out.println("INNER INVALID FILE DETECTED: " + fileEntry.getSFname() + " ext " + fileEntry.getNameExt() + " " + getHexLEDec(listOfDirData, startCount + 11, startCount + 11));
                         startCount = startCount + 32;
                     }
                 }
@@ -894,17 +925,78 @@ public class MainActivity extends AppCompatActivity {
                     getHexLEDec(uri, startCount + 11, startCount + 11) == 32) {
                 // READ ONLY || HIDDEN FILE || SYSTEM FILE || ARCHIVE
                 // Currently unsure what will happen for the following files;
-                System.out.println("UNSURE FILE DETECTED");
+ //               System.out.println("UNSURE FILE DETECTED");
                 startCount = startCount + 32;
             } else if (
                     getHexLEDec(uri, startCount + 11, startCount + 11) == 8) {
                 // VOLUME_ID
-                System.out.println("VOLUME LABEL DETECTED");
+//                System.out.println("VOLUME LABEL DETECTED");
                 startCount = startCount + 32;
             } else {
                 // INCORRECT FILE FORMAT
+//                String fullLFname = "";
+//                for (int i = 0; i < numOfLFNentries; i++) {
+//                    String tempLFname = "";
+//                    if (!getBEHexData(listOfDirData, startCount + 1, startCount + 1).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 1, startCount + 1));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 3, startCount + 3).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 3, startCount + 3));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 5, startCount + 5).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 5, startCount + 5));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 7, startCount + 7).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 7, startCount + 7));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 9, startCount + 9).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 9, startCount + 9));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 14, startCount + 14).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 14, startCount + 14));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 16, startCount + 16).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 16, startCount + 16));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 18, startCount + 18).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 18, startCount + 18));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 20, startCount + 20).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 20, startCount + 20));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 22, startCount + 22).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 22, startCount + 22));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 24, startCount + 24).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 24, startCount + 24));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 28, startCount + 28).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 28, startCount + 28));
+//                    }
+//                    if (!getBEHexData(listOfDirData, startCount + 30, startCount + 30).equals("FF")) {
+//                        tempLFname = tempLFname + getHexToASCII(getBEHexData(listOfDirData, startCount + 30, startCount + 30));
+//                    }
+//                    fullLFname = tempLFname + fullLFname;
+//                    startCount = startCount + 32;
+//                }
+//                FileEntry fileEntry = new FileEntry();
+//                fileEntry.setLFname(fullLFname);
+//                fileEntry.setSFname(getHexToASCII(getBEHexData(listOfDirData, startCount, startCount + 7)));
+//                fileEntry.setNameExt(getHexToASCII(getBEHexData(listOfDirData, startCount + 8, startCount + 10)));
+//                fileEntry.setFileAttribute(getHexLEDec(listOfDirData, startCount + 11, startCount + 11));
+//                // 13th is time in tenths of seconds.
+//                fileEntry.setCreatedTime(getHexLEDec(listOfDirData, startCount + 14, startCount + 15));
+//                fileEntry.setCreatedDate(getHexLEDec(listOfDirData, startCount + 16, startCount + 17));
+//                fileEntry.setAccessedDate(getHexLEDec(listOfDirData, startCount + 18, startCount + 19));
+//                fileEntry.setFirstClusterLoc(getHexToDecimal(concatHex(getLEHexData(listOfDirData, startCount + 20, startCount + 21),
+//                        getLEHexData(listOfDirData, startCount + 26, startCount + 27))));
+//                fileEntry.setWrittenTime(getHexLEDec(listOfDirData, startCount + 22, startCount + 23));
+//                fileEntry.setWrittenDate(getHexLEDec(listOfDirData, startCount + 24, startCount + 25));
+//                fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
+//                fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
+
                 startCount = startCount + 32;
-                System.out.println("INVALID FILE DETECTED: " + getHexLEDec(uri, startCount + 11, startCount + 11));
+//                System.out.println("INVALID FILE DETECTED: " + fileEntry.getSFname() + " ext " + fileEntry.getNameExt() + " " + getHexLEDec(listOfDirData, startCount + 11, startCount + 11));
             }
 
 
@@ -912,32 +1004,5 @@ public class MainActivity extends AppCompatActivity {
         return listOfFileAndDir;
     }
 }
-
-
-
-//    public ArrayList dataClusterTraverse(Uri uri, FATable fat, Long clusterNoNum, DataRegion dataRegion) throws IOException {
-//        ArrayList<Long> clusterNumlist = new ArrayList<Long>();
-//        ArrayList<String> clusterContent = new ArrayList<String>();
-//        clusterNumlist.add(clusterNoNum);
-//        boolean endOfFileReach = false;
-//        do {
-//            clusterContent.add(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + (clusterNoNum-2)*dataRegion.getClusterSizeInDec()),
-//                    (dataRegion.getStartDataRegionDec() + (clusterNoNum-1)*dataRegion.getClusterSizeInDec()-1)).toString());
-//            System.out.println(clusterContent.get(clusterContent.size()-1));
-//            long clusterHex = getHexLEDec(uri, (fat.getStartFirstFatDec() + (4*(clusterNoNum))), (fat.getStartFirstFatDec() + ((4*(clusterNoNum))+3)));
-//
-//            if ((!fat.chkDmgCluster(clusterHex)) && !fat.chkEOFCluster(clusterHex)) {
-//                clusterNumlist.add(clusterHex);
-//                clusterNoNum = clusterNumlist.get(clusterNumlist.size() - 1);
-//            }
-//            else {
-//                endOfFileReach = true;
-//            }
-//
-//        } while (endOfFileReach == false);
-//
-//        return clusterContent;
-//    }
-
 
 

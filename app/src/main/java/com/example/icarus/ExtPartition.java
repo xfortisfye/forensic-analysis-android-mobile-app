@@ -16,6 +16,7 @@ public class ExtPartition {
     private VBR vbr;
     private FATable fat;
     private DataRegion dataRegion;
+    private FileEntry rootDirectory;
 
 
     public ExtPartition() {
@@ -363,6 +364,7 @@ public class ExtPartition {
     }
     public void setFAT(FATable fat) {this.fat = fat;}
     public void setDataRegion(DataRegion dataRegion) { this.dataRegion = dataRegion; }
+    public void setRootDirectory(FileEntry rootDirectory) {this.rootDirectory = rootDirectory; }
 
     public String getPartitionName() { return partitionName; }
     public String getBootableStatus() { return bootableStatus; }
@@ -388,6 +390,7 @@ public class ExtPartition {
     public VBR getVBR() { return vbr; }
     public FATable getFAT() { return this.fat; }
     public DataRegion getDataRegion() { return this.dataRegion; }
+    public FileEntry getRootDirectory() { return this.rootDirectory; }
 
     public void toString(TextView testingText) {
         testingText.append(this.getPartitionName() + "\n");
