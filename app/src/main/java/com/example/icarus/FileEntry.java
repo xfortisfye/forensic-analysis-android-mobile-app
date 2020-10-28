@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class FileEntry extends Grab {
-    private String name;
+    private String lfname;
+    private String sfname;
     private String nameExt;
     private long fileAttribute;
     private String createdTime;
@@ -19,18 +20,19 @@ public class FileEntry extends Grab {
     private long sizeOfFile;
 
     private ArrayList<Long> listOfClusters;
-    private ArrayList<String> listOfData;
+    private ArrayList<StringBuilder> listOfData;
     private ArrayList<FileEntry> listOfFileAndDir;
 
     public FileEntry() {
     }
 
-    public FileEntry(Uri uri, FATable fatable, ArrayList<String> listOfData) {
-        // PLEASE REEDIT THIS. THIS IS SUPPOSED TO BE FOR ROOT DIRECTORY CREATION ONLY.
-        // I LOST MY CODES.
+    public FileEntry(ArrayList<Long> listOfClusters, ArrayList<StringBuilder> listOfData) {
+        this.setListOfClusters(listOfClusters);
+        this.setListOfData(listOfData);
     }
 
-    public void setName(String name) { this.name = name;}
+    public void setLFname(String lfname) {this.lfname = lfname;}
+    public void setSFname(String sfname) { this.sfname = sfname;}
     public void setNameExt(String nameExt) { this.nameExt = nameExt;}
     public void setFileAttribute(long fileAttribute) { this.fileAttribute = fileAttribute; }
     public void setCreatedTime (long createdTime) { this.createdTime = getDecBinTime(createdTime); }
@@ -42,10 +44,11 @@ public class FileEntry extends Grab {
     public void setSizeOfFile(long sizeOfFile) { this.sizeOfFile = sizeOfFile; }
 
     public void setListOfClusters(ArrayList<Long> listOfClusters) { this.listOfClusters = listOfClusters; }
-    public void setListOfData(ArrayList<String> listOfData) {this.listOfData = listOfData;}
+    public void setListOfData(ArrayList<StringBuilder> listOfData) {this.listOfData = listOfData;}
     public void setListOfFileAndDir(ArrayList<FileEntry> listOfFileAndDir) {this.listOfFileAndDir = listOfFileAndDir;}
 
-    public String getName() {return name;}
+    public String getLFname() {return lfname;}
+    public String getSFname() {return sfname;}
     public String getNameExt() {return nameExt;}
     public long getFileAttribute() {return fileAttribute;}
     public String getCreatedTime() {return createdTime;}
@@ -57,13 +60,14 @@ public class FileEntry extends Grab {
     public long getSizeOfFile() { return sizeOfFile; }
 
     public ArrayList<Long> getListOfClusters() {return listOfClusters;}
-    public ArrayList<String> getListOfData() { return listOfData; }
+    public ArrayList<StringBuilder> getListOfData() { return listOfData; }
     public ArrayList<FileEntry> getListOfFileAndDir() { return listOfFileAndDir; }
 
     public void toString(TextView testingText) {
-        if (this.getFileAttribute() == 15) {
+        if (this.getFileAttribute() == 32) {
             testingText.append("--- FILE ---" + "\n");
-            testingText.append("SFN: " + this.getName() + "\n");
+            testingText.append("LFN: " + this.getLFname() + "\n");
+            testingText.append("SFN: " + this.getSFname() + "\n");
             testingText.append("SFN Ext: " + this.getNameExt() + "\n");
             testingText.append("File Attribute (Dec): " + this.getFileAttribute() + "\n");
             testingText.append("Created Time: " + this.getCreatedDate() + " " + this.getCreatedTime() + "\n");
@@ -73,7 +77,8 @@ public class FileEntry extends Grab {
             testingText.append("Size of File: " + this.getSizeOfFile() + "\n");
         } else if (this.getFileAttribute() == 16) {
             testingText.append("--- DIRECTORY ---" + "\n");
-            testingText.append("SFN: " + this.getName() + "\n");
+            testingText.append("LFN: " + this.getLFname() + "\n");
+            testingText.append("SFN: " + this.getSFname() + "\n");
             testingText.append("SFN Ext: " + this.getNameExt() + "\n");
             testingText.append("File Attribute (Dec): " + this.getFileAttribute() + "\n");
             testingText.append("Created Time: " + this.getCreatedDate() + " " + this.getCreatedTime() + "\n");
@@ -83,7 +88,8 @@ public class FileEntry extends Grab {
             testingText.append("Size of File: " + this.getSizeOfFile() + "\n");
         } else {
             testingText.append("--- I don't know what is this ---" + "\n");
-            testingText.append("SFN: " + this.getName() + "\n");
+            testingText.append("LFN: " + this.getLFname() + "\n");
+            testingText.append("SFN: " + this.getSFname() + "\n");
             testingText.append("SFN Ext: " + this.getNameExt() + "\n");
             testingText.append("File Attribute (Dec): " + this.getFileAttribute() + "\n");
             testingText.append("Created Time: " + this.getCreatedDate() + " " + this.getCreatedTime() + "\n");
@@ -94,3 +100,4 @@ public class FileEntry extends Grab {
         }
     }
 }
+

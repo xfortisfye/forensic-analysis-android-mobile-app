@@ -2,13 +2,11 @@ package com.example.icarus;
 
 import android.net.Uri;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class Grab extends AppCompatActivity {
+public class Grab extends MainActivity {
     /*** Get Hex Data String in Big Endian Mode ***/
     public StringBuilder getBEHexData(Uri uri, long startCount, long endCount) throws IOException {
         int decimalValue;
@@ -71,12 +69,6 @@ public class Grab extends AppCompatActivity {
         }
 
         return hexLE;
-    }
-
-    /*** Change Hex to Decimal ***/ //Long is used in scenario when number is too huge.
-    public long getHexToDecimal(StringBuilder hexString) {
-        long decValue = Long.parseLong(String.valueOf(hexString), 16);
-        return decValue;
     }
 
     /*** Convert Hex to ASCII String  ***/
@@ -178,5 +170,6 @@ public class Grab extends AppCompatActivity {
     public String getDecBinDate(long decValue) {
         return getBinToDate(getDecToBin(decValue));
     }
+
 }
 
