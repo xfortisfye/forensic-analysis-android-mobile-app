@@ -266,6 +266,42 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Collecting all the data for File
+    public void carving(Uri uri, FATable fat, DataRegion dataRegion,
+                        ArrayList<Long> clusterNumList, long bytesPerCluster, long totalFileSize,
+                        String fileName, String fileExt ) throws IOException {
+
+        ArrayList<StringBuilder> fileContent = new ArrayList<StringBuilder>();
+
+        fileName = fileName.replaceAll("\\s+", "");
+        String fullFileName = fileName;
+        System.out.println("FULL NAME: " + fullFileName);
+        FileOutputStream outputStream;
+        outputStream = openFileOutput(fullFileName, Context.MODE_PRIVATE);
+
+        for (int i = 0; i < clusterNumList.size(); i++) {
+            if (totalFileSize >= bytesPerCluster) {
+                System.out.println("Total File Size: " + totalFileSize);
+                totalFileSize = totalFileSize - (bytesPerCluster);
+                System.out.println("File Cluster No.: "+ clusterNumList.get(i) + " Cluster No for Cal: " + (clusterNumList.get(i) - 2));
+                for (long j=((clusterNumList.get(i) - 2) * bytesPerCluster); j<((clusterNumList.get(i) - 1) * bytesPerCluster); j++) {
+                    outputStream.write((char) Integer.parseInt(String.valueOf(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + j),
+                            (dataRegion.getStartDataRegionDec() + j))), 16));
+                }
+            } else {
+                System.out.println("END Total File Size: " + totalFileSize);
+                System.out.println("END File Cluster No.: "+ clusterNumList.get(i) + " Cluster No for Cal: " + (clusterNumList.get(i) - 2));
+                for (long j=(clusterNumList.get(i) - 2) * bytesPerCluster; j<((clusterNumList.get(i) - 2) * bytesPerCluster + totalFileSize); j++) {
+                    outputStream.write((char) Integer.parseInt(String.valueOf(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + j),
+                            (dataRegion.getStartDataRegionDec() + j))), 16));
+                }
+            }
+        }
+        outputStream.close();
+    }
+
+
+
     public void carveFile(ArrayList<StringBuilder> listOfData, String fileName, String fileExt) throws IOException {
 
         fileName = fileName.replaceAll("\\s+", "");
@@ -710,8 +746,9 @@ public class MainActivity extends AppCompatActivity {
                         fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
                         fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
                         System.out.println("FILE DETECTED");
-                        //fileEntry.setListOfData(getListOfFileDataTraverse(uri, fat, dataRegion, fileEntry.getListOfClusters(),
-                        //        bytesPerCluster, fileEntry.getSizeOfFile()));
+                        carving(uri, fat, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(), fileEntry.getSFname(), fileEntry.getNameExt());
+//                        fileEntry.setListOfData(getListOfFileDataTraverse(uri, fat, dataRegion, fileEntry.getListOfClusters(),
+//                                bytesPerCluster, fileEntry.getSizeOfFile()));
                         listOfFileAndDir.add(fileEntry);
                         startCount = startCount + 32;
                         System.out.println("FILE DATA ARRAY: " + fileEntry.getListOfData());
