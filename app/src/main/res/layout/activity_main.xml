@@ -20,11 +20,6 @@
             android:layout_marginBottom="328dp"
             android:src="@drawable/icarus" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/testingText" />
-
         <Button
             android:id="@+id/startAnalyseButton"
             android:layout_width="132dp"

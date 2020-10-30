@@ -8,9 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,9 +24,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.gun0912.tedpermission.PermissionListener;
-import com.gun0912.tedpermission.TedPermission;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,25 +47,6 @@ public class MainActivity extends AppCompatActivity {
         else {
             file.mkdirs();
         }
-
-        PermissionListener permissionListener = new PermissionListener() {
-            @Override
-            public void onPermissionGranted() {
-                Toast.makeText(MainActivity.this, "Permission to write to external storage granted!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onPermissionDenied(List<String> deniedPermissions) {
-                Toast.makeText(MainActivity.this, "Permission to write to external storage denied!", Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        //check all needed permissions together
-        TedPermission.with(this)
-                .setPermissionListener(permissionListener)
-                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
-                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .check();
 
         /*** Detect Start Analyse Button ***/
         startAnalyseButton = (Button) findViewById(R.id.startAnalyseButton);
@@ -102,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 Uri uri = data.getData();
 
-                testingText = (TextView) findViewById(R.id.testingText);
-                testingText.setText("");
+/*                testingText = (TextView) findViewById(R.id.testingText);
+                testingText.setText("");*/
                 int partitionCounter = 0;
                 long startCount = 0L;
                 Boolean validMBR = false;
