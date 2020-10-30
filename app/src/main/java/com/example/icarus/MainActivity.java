@@ -45,14 +45,8 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
-        /*** Make a directory ***/
-        File file = new File (Environment.getExternalStorageDirectory(), "Icarus");
-        if (file.exists()) {
-
-        }
-        else {
-            file.mkdirs();
-        }        PermissionListener permissionListener = new PermissionListener() {
+        /*** Permission Listener***/
+        PermissionListener permissionListener = new PermissionListener() {
             @Override
             public void onPermissionGranted() {
                 Toast.makeText(MainActivity.this, "Permission to write to external storage granted!", Toast.LENGTH_SHORT).show();
@@ -70,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                 .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .check();
+
+        /*** Make a directory ***/
+        File file = new File (Environment.getExternalStorageDirectory(), "Icarus");
+        if (file.exists()) {
+
+        }
+        else {
+            file.mkdirs();
+        }
 
         /*** Detect Start Analyse Button ***/
         startAnalyseButton = (Button) findViewById(R.id.startAnalyseButton);
@@ -817,8 +820,8 @@ public class MainActivity extends AppCompatActivity {
                         fileEntry.setWrittenDate(getHexLEDec(listOfDirData, startCount + 24, startCount + 25));
                         fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
                         fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
-                        carving(uri, fat, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(),
-                                pathName+fileEntry.getLFname()+"/");
+//                        carving(uri, fat, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(),
+//                                pathName+fileEntry.getLFname()+"/");
 //                        fileEntry.setListOfData(getListOfFileDataTraverse(uri, fat, dataRegion, fileEntry.getListOfClusters(),
 //                                bytesPerCluster, fileEntry.getSizeOfFile()));
                         listOfFileAndDir.add(fileEntry);

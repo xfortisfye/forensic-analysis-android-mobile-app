@@ -15,9 +15,10 @@ public class PartInfo extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.partinfo);
         text = MainActivity.gettext();
-        TV= findViewById(R.id.infoview);
+        TV = findViewById(R.id.infoview);
         TV.setText(text);
 
     }
