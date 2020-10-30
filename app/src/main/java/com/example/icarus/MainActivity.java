@@ -27,7 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button startAnalyseButton;
+    Button startAnalyseButton, vtree;
     TextView testingText;
     private static final int READ_REQUEST_CODE = 42;
 
@@ -59,6 +59,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(openFileIntent, READ_REQUEST_CODE);
             }
         });
+        vtree = findViewById(R.id.FileSystem);
+        vtree.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                Intent treeview = new Intent(getApplicationContext(), viewtree.class);
+                startActivity(treeview);
+            }
+        });
     }
 
     /*** Detect File input ***/
@@ -71,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 Uri uri = data.getData();
 
-                testingText = (TextView) findViewById(R.id.testingText);
-                testingText.setText("");
+/*                testingText = (TextView) findViewById(R.id.testingText);
+                testingText.setText("");*/
                 int partitionCounter = 0;
                 long startCount = 0L;
                 Boolean validMBR = false;
