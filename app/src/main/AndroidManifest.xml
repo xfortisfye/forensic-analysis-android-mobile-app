@@ -20,21 +20,24 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity android:name=".viewtree">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.OPENABLE" />
             </intent-filter>
         </activity>
         <activity android:name=".viewerpage">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <category android:name="android.intent.category.OPENABLE" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".PartInfo">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.OPENABLE" />
             </intent-filter>
         </activity>
