@@ -31,10 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="156dp"
+            android:layout_marginStart="139dp"
             android:layout_marginTop="541dp"
-            android:layout_marginBottom="197dp"
-            android:text="Select File" />
+            android:layout_marginBottom="202dp"
+            android:text="Select File to analyse" />
 
         <Button
             android:id="@+id/FileSystem"
@@ -43,9 +43,9 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginTop="630dp"
-            android:layout_marginEnd="127dp"
-            android:layout_marginBottom="115dp"
-            android:text="File System" />
+            android:layout_marginEnd="141dp"
+            android:layout_marginBottom="128dp"
+            android:text="Select File to carve" />
 
         <Button
             android:id="@+id/partitioninfo"
@@ -54,9 +54,9 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginTop="630dp"
-            android:layout_marginEnd="128dp"
-            android:layout_marginBottom="48dp"
-            android:text="Partition Info" />
+            android:layout_marginEnd="143dp"
+            android:layout_marginBottom="57dp"
+            android:text="View Partition Info" />
 
     </RelativeLayout>
 </androidx.appcompat.widget.LinearLayoutCompat>

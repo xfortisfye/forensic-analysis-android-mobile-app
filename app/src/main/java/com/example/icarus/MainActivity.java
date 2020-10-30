@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button startAnalyseButton, vtree, info;
     static TextView testingText;
+    Intent inform;
     private static final int READ_REQUEST_CODE = 42;
 
     @RequiresApi(api = Build.VERSION_CODES.R)
@@ -88,13 +89,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(treeview);
             }
         });
-        info = findViewById(R.id.partitioninfo);
+        /*info = findViewById(R.id.partitioninfo);
         info.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Intent info = new Intent(getApplicationContext(), PartInfo.class);
-                startActivity(info);
+                inform = new Intent(getApplicationContext(), PartInfo.class);
+                startActivity(inform);
             }
-        });
+        });*/
     }
 
     /*** Detect File input ***/
@@ -301,6 +302,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        inform = new Intent(getApplicationContext(), PartInfo.class);
+        startActivity(inform);
     }
 
     public void printAllFileAndDir (ArrayList<FileEntry> listOfFileAndDir, TextView testingText) throws IOException {
