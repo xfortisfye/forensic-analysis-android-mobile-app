@@ -25,16 +25,16 @@ public class ExtMBR {
     public Boolean chkExtMBRValidity(TextView testingText) {
         if (this.getSignatureType().equals("AA55"))
         {
-            testingText.append("==================================================\n");
-            testingText.append("=====| START OF EXT FILE SYSTEM INFORMATION |=======\n");
-            testingText.append("==================================================\n\n");
+            testingText.append("================================================\n");
+            testingText.append("=====| START OF EXT FILE SYSTEM INFORMATION |=====\n");
+            testingText.append("================================================\n\n");
             testingText.append("ExtMBR detected. Signature Type: " + this.getSignatureType() + "\n\n");
             return true;
         }
         else {
-            testingText.append("==================================================\n");
-            testingText.append("=====| START OF EXT FILE SYSTEM INFORMATION |=======\n");
-            testingText.append("==================================================\n\n");
+            testingText.append("================================================\n");
+            testingText.append("=====| START OF EXT FILE SYSTEM INFORMATION |=====\n");
+            testingText.append("================================================\n\n");
             testingText.append("Invalid ExtMBR. ExtMBR cannot be detected." + "\n\n");
             return false;
         }
