@@ -266,11 +266,11 @@ public class MainActivity extends AppCompatActivity {
                 Uri uri = data.getData();
 
                 displayText = (TextView) findViewById(R.id.displayText);
-                displayText.setText("=====| START OF FILE SYSTEM INFORMATION |=====\n\n");
+                displayText.setText("");
                 int partitionCounter = 0;
                 long startCount = 0L;
                 Boolean validMBR = false;
-                String pathName = Environment.getExternalStorageDirectory() + "/Icarus/";
+                String pathName = Environment.getExternalStorageDirectory() + "/Icarus";
 
                 MBR mbr = new MBR();
 
@@ -337,7 +337,16 @@ public class MainActivity extends AppCompatActivity {
 
                                                 extmbr.getExtPartition().setVBR(getVBRInfo(uri, extmbr.getExtPartition().getStartOfPartition() * 512));
                                                 extmbr.getExtPartition().setPartitionName("EXT PARTITION " + partitionCounter + ": " +
-                                                        extmbr.getExtPartition().getVBR().getVolumeLabel() + " (" + extmbr.getExtPartition().getVBR().getFileSystemLabel() + ")");
+                                                        extmbr.getExtPartition().getVBR().getVolumeLabel() + " (" +
+                                                        extmbr.getExtPartition().getVBR().getFileSystemLabel() + ")");
+
+                                                File file = new File (pathName, "/"+extmbr.getExtPartition().getPartitionName());
+                                                if (file.exists()) {
+
+                                                }
+                                                else {
+                                                    file.mkdirs();
+                                                }
 
                                                 long startFirstFatSect, endFirstFatSect, endLastFatSect, startDataRegionSect, endDataRegionSect;
 
@@ -350,7 +359,8 @@ public class MainActivity extends AppCompatActivity {
                                                     startDataRegionSect = startDataRegionSect + extmbr.getExtPartition().getVBR().getBit32SectorsOfFat();
                                                 }
                                                 endLastFatSect = startDataRegionSect - 1;
-                                                endDataRegionSect = extmbr.getExtPartition().getStartOfPartition() + extmbr.getExtPartition().getVBR().getBit32Sectors() - 1;
+                                                endDataRegionSect = extmbr.getExtPartition().getStartOfPartition()
+                                                        + extmbr.getExtPartition().getVBR().getBit32Sectors() - 1;
 
                                                 FATable fat = new FATable(startFirstFatSect, endFirstFatSect, endLastFatSect,
                                                         extmbr.getExtPartition().getVBR().getBytesPerSector());
@@ -369,7 +379,8 @@ public class MainActivity extends AppCompatActivity {
 
                                                 ArrayList<FileEntry> listOfFileAndDir = new ArrayList<>();
                                                 rootDirectory.setListOfFileAndDir(traverseDirectory(uri, fat, dataRegion, extmbr.getExtPartition()
-                                                        .getVBR().getBytesPerCluster(), listOfRootDirData, listOfFileAndDir, pathName));
+                                                        .getVBR().getBytesPerCluster(), listOfRootDirData, listOfFileAndDir,
+                                                        pathName+"/"+extmbr.getExtPartition().getPartitionName()));
                                                 extmbr.getExtPartition().setRootDirectory(rootDirectory);
 
                                                 /*** Generation of Report ***/
@@ -400,6 +411,14 @@ public class MainActivity extends AppCompatActivity {
                                     partition.setPartitionName("PARTITION " + partitionCounter + ": " +
                                             partition.getVBR().getVolumeLabel() + " (" + partition.getVBR().getFileSystemLabel() + ")");
 
+                                    File file = new File (pathName, "/"+partition.getPartitionName());
+                                    if (file.exists()) {
+
+                                    }
+                                    else {
+                                        file.mkdirs();
+                                    }
+
                                     long startFirstFatSect, endFirstFatSect, endLastFatSect, startDataRegionSect, endDataRegionSect;
 
                                     startFirstFatSect = partition.getStartOfPartition() + partition.getVBR().getReservedAreaSize();
@@ -427,7 +446,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     ArrayList<FileEntry> listOfFileAndDir = new ArrayList<FileEntry>();
                                     rootDirectory.setListOfFileAndDir(traverseDirectory(uri, fat, dataRegion, partition.getVBR().getBytesPerCluster(),
-                                            listOfRootDirData, listOfFileAndDir, pathName));
+                                            listOfRootDirData, listOfFileAndDir, pathName+"/"+partition.getPartitionName()));
                                     partition.setRootDirectory(rootDirectory);
 
 
@@ -470,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
     // Collecting all the data for File
     public void carving(Uri uri, DataRegion dataRegion,
                         ArrayList<Long> clusterNumList, long bytesPerCluster, long totalFileSize, String pathName) throws IOException {
-
+        System.out.println(pathName);
         File file = new File(pathName);
         file.createNewFile();
         OutputStream outputStream;
@@ -960,7 +979,7 @@ public class MainActivity extends AppCompatActivity {
                         fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
                         fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
                         carving(uri, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(),
-                                pathName+fileEntry.getLFname()+"/");
+                                pathName+"/"+fileEntry.getLFname());
                         listOfFileAndDir.add(fileEntry);
                         startCount = startCount + 32;
                     }
@@ -984,7 +1003,7 @@ public class MainActivity extends AppCompatActivity {
                         fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
                         fileEntry.setListOfData(getListOfDirDataTraverse(uri, fat, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster));
                         ArrayList<FileEntry> listOfAnotherFileAndDir = new ArrayList<FileEntry>();
-                        File file = new File (pathName, fileEntry.getLFname());
+                        File file = new File (pathName, "/"+fileEntry.getLFname());
                         if (file.exists()) {
 
                         }
@@ -993,7 +1012,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         fileEntry.setListOfFileAndDir(traverseDirectory(uri, fat, dataRegion, bytesPerCluster,
-                                fileEntry.getListOfData(), listOfAnotherFileAndDir, pathName+fileEntry.getLFname()+"/"));
+                                fileEntry.getListOfData(), listOfAnotherFileAndDir, pathName+"/"+fileEntry.getLFname()));
                         listOfFileAndDir.add(fileEntry);
                         startCount = startCount + 32;
                     }
