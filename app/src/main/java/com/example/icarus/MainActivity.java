@@ -85,20 +85,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(openFileIntent, READ_REQUEST_CODE);
             }
         });
-        vtree = findViewById(R.id.FileSystem);
+        vtree = findViewById(R.id.FileCarve);
         vtree.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Intent treeview = new Intent(getApplicationContext(), viewtree.class);
-                startActivity(treeview);
+           /***     Intent openFileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                openFileIntent.addCategory(Intent.CATEGORY_OPENABLE);***/
+               // openFileIntent.setType("*/*");
+               // startActivityForResult(openFileIntent, READ_REQUEST_CODE);
             }
         });
-        /*info = findViewById(R.id.partitioninfo);
-        info.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                inform = new Intent(getApplicationContext(), PartInfo.class);
-                startActivity(inform);
-            }
-        });*/
     }
 
     /*** Detect File input ***/

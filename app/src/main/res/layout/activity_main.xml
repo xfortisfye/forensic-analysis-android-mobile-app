@@ -37,7 +37,7 @@
             android:text="Select File to analyse" />
 
         <Button
-            android:id="@+id/FileSystem"
+            android:id="@+id/FileCarve"
             android:layout_width="129dp"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -46,17 +46,6 @@
             android:layout_marginEnd="141dp"
             android:layout_marginBottom="128dp"
             android:text="Select File to carve" />
-
-        <Button
-            android:id="@+id/partitioninfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="630dp"
-            android:layout_marginEnd="143dp"
-            android:layout_marginBottom="57dp"
-            android:text="View Partition Info" />
 
     </RelativeLayout>
 </androidx.appcompat.widget.LinearLayoutCompat>
