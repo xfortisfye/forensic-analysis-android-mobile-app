@@ -1,5 +1,4 @@
-# ICT2202-Icarus
-xPosed Project
+# ICT2202-Icarus (xPosed Project)
 
 
 
