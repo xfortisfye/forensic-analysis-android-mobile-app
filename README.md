@@ -4,7 +4,7 @@ xPosed Project
 
 
 
-![Alt text](pictures/SIT_Logo.jpg?raw=true "Optional Title")
+![Alt text](https://github.com/qiikaii/ICT2202-Icarus/tree/main/pictures/SIT_Logo.jpg?raw=true "Optional Title")
 
 
 
