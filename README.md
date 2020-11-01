@@ -19,12 +19,14 @@ Icarus.apk may be downloaded from the following link: https://github.com/qiikaii
 Thereafter, user should install Icarus as seen in Figure 1.1
 
  ![Figure 1.1](/pictures/Figure1_1.png?raw=true "Figure 1.1")
+ 
 Figure 1.1 Installation of Icarus
 
 Upon launching Icarus, users must provide Icarus with permission to access the file manager.
 If not, the application will not be able to provide its service.
 
  ![Figure 1.2](/pictures/Figure1_2.png?raw=true "Figure 1.2")
+ 
 Figure 1.2 Request of Permission from Icarus
 
 If permission has been granted, a success message will popup.
