@@ -13,11 +13,15 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
         /*** Detect Start Analyse Button ***/
         startAnalyseButton = (Button) findViewById(R.id.startAnalyseButton);
+        displayText = (TextView) findViewById(R.id.displayText);
+        displayText.setText("");
         startAnalyseButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             public void onClick(View v) {
@@ -85,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
         /*** Detect Start Carve Button ***/
         startCarveButton = (Button) findViewById(R.id.startCarveButton);
+        displayText = (TextView) findViewById(R.id.displayText);
+        displayText.setText("");
         startCarveButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             public void onClick(View v) {
@@ -96,26 +104,60 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ANALYSE_FILE && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                Uri uri = data.getData();
+    private class TaskExecutor extends AsyncTask<setParams, String, String> {
+        FrameLayout progressbar = (FrameLayout) findViewById(R.id.progressBarHolder);
+        AlphaAnimation inAnimation;
+        AlphaAnimation outAnimation;
+        String resultString = " \n";
 
-                displayText = (TextView) findViewById(R.id.displayText);
-                displayText.setText("");
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            startAnalyseButton.setEnabled(false);
+            inAnimation = new AlphaAnimation(0f, 1f);
+            inAnimation.setDuration(200);
+            progressbar.setAnimation(inAnimation);
+            progressbar.setVisibility(View.VISIBLE);
+            displayText.setText("");
+        }
+
+        @Override
+        protected void onPostExecute(String aVoid) {
+            outAnimation = new AlphaAnimation(1f, 0f);
+            outAnimation.setDuration(200);
+            progressbar.setAnimation(outAnimation);
+            progressbar.setVisibility(View.GONE);
+            startAnalyseButton.setEnabled(true);
+            displayText.append(aVoid);
+        }
+
+        @Override
+        protected void onProgressUpdate(String... Updates) {
+            for (String update : Updates){
+                displayText.append(update);
+                System.out.println("UPDATED PROGRESS");
+            }
+        }
+
+        @Override
+        protected String doInBackground(setParams... params) {
+            Looper.prepare();
+            int requestCode = params[0].requestCode;
+            int resultCode = params[0].resultCode;
+            Uri uri = params[0].uri;
+
+            MBR mbr = new MBR();
+
+            if (requestCode == ANALYSE_FILE && resultCode == Activity.RESULT_OK) {
                 int partitionCounter = 0;
                 long startCount = 0L;
                 Boolean validMBR = false;
 
-                MBR mbr = new MBR();
-
                 try {
                     mbr = getMBR(uri, startCount + 0); // Instantiate new MBR object
 
-                    if (mbr.chkMBRValidity(displayText)) {
-
+                    if (mbr.chkMBRValidity()) {
+                        resultString = mbr.appendValidMBRResult(resultString);
                         mbr.setPartition1(getMBR_PartitionInfo(uri, startCount + 446));
                         mbr.setPartition2(getMBR_PartitionInfo(uri, startCount + 462));
                         mbr.setPartition3(getMBR_PartitionInfo(uri, startCount + 478));
@@ -128,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
                         validMBR = true;
                     } else {
+                        resultString = mbr.appendInvalidMBRResult(resultString);
                         validMBR = false;
                     }
                 } catch (IOException e) {
@@ -150,11 +193,13 @@ public class MainActivity extends AppCompatActivity {
                                     ExtMBR extmbr = new ExtMBR();
                                     try {
                                         extmbr = getExtMBR(uri, partition.getStartOfPartition() * 512);
-                                        if (extmbr.chkExtMBRValidity(displayText)) {
+                                        if (extmbr.chkExtMBRValidity()) {
+                                            resultString = extmbr.appendValidExtMBR(resultString);
                                             extmbr.setExtPartition(getExtMBR_PartitionInfo(uri, (partition.getStartOfPartition() * 512) + 446, partition.getStartOfPartition(), priExtPartitionStart));
                                             extmbr.getExtPartition().setEndOfPartition();
                                             validExtMBR = true;
                                         } else {
+                                            resultString += extmbr.appendInvalidExtMBR(resultString);
                                             validExtMBR = false;
                                         }
                                     } catch (IOException e) {
@@ -193,11 +238,12 @@ public class MainActivity extends AppCompatActivity {
                                                 extmbr.getExtPartition().setDataRegion(dataRegion);
 
                                                 /*** Generation of Report ***/
-                                                extmbr.getExtPartition().toString(displayText);
-                                                extmbr.getExtPartition().getVBR().toString(displayText);
-                                                extmbr.getExtPartition().getFAT().toString(displayText);
-                                                extmbr.getExtPartition().getDataRegion().toString(displayText);
+                                                resultString = extmbr.getExtPartition().toString(resultString);
+                                                resultString = extmbr.getExtPartition().getVBR().toString(resultString);
+                                                resultString = extmbr.getExtPartition().getFAT().toString(resultString);
+                                                resultString = extmbr.getExtPartition().getDataRegion().toString(resultString);
                                                 partition.setStartOfPartition(extmbr.getExtPartition().getCalExt2MBR());
+
 
                                             } else {
                                                 loopedAllExtPartitions = true;
@@ -241,11 +287,11 @@ public class MainActivity extends AppCompatActivity {
                                     DataRegion dataRegion = new DataRegion(startDataRegionSect, endDataRegionSect, partition.getVBR().getBytesPerSector());
                                     partition.setDataRegion(dataRegion);
 
-                                    /*** Generation of Report ***/
-                                    partition.toString(displayText);
-                                    partition.getVBR().toString(displayText);
-                                    partition.getFAT().toString(displayText);
-                                    partition.getDataRegion().toString(displayText);
+                                    resultString = partition.toString(resultString);
+                                    resultString = partition.getVBR().toString(resultString);
+                                    resultString = partition.getFAT().toString(resultString);
+                                    resultString = partition.getDataRegion().toString(resultString);
+
                                 } else {
                                     //Ignore
                                 }
@@ -259,25 +305,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-        }
-
-        else if (requestCode == CARVE_FILE && resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                Uri uri = data.getData();
-
-                displayText = (TextView) findViewById(R.id.displayText);
-                displayText.setText("");
+            else if (requestCode == CARVE_FILE && resultCode == Activity.RESULT_OK) {
                 int partitionCounter = 0;
                 long startCount = 0L;
                 Boolean validMBR = false;
                 String pathName = Environment.getExternalStorageDirectory() + "/Icarus";
 
-                MBR mbr = new MBR();
-
                 try {
                     mbr = getMBR(uri, startCount + 0); // Instantiate new MBR object
 
-                    if (mbr.chkMBRValidity(displayText)) {
+                    if (mbr.chkMBRValidity()) {
 
                         mbr.setPartition1(getMBR_PartitionInfo(uri, startCount + 446));
                         mbr.setPartition2(getMBR_PartitionInfo(uri, startCount + 462));
@@ -316,8 +353,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     try {
                                         extmbr = getExtMBR(uri, partition.getStartOfPartition() * 512);
-                                        if (extmbr.chkExtMBRValidity(displayText)) {
-
+                                        if (extmbr.chkExtMBRValidity()) {
                                             extmbr.setExtPartition(getExtMBR_PartitionInfo(uri, (partition.getStartOfPartition() * 512) + 446, partition.getStartOfPartition(), priExtPartitionStart));
                                             extmbr.getExtPartition().setEndOfPartition();
 
@@ -379,14 +415,17 @@ public class MainActivity extends AppCompatActivity {
 
                                                 ArrayList<FileEntry> listOfFileAndDir = new ArrayList<>();
                                                 rootDirectory.setListOfFileAndDir(traverseDirectory(uri, fat, dataRegion, extmbr.getExtPartition()
-                                                        .getVBR().getBytesPerCluster(), listOfRootDirData, listOfFileAndDir,
+                                                                .getVBR().getBytesPerCluster(), listOfRootDirData, listOfFileAndDir,
                                                         pathName+"/"+extmbr.getExtPartition().getPartitionName()));
                                                 extmbr.getExtPartition().setRootDirectory(rootDirectory);
 
                                                 /*** Generation of Report ***/
-                                                displayText.append(extmbr.getExtPartition().getPartitionName()+"\n");
-                                                printAllFileAndDir(extmbr.getExtPartition().getRootDirectory().getListOfFileAndDir(), displayText);
+                                                String temp = extmbr.getExtPartition().getPartitionName() + "\n";
+                                                resultString += temp;
+                                                resultString = printAllFileAndDir(extmbr.getExtPartition().getRootDirectory().getListOfFileAndDir(), resultString);
                                                 partition.setStartOfPartition(extmbr.getExtPartition().getCalExt2MBR());
+                                                publishProgress(resultString);
+                                                System.out.println("PASSED!");
 
                                             } else {
                                                 loopedAllExtPartitions = true;
@@ -449,10 +488,12 @@ public class MainActivity extends AppCompatActivity {
                                             listOfRootDirData, listOfFileAndDir, pathName+"/"+partition.getPartitionName()));
                                     partition.setRootDirectory(rootDirectory);
 
-
                                     /*** Generation of Report ***/
-                                    displayText.append(partition.getPartitionName()+"\n");
-                                    printAllFileAndDir(partition.getRootDirectory().getListOfFileAndDir(), displayText);
+                                    String temp = partition.getPartitionName() + "\n";
+                                    resultString += temp;
+                                    resultString = printAllFileAndDir(partition.getRootDirectory().getListOfFileAndDir(), resultString);
+                                    publishProgress(resultString);
+                                    System.out.println("PASSED!");
 
                                 } else {
                                     //Ignore
@@ -466,11 +507,36 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Scroll down to view carve file information", Toast.LENGTH_SHORT).show();
                 }
             }
-        }
 
-        else {
-            finish();
+            else {
+                finish();
+            }
+
+            System.out.println(resultString);
+            return resultString;
         }
+    }
+
+    private static class setParams {
+        int requestCode;
+        int resultCode;
+        Uri uri;
+
+        setParams(int requestCode, int resultCode, Uri uri){
+            this.requestCode = requestCode;
+            this.resultCode = resultCode;
+            this.uri = uri;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri uri = data.getData();
+        setParams newParam = new setParams(requestCode, resultCode, uri);
+        TaskExecutor task = new TaskExecutor();
+        task.execute(newParam);
+
 
     }
 
@@ -484,6 +550,19 @@ public class MainActivity extends AppCompatActivity {
                 printAllFileAndDir(listOfFileAndDir.get(i).getListOfFileAndDir(), displayText);
             }
         }
+    }
+
+    public String printAllFileAndDir (ArrayList<FileEntry> listOfFileAndDir, String resultString) throws IOException {
+        for (int i = 0; i < listOfFileAndDir.size(); i++) {
+            resultString += listOfFileAndDir.get(i).toString();
+            if (listOfFileAndDir.get(i).getFileAttribute() == 32) {
+                //carveFile(listOfFileAndDir.get(i).getListOfData(), listOfFileAndDir.get(i).getLFname(), listOfFileAndDir.get(i).getNameExt());
+            }
+            if (listOfFileAndDir.get(i).getFileAttribute() == 16) {
+                printAllFileAndDir(listOfFileAndDir.get(i).getListOfFileAndDir(), resultString);
+            }
+        }
+        return resultString;
     }
 
     // Collecting all the data for File

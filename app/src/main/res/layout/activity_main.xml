@@ -24,6 +24,23 @@
                 android:cropToPadding="false"
                 app:srcCompat="@drawable/icaruslogo" />
 
+            <FrameLayout
+                android:id="@+id/progressBarHolder"
+                android:animateLayoutChanges="true"
+                android:visibility="gone"
+                android:alpha="0.4"
+                android:background="#00FFFFFF"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ProgressBar
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
             <Button
                 android:id="@+id/startAnalyseButton"
                 android:layout_width="match_parent"

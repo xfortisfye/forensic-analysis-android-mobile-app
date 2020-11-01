@@ -79,6 +79,20 @@ public class FATable extends Grab{
         testingText.append("\n");
     }
 
+    public String toString(String resultString) {
+        resultString += ("----------| FAT TABLE INFORMATION\n\n");
+        resultString += ("FATID: " + this.getFatID()+ "\n");
+        resultString += ("End Cluster Mark: " + this.getEndClusterMarker()+ "\n");
+        resultString += ("Start of First FAT (First sect): " + this.getStartFirstFatSect() + "\n");
+        resultString += ("End of First FAT (Last sect): " + this.getEndFirstFatSect() + "\n");
+        resultString += ("End of Last FAT (Last sect): " + this.getEndLastFatSect() + "\n");
+        resultString += ("Start of First FAT (First byte): " + this.getStartFirstFatDec() + "\n");
+        resultString += ("End of First FAT (Last byte): " + this.getEndFirstFatDec() + "\n");
+        resultString += ("End of Last FAT (Last byte): " + this.getEndLastFatDec() + "\n");
+        resultString += ("\n");
+        return resultString;
+    }
+
     public Boolean chkDmgCluster(long dmgCluster) {
         if (dmgCluster == 268435447) {
             return true;

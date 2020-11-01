@@ -38,4 +38,14 @@ public class DataRegion extends VBR{
         testingText.append("End of Data Region (bytes): " + this.getEndDataRegionDec() + "\n");
         testingText.append("\n");
     }
+
+    public String toString(String resultString) {
+        resultString += ("----------| DATA REGION INFORMATION\n\n");
+        resultString += ("Start of Data Region (sectors): " + this.getStartDataRegionSect() + "\n");
+        resultString += ("End of Data Region (sectors): " + this.getEndDataRegionSect() + "\n");
+        resultString += ("Start of Data Region (bytes): " + this.getStartDataRegionDec() + "\n");
+        resultString += ("End of Data Region (bytes): " + this.getEndDataRegionDec() + "\n");
+        resultString += ("\n");
+        return resultString;
+    }
 }

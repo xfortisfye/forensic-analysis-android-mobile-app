@@ -389,6 +389,17 @@ public class Partition {
         testingText.append("\n");
     }
 
+    public String toString(String resultString) {
+        resultString += ("----------| " + this.getPartitionName() + " |----------\n\n");
+        resultString += ("Bootable Status: " + this.getBootableStatus() + "\n");
+        resultString += ("Partition Type: " + this.getPartitionType() + "\n");
+        resultString += ("Start of Partition (Sectors): " + this.getStartOfPartition() + "\n");
+        resultString += ("End of Partition (Sectors): " + this.getEndOfPartition() + "\n");
+        resultString += ("Len of Partition (Sectors): " + this.getLenOfPartition() + "\n");
+        resultString += ("\n");
+        return resultString;
+    }
+
 }
 
 

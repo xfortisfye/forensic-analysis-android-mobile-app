@@ -130,5 +130,24 @@ public class VBR extends Grab {
         testingText.append("File System Label: " + this.getFileSystemLabel() + "\n");
         testingText.append("\n");
     }
+
+    public String toString(String resultString) {
+        resultString += ("----------| VOLUME BOOT RECORD\n\n");
+        resultString += ("OEM: " + this.getOEM() + "\n");
+        resultString += ("Bytes Per Sector: " + this.getBytesPerSector() + "\n");
+        resultString += ("Sectors Per Cluster: " + this.getSectorsPerCluster() + "\n");
+        resultString += ("Reserved Area Size (in sectors): " + this.getReservedAreaSize() + "\n");
+        resultString += ("Number of FATs: " + this.getNumOfFats() + "\n");
+        resultString += ("16-bit value of total number of sectors: " + this.getBit16Sectors() + "\n");
+        resultString += ("Media Type: " + this.getMediaType() + "\n");
+        resultString += ("Number of sectors before start of partition: " + this.getOffset() + "\n");
+        resultString += ("32-bit value of total number of sectors: " + this.getBit32Sectors() + "\n");
+        resultString += ("32-bit value of 1 FAT (in sectors): " + this.getBit32SectorsOfFat() + "\n");
+        resultString += ("Cluster of Root Directory: " + this.getRootCluster() + "\n");
+        resultString += ("Volume Label: " + this.getVolumeLabel() + "\n");
+        resultString += ("File System Label: " + this.getFileSystemLabel() + "\n");
+        resultString += ("\n");
+        return resultString;
+    }
 }
 

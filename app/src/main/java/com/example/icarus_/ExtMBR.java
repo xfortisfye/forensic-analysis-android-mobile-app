@@ -22,22 +22,30 @@ public class ExtMBR {
         return signatureType;
     }
 
-    public Boolean chkExtMBRValidity(TextView testingText) {
+    public Boolean chkExtMBRValidity() {
         if (this.getSignatureType().equals("AA55"))
         {
-            testingText.append("================================================\n");
-            testingText.append("=====| START OF EXT FILE SYSTEM INFORMATION |=====\n");
-            testingText.append("================================================\n\n");
-            testingText.append("ExtMBR detected. Signature Type: " + this.getSignatureType() + "\n\n");
             return true;
         }
         else {
-            testingText.append("================================================\n");
-            testingText.append("=====| START OF EXT FILE SYSTEM INFORMATION |=====\n");
-            testingText.append("================================================\n\n");
-            testingText.append("Invalid ExtMBR. ExtMBR cannot be detected." + "\n\n");
             return false;
         }
+    }
+
+    public String appendValidExtMBR(String resultString) {
+        resultString += ("================================================\n");
+        resultString += ("=====| START OF EXT FILE SYSTEM INFORMATION |=====\n");
+        resultString += ("================================================\n\n");
+        resultString += ("ExtMBR detected. Signature Type: " + this.getSignatureType() + "\n\n");
+        return resultString;
+    }
+
+    public String appendInvalidExtMBR(String resultString) {
+        resultString += ("================================================\n");
+        resultString += ("=====| START OF EXT FILE SYSTEM INFORMATION |=====\n");
+        resultString += ("================================================\n\n");
+        resultString += ("Invalid ExtMBR. ExtMBR cannot be detected." + "\n\n");
+        return resultString;
     }
 
 

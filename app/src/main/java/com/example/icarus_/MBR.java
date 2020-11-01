@@ -73,5 +73,31 @@ public class MBR {
         }
     }
 
+    public Boolean chkMBRValidity() {
+        if (this.getSignatureType().equals("AA55")) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public String appendValidMBRResult(String resultString) {
+        resultString += ("==============================================\n");
+        resultString += ("=====| START OF FILE SYSTEM INFORMATION |=======\n");
+        resultString += ("==============================================\n\n");
+        resultString += ("MBR detected. Signature Type: " + this.getSignatureType() + "\n");
+        resultString += ("MBR Disk Identifier: " + this.getDiskIdentifer() + "\n\n");
+        return resultString;
+    }
+
+    public String appendInvalidMBRResult(String resultString) {
+        resultString += ("==============================================\n");
+        resultString += ("=====| START OF FILE SYSTEM INFORMATION |=======\n");
+        resultString += ("==============================================\n\n");
+        resultString  += ("Invalid MBR. MBR cannot be detected." + "\n\n");
+        return resultString;
+    }
+
 
 }
