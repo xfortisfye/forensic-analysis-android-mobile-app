@@ -122,13 +122,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String aVoid) {
+        protected void onPostExecute(String resultString) {
             outAnimation = new AlphaAnimation(1f, 0f);
             outAnimation.setDuration(200);
             progressbar.setAnimation(outAnimation);
             progressbar.setVisibility(View.GONE);
             startAnalyseButton.setEnabled(true);
-            displayText.append(aVoid);
+            displayText.setText(resultString);
         }
 
         @Override
@@ -143,11 +143,12 @@ public class MainActivity extends AppCompatActivity {
             Looper.prepare();
             int requestCode = params[0].requestCode;
             int resultCode = params[0].resultCode;
-            Uri uri = params[0].uri;
+            Intent data = params[0].data ;
 
             MBR mbr = new MBR();
 
             if (requestCode == ANALYSE_FILE && resultCode == Activity.RESULT_OK) {
+                Uri uri = data.getData();
                 int partitionCounter = 0;
                 long startCount = 0L;
                 Boolean validMBR = false;
@@ -304,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             else if (requestCode == CARVE_FILE && resultCode == Activity.RESULT_OK) {
+                Uri uri = data.getData();
                 int partitionCounter = 0;
                 long startCount = 0L;
                 Boolean validMBR = false;
@@ -515,20 +517,19 @@ public class MainActivity extends AppCompatActivity {
     private static class setParams {
         int requestCode;
         int resultCode;
-        Uri uri;
+        Intent data;
 
-        setParams(int requestCode, int resultCode, Uri uri){
+        setParams(int requestCode, int resultCode, Intent data){
             this.requestCode = requestCode;
             this.resultCode = resultCode;
-            this.uri = uri;
+            this.data = data;
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Uri uri = data.getData();
-        setParams newParam = new setParams(requestCode, resultCode, uri);
+        setParams newParam = new setParams(requestCode, resultCode, data);
         TaskExecutor task = new TaskExecutor();
         task.execute(newParam);
     }
