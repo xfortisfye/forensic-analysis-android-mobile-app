@@ -10,6 +10,7 @@
 ICT2202 Digital Forensics
 AY2020/2021, Trimester 1
 
+Youtube Video: https://youtu.be/Tom9mu2HXfs
  
 1.	Installation of Icarus
 
