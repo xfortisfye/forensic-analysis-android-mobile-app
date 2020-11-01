@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -300,8 +301,14 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                         System.out.println("Unable to read file");
                     }
-                    Toast.makeText(MainActivity.this, "Scroll down to view file system information", Toast.LENGTH_SHORT).show();
+
                 }
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Scroll down to view file system information", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             else if (requestCode == CARVE_FILE && resultCode == Activity.RESULT_OK) {
@@ -502,8 +509,13 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                         System.out.println("Unable to read file");
                     }
-                    Toast.makeText(MainActivity.this, "Scroll down to view carve file information", Toast.LENGTH_SHORT).show();
                 }
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Scroll down to view carve file information", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             else {
@@ -1013,8 +1025,8 @@ public class MainActivity extends AppCompatActivity {
                         fileEntry.setWrittenDate(getHexLEDec(listOfDirData, startCount + 24, startCount + 25));
                         fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
                         fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
-//                        carving(uri, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(),
-//                                pathName+"/"+fileEntry.getLFname());
+                        carving(uri, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(),
+                                pathName+"/"+fileEntry.getLFname());
                         listOfFileAndDir.add(fileEntry);
                         startCount = startCount + 32;
                     }
