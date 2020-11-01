@@ -15,7 +15,7 @@ Youtube Link: https://youtu.be/nFhL5-qZKhk
  
 1.	Installation of Icarus
 
-Icarus.apk may be downloaded from the following link: https://github.com/qiikaii/ICT2202-Icarus.
+Icarus.apk may be downloaded from the following link: https://github.com/qiikaii/ICT2202-Icarus/blob/main/app/release/Icarus.apk
 
 Thereafter, user should install Icarus as seen in Figure 1.1
 
