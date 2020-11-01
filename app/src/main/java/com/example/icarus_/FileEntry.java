@@ -63,7 +63,7 @@ public class FileEntry extends Grab {
 
     public String toString(String resultString) {
         if (this.getFileAttribute() == 32) {
-            resultString += ("\n--- FILE ---" + "\n\n");
+            resultString += ("-----| FILE" + "\n\n");
             resultString += ("LFN: " + this.getLFname() + "\n");
             resultString += ("SFN: " + this.getSFname() + "\n");
             resultString += ("SFN Ext: " + this.getNameExt() + "\n");
@@ -72,9 +72,9 @@ public class FileEntry extends Grab {
             resultString += ("Accessed Date: " + this.getAccessedDate() + "\n");
             resultString += ("First Cluster Location: " + this.getFirstClusterLoc() + "\n");
             resultString += ("Written Time: " + this.getWrittenDate() + " " + this.getWrittenTime() + "\n");
-            resultString += ("Size of File (Bytes): " + this.getSizeOfFile() + "\n");
+            resultString += ("Size of File (Bytes): " + this.getSizeOfFile() + "\n\n");
         } else if (this.getFileAttribute() == 16) {
-            resultString += ("\n--- DIRECTORY ---" + "\n\n");
+            resultString += ("-----| DIRECTORY " + "\n\n");
             resultString += ("LFN: " + this.getLFname() + "\n");
             resultString += ("SFN: " + this.getSFname() + "\n");
             resultString += ("SFN Ext: " + this.getNameExt() + "\n");
@@ -83,9 +83,9 @@ public class FileEntry extends Grab {
             resultString += ("Accessed Date: " + this.getAccessedDate() + "\n");
             resultString += ("First Cluster Location: " + this.getFirstClusterLoc() + "\n");
             resultString += ("Written Time: " + this.getWrittenDate() + " " + this.getWrittenTime() + "\n");
-            resultString += ("Size of File (Bytes): " + this.getSizeOfFile() + "\n");
+            resultString += ("Size of File (Bytes): " + this.getSizeOfFile() + "\n\n");
         } else {
-            resultString += ("\n--- Non-File and Non-Directory ---" + "\n\n");
+            resultString += ("-----|  Non-File and Non-Directory" + "\n\n");
             resultString += ("LFN: " + this.getLFname() + "\n");
             resultString += ("SFN: " + this.getSFname() + "\n");
             resultString += ("SFN Ext: " + this.getNameExt() + "\n");
@@ -94,7 +94,7 @@ public class FileEntry extends Grab {
             resultString += ("Accessed Date: " + this.getAccessedDate() + "\n");
             resultString += ("First Cluster Location: " + this.getFirstClusterLoc() + "\n");
             resultString += ("Written Time: " + this.getWrittenDate() + " " + this.getWrittenTime() + "\n");
-            resultString += ("Size of File (Bytes): " + this.getSizeOfFile() + "\n");
+            resultString += ("Size of File (Bytes): " + this.getSizeOfFile() + "\n\n");
         }
         return resultString;
     }

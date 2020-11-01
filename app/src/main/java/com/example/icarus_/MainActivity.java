@@ -134,8 +134,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(String... Updates) {
             for (String update : Updates){
-                displayText.append(update);
-                System.out.println("UPDATED PROGRESS");
+                displayText.setText(update);
             }
         }
 
@@ -356,11 +355,10 @@ public class MainActivity extends AppCompatActivity {
                                         if (extmbr.chkExtMBRValidity()) {
                                             extmbr.setExtPartition(getExtMBR_PartitionInfo(uri, (partition.getStartOfPartition() * 512) + 446, partition.getStartOfPartition(), priExtPartitionStart));
                                             extmbr.getExtPartition().setEndOfPartition();
-
-                                            resultString += extmbr.appendValidExtMBR(resultString);
+                                            resultString = extmbr.appendValidExtMBR(resultString);
                                             validExtMBR = true;
                                         } else {
-                                            resultString += extmbr.appendInvalidExtMBR(resultString);
+                                            resultString = extmbr.appendInvalidExtMBR(resultString);
                                             validExtMBR = false;
                                         }
                                     } catch (IOException e) {
@@ -422,13 +420,11 @@ public class MainActivity extends AppCompatActivity {
                                                 extmbr.getExtPartition().setRootDirectory(rootDirectory);
 
                                                 /*** Generation of Report ***/
-                                                String temp = "----------| " + extmbr.getExtPartition().getPartitionName() + " |----------\n\n";
+                                                String temp = "\n----------| " + extmbr.getExtPartition().getPartitionName() + " |----------\n\n";
                                                 resultString += temp;
                                                 resultString = printAllFileAndDir(extmbr.getExtPartition().getRootDirectory().getListOfFileAndDir(), resultString);
                                                 partition.setStartOfPartition(extmbr.getExtPartition().getCalExt2MBR());
                                                 publishProgress(resultString);
-                                                System.out.println("PASSED!");
-
                                             } else {
                                                 loopedAllExtPartitions = true;
                                                 partition.setStartOfPartition(priExtPartitionStart);
@@ -495,8 +491,6 @@ public class MainActivity extends AppCompatActivity {
                                     resultString += temp;
                                     resultString = printAllFileAndDir(partition.getRootDirectory().getListOfFileAndDir(), resultString);
                                     publishProgress(resultString);
-                                    System.out.println("PASSED!");
-
                                 } else {
                                     //Ignore
                                 }
@@ -541,7 +535,7 @@ public class MainActivity extends AppCompatActivity {
 
     public String printAllFileAndDir (ArrayList<FileEntry> listOfFileAndDir, String resultString) throws IOException {
         for (int i = 0; i < listOfFileAndDir.size(); i++) {
-            resultString += listOfFileAndDir.get(i).toString();
+            resultString = listOfFileAndDir.get(i).toString(resultString);
             if (listOfFileAndDir.get(i).getFileAttribute() == 32) {
                 //carveFile(listOfFileAndDir.get(i).getListOfData(), listOfFileAndDir.get(i).getLFname(), listOfFileAndDir.get(i).getNameExt());
             }
