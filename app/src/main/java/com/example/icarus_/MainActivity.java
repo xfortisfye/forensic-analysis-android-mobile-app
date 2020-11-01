@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -122,13 +123,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String aVoid) {
+        protected void onPostExecute(String resultString) {
             outAnimation = new AlphaAnimation(1f, 0f);
             outAnimation.setDuration(200);
             progressbar.setAnimation(outAnimation);
             progressbar.setVisibility(View.GONE);
             startAnalyseButton.setEnabled(true);
-            displayText.append(aVoid);
+            displayText.setText(resultString);
         }
 
         @Override
@@ -143,11 +144,12 @@ public class MainActivity extends AppCompatActivity {
             Looper.prepare();
             int requestCode = params[0].requestCode;
             int resultCode = params[0].resultCode;
-            Uri uri = params[0].uri;
+            Intent data = params[0].data ;
 
             MBR mbr = new MBR();
 
             if (requestCode == ANALYSE_FILE && resultCode == Activity.RESULT_OK) {
+                Uri uri = data.getData();
                 int partitionCounter = 0;
                 long startCount = 0L;
                 Boolean validMBR = false;
@@ -299,11 +301,18 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                         System.out.println("Unable to read file");
                     }
-                    Toast.makeText(MainActivity.this, "Scroll down to view file system information", Toast.LENGTH_SHORT).show();
+
                 }
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Scroll down to view file system information", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             else if (requestCode == CARVE_FILE && resultCode == Activity.RESULT_OK) {
+                Uri uri = data.getData();
                 int partitionCounter = 0;
                 long startCount = 0L;
                 Boolean validMBR = false;
@@ -500,12 +509,17 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                         System.out.println("Unable to read file");
                     }
-                    Toast.makeText(MainActivity.this, "Scroll down to view carve file information", Toast.LENGTH_SHORT).show();
                 }
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Scroll down to view carve file information", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             else {
-                finish();
+
             }
 
             return resultString;
@@ -515,20 +529,19 @@ public class MainActivity extends AppCompatActivity {
     private static class setParams {
         int requestCode;
         int resultCode;
-        Uri uri;
+        Intent data;
 
-        setParams(int requestCode, int resultCode, Uri uri){
+        setParams(int requestCode, int resultCode, Intent data){
             this.requestCode = requestCode;
             this.resultCode = resultCode;
-            this.uri = uri;
+            this.data = data;
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Uri uri = data.getData();
-        setParams newParam = new setParams(requestCode, resultCode, uri);
+        setParams newParam = new setParams(requestCode, resultCode, data);
         TaskExecutor task = new TaskExecutor();
         task.execute(newParam);
     }
@@ -1012,8 +1025,8 @@ public class MainActivity extends AppCompatActivity {
                         fileEntry.setWrittenDate(getHexLEDec(listOfDirData, startCount + 24, startCount + 25));
                         fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
                         fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
-//                        carving(uri, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(),
-//                                pathName+"/"+fileEntry.getLFname());
+                        carving(uri, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(),
+                                pathName+"/"+fileEntry.getLFname());
                         listOfFileAndDir.add(fileEntry);
                         startCount = startCount + 32;
                     }
