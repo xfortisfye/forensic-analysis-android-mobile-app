@@ -4,7 +4,7 @@ xPosed Project
 
 
 
-![Alt text](/pictures/SIT_Logo.jpg?raw=true "Optional Title")
+![Alt text](pictures/SIT_Logo.jpg?raw=true "Optional Title")
 
 
 
