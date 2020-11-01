@@ -3,7 +3,7 @@
 
 
 
-![SIT Logo](/pictures/SIT_Logo.png?raw=true =100x20)
+![SIT Logo](/pictures/SIT_Logo.png?raw=true "SIT Logo")
 ![Icarus Logo](/pictures/Icarus_Logo.png?raw=true "Icarus Logo")
 
 
