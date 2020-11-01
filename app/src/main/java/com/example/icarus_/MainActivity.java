@@ -420,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
                                                 extmbr.getExtPartition().setRootDirectory(rootDirectory);
 
                                                 /*** Generation of Report ***/
-                                                String temp = "\n----------| " + extmbr.getExtPartition().getPartitionName() + " |----------\n\n";
+                                                String temp = "----------| " + extmbr.getExtPartition().getPartitionName() + " |----------\n\n";
                                                 resultString += temp;
                                                 resultString = printAllFileAndDir(extmbr.getExtPartition().getRootDirectory().getListOfFileAndDir(), resultString);
                                                 partition.setStartOfPartition(extmbr.getExtPartition().getCalExt2MBR());
@@ -536,9 +536,6 @@ public class MainActivity extends AppCompatActivity {
     public String printAllFileAndDir (ArrayList<FileEntry> listOfFileAndDir, String resultString) throws IOException {
         for (int i = 0; i < listOfFileAndDir.size(); i++) {
             resultString = listOfFileAndDir.get(i).toString(resultString);
-            if (listOfFileAndDir.get(i).getFileAttribute() == 32) {
-                //carveFile(listOfFileAndDir.get(i).getListOfData(), listOfFileAndDir.get(i).getLFname(), listOfFileAndDir.get(i).getNameExt());
-            }
             if (listOfFileAndDir.get(i).getFileAttribute() == 16) {
                 printAllFileAndDir(listOfFileAndDir.get(i).getListOfFileAndDir(), resultString);
             }
@@ -575,27 +572,6 @@ public class MainActivity extends AppCompatActivity {
         outputStream.flush();
         outputStream.close();
     }
-
-    public void carveFile(ArrayList<StringBuilder> listOfData, String fileName, String fileExt) throws IOException {
-
-        fileName = fileName.replaceAll("\\s+", "");
-        String fullFileName = fileName;
-        File fileeee = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Icarus/" + fullFileName);
-        fileeee.createNewFile();
-        OutputStream outputStream = null;
-        outputStream = new FileOutputStream(fileeee);
-
-        try {
-            for (int i = 0; i < listOfData.size(); i++) {
-                outputStream.write((char) Integer.parseInt(String.valueOf(listOfData.get(i)), 16));
-            }
-            outputStream.flush();
-            outputStream.close();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
 
     /*** Change Decimal to Binary ***/
     public String getDecToBin(long decValue) {
