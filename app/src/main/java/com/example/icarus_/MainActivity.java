@@ -507,7 +507,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             else {
-                finish();
+
             }
 
             return resultString;
