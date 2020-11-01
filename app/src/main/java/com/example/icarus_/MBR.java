@@ -55,24 +55,6 @@ public class MBR {
         return signatureType;
     }
 
-    public Boolean chkMBRValidity(TextView testingText) {
-        if (this.getSignatureType().equals("AA55")) {
-            testingText.append("==============================================\n");
-            testingText.append("=====| START OF FILE SYSTEM INFORMATION |=======\n");
-            testingText.append("==============================================\n\n");
-            testingText.append("MBR detected. Signature Type: " + this.getSignatureType() + "\n");
-            testingText.append("MBR Disk Identifier: " + this.getDiskIdentifer() + "\n\n");
-            return true;
-        }
-        else {
-            testingText.append("==============================================\n");
-            testingText.append("=====| START OF FILE SYSTEM INFORMATION |=======\n");
-            testingText.append("==============================================\n\n");
-            testingText.append("Invalid MBR. MBR cannot be detected." + "\n\n");
-            return false;
-        }
-    }
-
     public Boolean chkMBRValidity() {
         if (this.getSignatureType().equals("AA55")) {
             return true;

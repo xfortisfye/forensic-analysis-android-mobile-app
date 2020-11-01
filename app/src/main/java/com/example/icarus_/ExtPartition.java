@@ -392,16 +392,6 @@ public class ExtPartition {
     public DataRegion getDataRegion() { return this.dataRegion; }
     public FileEntry getRootDirectory() { return this.rootDirectory; }
 
-    public void toString(TextView testingText) {
-        testingText.append("----------| " + this.getPartitionName() + " |----------\n\n");
-        testingText.append("Bootable Status: " + this.getBootableStatus() + "\n");
-        testingText.append("Partition Type: " + this.getPartitionType() + "\n");
-        testingText.append("Start of Partition (Sectors): " + this.getStartOfPartition() + "\n");
-        testingText.append("End of Partition (Sectors): " + this.getEndOfPartition() + "\n");
-        testingText.append("Len of Partition (Sectors): " + this.getLenOfPartition() + "\n");
-        testingText.append("\n");
-    }
-
     public String toString(String resultString) {
         resultString += ("----------| " + this.getPartitionName() + " |----------\n\n");
         resultString += ("Bootable Status: " + this.getBootableStatus() + "\n");

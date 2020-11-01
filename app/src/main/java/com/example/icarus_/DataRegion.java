@@ -30,15 +30,6 @@ public class DataRegion extends VBR{
     public long getStartDataRegionDec() { return startDataRegionDec; }
     public long getEndDataRegionDec() { return endDataRegionDec; }
 
-    public void toString(TextView testingText) {
-        testingText.append("----------| DATA REGION INFORMATION\n\n");
-        testingText.append("Start of Data Region (sectors): " + this.getStartDataRegionSect() + "\n");
-        testingText.append("End of Data Region (sectors): " + this.getEndDataRegionSect() + "\n");
-        testingText.append("Start of Data Region (bytes): " + this.getStartDataRegionDec() + "\n");
-        testingText.append("End of Data Region (bytes): " + this.getEndDataRegionDec() + "\n");
-        testingText.append("\n");
-    }
-
     public String toString(String resultString) {
         resultString += ("----------| DATA REGION INFORMATION\n\n");
         resultString += ("Start of Data Region (sectors): " + this.getStartDataRegionSect() + "\n");

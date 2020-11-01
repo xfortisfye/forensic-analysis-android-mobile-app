@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                     mbr = getMBR(uri, startCount + 0); // Instantiate new MBR object
 
                     if (mbr.chkMBRValidity()) {
-                        resultString = mbr.appendValidMBRResult(resultString);
                         mbr.setPartition1(getMBR_PartitionInfo(uri, startCount + 446));
                         mbr.setPartition2(getMBR_PartitionInfo(uri, startCount + 462));
                         mbr.setPartition3(getMBR_PartitionInfo(uri, startCount + 478));
@@ -168,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
                         mbr.getPartition3().setEndOfPartition();
                         mbr.getPartition4().setEndOfPartition();
 
+                        resultString = mbr.appendValidMBRResult(resultString);
                         validMBR = true;
                     } else {
                         resultString = mbr.appendInvalidMBRResult(resultString);
@@ -194,9 +194,10 @@ public class MainActivity extends AppCompatActivity {
                                     try {
                                         extmbr = getExtMBR(uri, partition.getStartOfPartition() * 512);
                                         if (extmbr.chkExtMBRValidity()) {
-                                            resultString = extmbr.appendValidExtMBR(resultString);
                                             extmbr.setExtPartition(getExtMBR_PartitionInfo(uri, (partition.getStartOfPartition() * 512) + 446, partition.getStartOfPartition(), priExtPartitionStart));
                                             extmbr.getExtPartition().setEndOfPartition();
+
+                                            resultString = extmbr.appendValidExtMBR(resultString);
                                             validExtMBR = true;
                                         } else {
                                             resultString += extmbr.appendInvalidExtMBR(resultString);
@@ -243,8 +244,6 @@ public class MainActivity extends AppCompatActivity {
                                                 resultString = extmbr.getExtPartition().getFAT().toString(resultString);
                                                 resultString = extmbr.getExtPartition().getDataRegion().toString(resultString);
                                                 partition.setStartOfPartition(extmbr.getExtPartition().getCalExt2MBR());
-
-
                                             } else {
                                                 loopedAllExtPartitions = true;
                                                 partition.setStartOfPartition(priExtPartitionStart);
@@ -315,7 +314,6 @@ public class MainActivity extends AppCompatActivity {
                     mbr = getMBR(uri, startCount + 0); // Instantiate new MBR object
 
                     if (mbr.chkMBRValidity()) {
-
                         mbr.setPartition1(getMBR_PartitionInfo(uri, startCount + 446));
                         mbr.setPartition2(getMBR_PartitionInfo(uri, startCount + 462));
                         mbr.setPartition3(getMBR_PartitionInfo(uri, startCount + 478));
@@ -326,8 +324,10 @@ public class MainActivity extends AppCompatActivity {
                         mbr.getPartition3().setEndOfPartition();
                         mbr.getPartition4().setEndOfPartition();
 
+                        resultString = mbr.appendValidMBRResult(resultString);
                         validMBR = true;
                     } else {
+                        resultString = mbr.appendInvalidMBRResult(resultString);
                         validMBR = false;
                     }
                 } catch (IOException e) {
@@ -357,8 +357,10 @@ public class MainActivity extends AppCompatActivity {
                                             extmbr.setExtPartition(getExtMBR_PartitionInfo(uri, (partition.getStartOfPartition() * 512) + 446, partition.getStartOfPartition(), priExtPartitionStart));
                                             extmbr.getExtPartition().setEndOfPartition();
 
+                                            resultString += extmbr.appendValidExtMBR(resultString);
                                             validExtMBR = true;
                                         } else {
+                                            resultString += extmbr.appendInvalidExtMBR(resultString);
                                             validExtMBR = false;
                                         }
                                     } catch (IOException e) {
@@ -420,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
                                                 extmbr.getExtPartition().setRootDirectory(rootDirectory);
 
                                                 /*** Generation of Report ***/
-                                                String temp = extmbr.getExtPartition().getPartitionName() + "\n";
+                                                String temp = "----------| " + extmbr.getExtPartition().getPartitionName() + " |----------\n\n";
                                                 resultString += temp;
                                                 resultString = printAllFileAndDir(extmbr.getExtPartition().getRootDirectory().getListOfFileAndDir(), resultString);
                                                 partition.setStartOfPartition(extmbr.getExtPartition().getCalExt2MBR());
@@ -489,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
                                     partition.setRootDirectory(rootDirectory);
 
                                     /*** Generation of Report ***/
-                                    String temp = partition.getPartitionName() + "\n";
+                                    String temp = "----------| " + partition.getPartitionName() + " |----------\n\n";
                                     resultString += temp;
                                     resultString = printAllFileAndDir(partition.getRootDirectory().getListOfFileAndDir(), resultString);
                                     publishProgress(resultString);
@@ -512,7 +514,6 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
 
-            System.out.println(resultString);
             return resultString;
         }
     }
@@ -536,20 +537,6 @@ public class MainActivity extends AppCompatActivity {
         setParams newParam = new setParams(requestCode, resultCode, uri);
         TaskExecutor task = new TaskExecutor();
         task.execute(newParam);
-
-
-    }
-
-    public void printAllFileAndDir (ArrayList<FileEntry> listOfFileAndDir, TextView displayText) throws IOException {
-        for (int i = 0; i < listOfFileAndDir.size(); i++) {
-            listOfFileAndDir.get(i).toString(displayText);
-            if (listOfFileAndDir.get(i).getFileAttribute() == 32) {
-                //carveFile(listOfFileAndDir.get(i).getListOfData(), listOfFileAndDir.get(i).getLFname(), listOfFileAndDir.get(i).getNameExt());
-            }
-            if (listOfFileAndDir.get(i).getFileAttribute() == 16) {
-                printAllFileAndDir(listOfFileAndDir.get(i).getListOfFileAndDir(), displayText);
-            }
-        }
     }
 
     public String printAllFileAndDir (ArrayList<FileEntry> listOfFileAndDir, String resultString) throws IOException {
@@ -594,8 +581,6 @@ public class MainActivity extends AppCompatActivity {
         outputStream.flush();
         outputStream.close();
     }
-
-
 
     public void carveFile(ArrayList<StringBuilder> listOfData, String fileName, String fileExt) throws IOException {
 
@@ -1057,8 +1042,8 @@ public class MainActivity extends AppCompatActivity {
                         fileEntry.setWrittenDate(getHexLEDec(listOfDirData, startCount + 24, startCount + 25));
                         fileEntry.setSizeOfFile(getHexLEDec(listOfDirData, startCount + 28, startCount + 31));
                         fileEntry.setListOfClusters(getListOfClusterTraverse(uri, fat, fileEntry.getFirstClusterLoc()));
-                        carving(uri, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(),
-                                pathName+"/"+fileEntry.getLFname());
+//                        carving(uri, dataRegion, fileEntry.getListOfClusters(), bytesPerCluster, fileEntry.getSizeOfFile(),
+//                                pathName+"/"+fileEntry.getLFname());
                         listOfFileAndDir.add(fileEntry);
                         startCount = startCount + 32;
                     }

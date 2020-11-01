@@ -61,41 +61,42 @@ public class FileEntry extends Grab {
     public ArrayList<StringBuilder> getListOfData() { return listOfData; }
     public ArrayList<FileEntry> getListOfFileAndDir() { return listOfFileAndDir; }
 
-    public void toString(TextView testingText) {
+    public String toString(String resultString) {
         if (this.getFileAttribute() == 32) {
-            testingText.append("--- FILE ---" + "\n");
-            testingText.append("LFN: " + this.getLFname() + "\n");
-            testingText.append("SFN: " + this.getSFname() + "\n");
-            testingText.append("SFN Ext: " + this.getNameExt() + "\n");
-            testingText.append("File Attribute (Dec): " + this.getFileAttribute() + "\n");
-            testingText.append("Created Time: " + this.getCreatedDate() + " " + this.getCreatedTime() + "\n");
-            testingText.append("Accessed Date: " + this.getAccessedDate() + "\n");
-            testingText.append("First Cluster Location: " + this.getFirstClusterLoc() + "\n");
-            testingText.append("Written Time: " + this.getWrittenDate() + " " + this.getWrittenTime() + "\n");
-            testingText.append("Size of File: " + this.getSizeOfFile() + "\n");
+            resultString += ("\n--- FILE ---" + "\n\n");
+            resultString += ("LFN: " + this.getLFname() + "\n");
+            resultString += ("SFN: " + this.getSFname() + "\n");
+            resultString += ("SFN Ext: " + this.getNameExt() + "\n");
+            resultString += ("File Attribute (Dec): " + this.getFileAttribute() + "\n");
+            resultString += ("Created Time: " + this.getCreatedDate() + " " + this.getCreatedTime() + "\n");
+            resultString += ("Accessed Date: " + this.getAccessedDate() + "\n");
+            resultString += ("First Cluster Location: " + this.getFirstClusterLoc() + "\n");
+            resultString += ("Written Time: " + this.getWrittenDate() + " " + this.getWrittenTime() + "\n");
+            resultString += ("Size of File (Bytes): " + this.getSizeOfFile() + "\n");
         } else if (this.getFileAttribute() == 16) {
-            testingText.append("--- DIRECTORY ---" + "\n");
-            testingText.append("LFN: " + this.getLFname() + "\n");
-            testingText.append("SFN: " + this.getSFname() + "\n");
-            testingText.append("SFN Ext: " + this.getNameExt() + "\n");
-            testingText.append("File Attribute (Dec): " + this.getFileAttribute() + "\n");
-            testingText.append("Created Time: " + this.getCreatedDate() + " " + this.getCreatedTime() + "\n");
-            testingText.append("Accessed Date: " + this.getAccessedDate() + "\n");
-            testingText.append("First Cluster Location: " + this.getFirstClusterLoc() + "\n");
-            testingText.append("Written Time: " + this.getWrittenDate() + " " + this.getWrittenTime() + "\n");
-            testingText.append("Size of File: " + this.getSizeOfFile() + "\n");
+            resultString += ("\n--- DIRECTORY ---" + "\n\n");
+            resultString += ("LFN: " + this.getLFname() + "\n");
+            resultString += ("SFN: " + this.getSFname() + "\n");
+            resultString += ("SFN Ext: " + this.getNameExt() + "\n");
+            resultString += ("File Attribute (Dec): " + this.getFileAttribute() + "\n");
+            resultString += ("Created Time: " + this.getCreatedDate() + " " + this.getCreatedTime() + "\n");
+            resultString += ("Accessed Date: " + this.getAccessedDate() + "\n");
+            resultString += ("First Cluster Location: " + this.getFirstClusterLoc() + "\n");
+            resultString += ("Written Time: " + this.getWrittenDate() + " " + this.getWrittenTime() + "\n");
+            resultString += ("Size of File (Bytes): " + this.getSizeOfFile() + "\n");
         } else {
-            testingText.append("--- I don't know what is this ---" + "\n");
-            testingText.append("LFN: " + this.getLFname() + "\n");
-            testingText.append("SFN: " + this.getSFname() + "\n");
-            testingText.append("SFN Ext: " + this.getNameExt() + "\n");
-            testingText.append("File Attribute (Dec): " + this.getFileAttribute() + "\n");
-            testingText.append("Created Time: " + this.getCreatedDate() + " " + this.getCreatedTime() + "\n");
-            testingText.append("Accessed Date: " + this.getAccessedDate() + "\n");
-            testingText.append("First Cluster Location: " + this.getFirstClusterLoc() + "\n");
-            testingText.append("Written Time: " + this.getWrittenDate() + " " + this.getWrittenTime() + "\n");
-            testingText.append("Size of File: " + this.getSizeOfFile() + "\n");
+            resultString += ("\n--- Non-File and Non-Directory ---" + "\n\n");
+            resultString += ("LFN: " + this.getLFname() + "\n");
+            resultString += ("SFN: " + this.getSFname() + "\n");
+            resultString += ("SFN Ext: " + this.getNameExt() + "\n");
+            resultString += ("File Attribute (Dec): " + this.getFileAttribute() + "\n");
+            resultString += ("Created Time: " + this.getCreatedDate() + " " + this.getCreatedTime() + "\n");
+            resultString += ("Accessed Date: " + this.getAccessedDate() + "\n");
+            resultString += ("First Cluster Location: " + this.getFirstClusterLoc() + "\n");
+            resultString += ("Written Time: " + this.getWrittenDate() + " " + this.getWrittenTime() + "\n");
+            resultString += ("Size of File (Bytes): " + this.getSizeOfFile() + "\n");
         }
+        return resultString;
     }
 }
 
