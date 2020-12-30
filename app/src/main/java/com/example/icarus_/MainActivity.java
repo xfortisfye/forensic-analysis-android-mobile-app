@@ -672,6 +672,23 @@ public class MainActivity extends AppCompatActivity {
                 if (totalFileSize >= bytesPerCluster) {
                     long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
                     long endCount = (clusterNumList.get(i) -1) * bytesPerCluster;
+                    outputStream.write(getBEHexData1(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
+                } else {
+                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
+                    long endCount = (clusterNumList.get(i) -2) * bytesPerCluster + totalFileSize;
+                    outputStream.write(getBEHexData1(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return outputStream;
+        }
+
+        /*public OutputStream call() throws Exception {
+            try{
+                if (totalFileSize >= bytesPerCluster) {
+                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
+                    long endCount = (clusterNumList.get(i) -1) * bytesPerCluster;
                     String temp = String.valueOf(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
                     List<String> strings = new ArrayList<String>();
                     int index = 0;
@@ -703,7 +720,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             return outputStream;
-        }
+        }*/
     }
 
     // Collecting all the data for File
@@ -713,7 +730,7 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(pathName);
         file.createNewFile();
         OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        ExecutorService executor = Executors.newSingleThreadExecutor();
         List<Future<OutputStream>> futures = new ArrayList<>();
         List<Callable<OutputStream>> callables = new ArrayList<>();
 
@@ -835,21 +852,17 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    public StringBuilder getBEHexData1(Uri uri, long startCount, long endCount, long size) throws IOException {
+    public byte[] getBEHexData1(Uri uri, long startCount, long endCount) throws IOException {
         int decimalValue = 0;
-        StringBuilder hexString = new StringBuilder();
-
         try {
-            InputStream is = new BufferedInputStream(getContentResolver().openInputStream(uri));
+            InputStream is = getContentResolver().openInputStream(uri);
             is.skip(startCount);
-            byte[] buffer = new byte[(int)size];
-            for (long i = startCount; i <= endCount; i++) {
-                decimalValue = is.read(buffer);
-                hexString.append(String.format("%02X", decimalValue));
-                i += size;
-            }
+
+            byte[] buffer = new byte[(int) endCount - (int)startCount + 1];
+            is.read(buffer, 0, (int)endCount - (int) startCount + 1);
+
             is.close();
-            return hexString;
+            return buffer;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
