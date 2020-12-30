@@ -27,8 +27,8 @@ public class ExtPartition {
     public void setPartitionName(String partitionName) {
         this.partitionName = partitionName;
     }
-    public void setExtBootableStatus(StringBuilder hexData) {
-        switch(hexData.toString()) {
+    public void setExtBootableStatus(String hexData) {
+        switch(hexData) {
             case "80":
                 this.bootableStatus = "Bootable";
                 break;
@@ -41,8 +41,8 @@ public class ExtPartition {
         }
     }
 
-    public void setPartitionType(StringBuilder hexData) {
-        switch(hexData.toString()) {
+    public void setPartitionType(String hexData) {
+        switch(hexData) {
             case "00":
                 this.partitionType = "Empty";
                 break;
