@@ -110,72 +110,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    class TestRunnable implements Runnable {
-        int i;
-        Uri uri;
-        DataRegion dataRegion;
-        ArrayList<Long> clusterNumList;
-        long bytesPerCluster;
-        long totalFileSize;
-        OutputStream outputStream;
-        String pathName;
-
-        public TestRunnable(int i, Uri uri, DataRegion dataRegion,
-                            ArrayList<Long> clusterNumList, long bytesPerCluster, long totalFileSize, OutputStream outputStream, String pathName) {
-            this.i = i;
-            this.uri = uri;
-            this.dataRegion = dataRegion;
-            this.clusterNumList = clusterNumList;
-            this.bytesPerCluster = bytesPerCluster;
-            this.totalFileSize = totalFileSize;
-            this.outputStream = outputStream;
-            this.pathName = pathName;
-        }
-
-        public OutputStream getOS() {
-            return this.outputStream;
-        }
-
-        public int getIndex() {
-            return this.i;
-        }
-
-        public void run(){
-            try{
-                if (totalFileSize >= bytesPerCluster) {
-                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
-                    long endCount = (clusterNumList.get(i) -1) * bytesPerCluster;
-                    String temp = String.valueOf(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
-                    List<String> strings = new ArrayList<String>();
-                    int index = 0;
-                    while (index < temp.length() - 1) {
-                        strings.add(temp.substring(index, Math.min(index + 2,temp.length())));
-                        index += 2;
-                    }
-                    for (String s: strings){
-                        outputStream.write((char) Integer.parseInt((s), 16));
-                    }
-
-                } else {
-                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
-                    long endCount = (clusterNumList.get(i) -2) * bytesPerCluster + totalFileSize;
-                    String temp = String.valueOf(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
-                    List<String> strings = new ArrayList<String>();
-                    int index = 0;
-                    while (index < temp.length() - 1) {
-                        strings.add(temp.substring(index, Math.min(index + 2,temp.length())));
-                        index += 2;
-                    }
-                    for (String s: strings){
-                        outputStream.write((char) Integer.parseInt((s), 16));
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private class TaskExecutor extends AsyncTask<setParams, String, String> {
         FrameLayout progressbar = (FrameLayout) findViewById(R.id.progressBarHolder);
         AlphaAnimation inAnimation;
@@ -1113,7 +1047,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public ArrayList<FileEntry> traverseDirectory(Uri uri, FATable fat, DataRegion dataRegion, long bytesPerCluster,
-                                                  ArrayList<StringBuilder> listOfDirData, ArrayList<FileEntry> listOfFileAndDir, String pathName) throws IOException, InterruptedException {
+                                                  ArrayList<StringBuilder> listOfDirData, ArrayList<FileEntry> listOfFileAndDir, String pathName) throws IOException {
 
         int numOfLFNentries;
         long startCount = 0;
