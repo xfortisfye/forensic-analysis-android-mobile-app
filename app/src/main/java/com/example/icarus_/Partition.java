@@ -22,8 +22,8 @@ public class Partition {
         this.partitionName = partitionName;
     }
 
-    public void setBootableStatus(StringBuilder hexData) {
-        switch(hexData.toString()) {
+    public void setBootableStatus(String hexData) {
+        switch(hexData) {
             case "80":
                 this.bootableStatus = "Bootable";
                 break;
@@ -36,8 +36,8 @@ public class Partition {
         }
     }
 
-    public void setPartitionType(StringBuilder hexData) {
-        switch(hexData.toString()) {
+    public void setPartitionType(String hexData) {
+        switch(hexData) {
             case "00":
                 this.partitionType = "Empty";
                 break;

@@ -1,6 +1,5 @@
 package com.example.icarus_;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +22,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
@@ -44,15 +42,15 @@ public class MainActivity extends AppCompatActivity {
     TextView displayText;
     private static final int ANALYSE_FILE = 01;
     private static final int CARVE_FILE = 02;
-
     @RequiresApi(api = Build.VERSION_CODES.R)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*** FOR HIDING TOP BAR ***/
+        // For hiding top bar
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
+        // Permission notifier
         PermissionListener permissionListener = new PermissionListener() {
             @Override
             public void onPermissionGranted() {
@@ -65,14 +63,14 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        //check all needed permissions together
+        // Check if permission is enabled
         TedPermission.with(this)
                 .setPermissionListener(permissionListener)
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                 .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .check();
 
-        /*** Make a directory ***/
+        // Make Icarus directory
         File file = new File (Environment.getExternalStorageDirectory(), "Icarus");
         if (file.exists()) {
 
@@ -81,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             file.mkdirs();
         }
 
-        /*** Detect Start Analyse Button ***/
+        // Detect Start Analyse Button
         startAnalyseButton = (Button) findViewById(R.id.startAnalyseButton);
         displayText = (TextView) findViewById(R.id.displayText);
         displayText.setText("");
@@ -95,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*** Detect Start Carve Button ***/
+        // Detect Start Carve Button
         startCarveButton = (Button) findViewById(R.id.startCarveButton);
         displayText = (TextView) findViewById(R.id.displayText);
         displayText.setText("");
@@ -140,35 +138,19 @@ public class MainActivity extends AppCompatActivity {
             return this.i;
         }
 
-        public void run(){
-            try{
+        public void run() {
+            try {
                 if (totalFileSize >= bytesPerCluster) {
                     long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
-                    long endCount = (clusterNumList.get(i) -1) * bytesPerCluster;
-                    String temp = String.valueOf(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
-                    List<String> strings = new ArrayList<String>();
-                    int index = 0;
-                    while (index < temp.length() - 1) {
-                        strings.add(temp.substring(index, Math.min(index + 2,temp.length())));
-                        index += 2;
-                    }
-                    for (String s: strings){
-                        outputStream.write((char) Integer.parseInt((s), 16));
-                    }
+                    long endCount = (clusterNumList.get(i) - 1) * bytesPerCluster;
+                    outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
+
 
                 } else {
                     long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
-                    long endCount = (clusterNumList.get(i) -2) * bytesPerCluster + totalFileSize;
-                    String temp = String.valueOf(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
-                    List<String> strings = new ArrayList<String>();
-                    int index = 0;
-                    while (index < temp.length() - 1) {
-                        strings.add(temp.substring(index, Math.min(index + 2,temp.length())));
-                        index += 2;
-                    }
-                    for (String s: strings){
-                        outputStream.write((char) Integer.parseInt((s), 16));
-                    }
+                    long endCount = (clusterNumList.get(i) - 2) * bytesPerCluster + totalFileSize;
+                    outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -672,11 +654,11 @@ public class MainActivity extends AppCompatActivity {
                 if (totalFileSize >= bytesPerCluster) {
                     long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
                     long endCount = (clusterNumList.get(i) -1) * bytesPerCluster;
-                    outputStream.write(getBEHexData1(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
+                    outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
                 } else {
                     long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
                     long endCount = (clusterNumList.get(i) -2) * bytesPerCluster + totalFileSize;
-                    outputStream.write(getBEHexData1(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
+                    outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -852,8 +834,7 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    public byte[] getBEHexData1(Uri uri, long startCount, long endCount) throws IOException {
-        int decimalValue = 0;
+    public byte[] getHexBEBuf(Uri uri, long startCount, long endCount) throws IOException {
         try {
             InputStream is = getContentResolver().openInputStream(uri);
             is.skip(startCount);
@@ -983,8 +964,8 @@ public class MainActivity extends AppCompatActivity {
     /*** Create new Partition object with its' information ***/
     public Partition getMBR_PartitionInfo(Uri uri, long startCount) throws IOException {
         Partition partition = new Partition();
-        partition.setBootableStatus(getLEHexData(uri, startCount + 0, startCount + 0));
-        partition.setPartitionType(getLEHexData(uri, startCount + 4, startCount + 4));
+        partition.setBootableStatus(getLEHexData(uri, startCount + 0, startCount + 0).toString());
+        partition.setPartitionType(getLEHexData(uri, startCount + 4, startCount + 4).toString());
         partition.setStartOfPartition(getHexLEDec(uri, startCount + 8, startCount + 11));
         partition.setLenOfPartition(getHexLEDec(uri, startCount + 12, startCount + 15));
         return partition;
@@ -1000,7 +981,7 @@ public class MainActivity extends AppCompatActivity {
         vbr.setNumOfFats(getHexLEDec(uri, startCount + 16, startCount + 16));
         vbr.setMaxRootFiles(getHexLEDec(uri, startCount + 17, startCount + 18));
         vbr.setBit16Sectors(getHexLEDec(uri, startCount + 19, startCount + 20));
-        vbr.setMediaType(getLEHexData(uri, startCount + 21, startCount + 21));
+        vbr.setMediaType(getLEHexData(uri, startCount + 21, startCount + 21).toString());
         vbr.setOffset(getHexLEDec(uri, startCount + 28, startCount + 31));
         vbr.setBit32Sectors(getHexLEDec(uri, startCount + 32, startCount + 35));
         vbr.setBit32SectorsOfFat(getHexLEDec(uri, startCount + 36, startCount + 39));
@@ -1028,8 +1009,8 @@ public class MainActivity extends AppCompatActivity {
     /*** Create new ExtPartition object with its' information ***/
     public ExtPartition getExtMBR_PartitionInfo(Uri uri, long startCount, long startExtMBR, long priExtPartitionStart) throws IOException {
         ExtPartition extPartition = new ExtPartition(startExtMBR);
-        extPartition.setExtBootableStatus(getLEHexData(uri, startCount + 0, startCount + 0));
-        extPartition.setPartitionType(getLEHexData(uri, startCount + 4, startCount + 4));
+        extPartition.setExtBootableStatus(getLEHexData(uri, startCount + 0, startCount + 0).toString());
+        extPartition.setPartitionType(getLEHexData(uri, startCount + 4, startCount + 4).toString());
         extPartition.setPriExtPartitionStart(priExtPartitionStart);
         extPartition.setStartOfPartition(getHexLEDec(uri, startCount + 8, startCount + 11));
         extPartition.setLenOfPartition(getHexLEDec(uri, startCount + 12, startCount + 15));

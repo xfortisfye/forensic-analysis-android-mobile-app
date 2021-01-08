@@ -39,8 +39,8 @@ public class VBR extends Grab {
     }
     public void setMaxRootFiles(long maxRootFiles) { this.maxRootFiles = maxRootFiles; }
 
-    public void setMediaType(StringBuilder hexData) {
-        switch (hexData.toString()) {
+    public void setMediaType(String hexData) {
+        switch (hexData) {
             case "F8":
                 mediaType = "Fixed Disk";
                 break;
