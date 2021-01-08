@@ -108,56 +108,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    class TestRunnable implements Runnable {
-        int i;
-        Uri uri;
-        DataRegion dataRegion;
-        ArrayList<Long> clusterNumList;
-        long bytesPerCluster;
-        long totalFileSize;
-        OutputStream outputStream;
-        String pathName;
-
-        public TestRunnable(int i, Uri uri, DataRegion dataRegion,
-                            ArrayList<Long> clusterNumList, long bytesPerCluster, long totalFileSize, OutputStream outputStream, String pathName) {
-            this.i = i;
-            this.uri = uri;
-            this.dataRegion = dataRegion;
-            this.clusterNumList = clusterNumList;
-            this.bytesPerCluster = bytesPerCluster;
-            this.totalFileSize = totalFileSize;
-            this.outputStream = outputStream;
-            this.pathName = pathName;
-        }
-
-        public OutputStream getOS() {
-            return this.outputStream;
-        }
-
-        public int getIndex() {
-            return this.i;
-        }
-
-        public void run() {
-            try {
-                if (totalFileSize >= bytesPerCluster) {
-                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
-                    long endCount = (clusterNumList.get(i) - 1) * bytesPerCluster;
-                    outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
-
-
-                } else {
-                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
-                    long endCount = (clusterNumList.get(i) - 2) * bytesPerCluster + totalFileSize;
-                    outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
-
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private class TaskExecutor extends AsyncTask<setParams, String, String> {
         FrameLayout progressbar = (FrameLayout) findViewById(R.id.progressBarHolder);
         AlphaAnimation inAnimation;
