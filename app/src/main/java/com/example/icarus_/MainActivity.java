@@ -595,19 +595,18 @@ public class MainActivity extends AppCompatActivity {
             this.pathName = pathName;
         }
 
-        public int getI() {
-            return this.i;
-        }
-
-        public OutputStream call() throws Exception {
+        public OutputStream call() {
             try{
                 if (totalFileSize >= bytesPerCluster) {
                     long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
                     long endCount = (clusterNumList.get(i) -1) * bytesPerCluster;
+                    System.out.println("Starting: " + startCount + " Ending: " + endCount);
+                    System.out.println("Starting: " + startCount + " Ending: " + endCount + " Current File Size: " + totalFileSize);
                     outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
                 } else {
                     long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
                     long endCount = (clusterNumList.get(i) -2) * bytesPerCluster + totalFileSize;
+                    System.out.println("Final Starting: " + startCount + " Final Ending: " + endCount + " Current File Size: " + totalFileSize);
                     outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
                 }
             } catch (IOException e) {
@@ -615,44 +614,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return outputStream;
         }
-
-        /*public OutputStream call() throws Exception {
-            try{
-                if (totalFileSize >= bytesPerCluster) {
-                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
-                    long endCount = (clusterNumList.get(i) -1) * bytesPerCluster;
-                    String temp = String.valueOf(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
-                    List<String> strings = new ArrayList<String>();
-                    int index = 0;
-                    while (index < temp.length() - 1) {
-                        strings.add(temp.substring(index, Math.min(index + 2,temp.length())));
-                        index += 2;
-                    }
-                    for (String s: strings){
-                        outputStream.write((char) Integer.parseInt((s), 16));
-                    }
-                    System.out.println(i);
-
-                } else {
-                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
-                    long endCount = (clusterNumList.get(i) -2) * bytesPerCluster + totalFileSize;
-                    String temp = String.valueOf(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
-                    List<String> strings = new ArrayList<String>();
-                    int index = 0;
-                    while (index < temp.length() - 1) {
-                        strings.add(temp.substring(index, Math.min(index + 2,temp.length())));
-                        index += 2;
-                    }
-                    for (String s: strings){
-                        outputStream.write((char) Integer.parseInt((s), 16));
-                    }
-                    System.out.println("LOL" + i);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return outputStream;
-        }*/
     }
 
     // Collecting all the data for File
@@ -664,18 +625,13 @@ public class MainActivity extends AppCompatActivity {
         OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         List<Future<OutputStream>> futures = new ArrayList<>();
-        List<Callable<OutputStream>> callables = new ArrayList<>();
 
         try {
             for (int i = 0; i < clusterNumList.size(); i++) {
-                if (totalFileSize >= bytesPerCluster) {
-                    totalFileSize = totalFileSize - bytesPerCluster;
-                }
                 futures.add(executor.submit(new createCallable(i, uri , dataRegion, clusterNumList, bytesPerCluster, totalFileSize, outputStream, pathName)));
-              // Futures
-                // Callable<OutputStream> newCallable = new createCallable(i,uri,dataRegion, clusterNumList,bytesPerCluster,totalFileSize, outputStream, pathName);
-                // callables.add(toCallable(new TestRunnable(i,uri,dataRegion, clusterNumList,bytesPerCluster,totalFileSize, outputStream, pathName)));
-                // executor.execute(new TestRunnable(i,uri,dataRegion, clusterNumList,bytesPerCluster,totalFileSize, outputStream, pathName));
+                if (totalFileSize >= bytesPerCluster) {
+                    totalFileSize -= bytesPerCluster;
+                }
             }
 
             for (Future<OutputStream> fut : futures) {
@@ -689,6 +645,38 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+/*    public void carving(Uri uri, DataRegion dataRegion,
+                        ArrayList<Long> clusterNumList, long bytesPerCluster, long totalFileSize, String pathName) throws IOException {
+        System.out.println("Carving " +  pathName + " File Size = " + totalFileSize);
+        File file = new File(pathName);
+        file.createNewFile();
+        OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
+
+
+        try {
+            for (int i = 0; i < clusterNumList.size(); i++) {
+                if (totalFileSize >= bytesPerCluster) {
+                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
+                    long endCount = (clusterNumList.get(i) -1) * bytesPerCluster;
+                    totalFileSize = totalFileSize - bytesPerCluster;
+                    System.out.println("Starting: " + startCount + " Ending: " + endCount + " Current File Size: " + totalFileSize);
+                    outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
+                } else {
+                    long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
+                    long endCount = (clusterNumList.get(i) -2) * bytesPerCluster + totalFileSize;
+                    System.out.println("Final Starting: " + startCount + " Final Ending: " + endCount + " Current File Size: " + totalFileSize);
+                    outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
+                }
+            }
+
+            outputStream.flush();
+            outputStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }*/
 
     /*** Change Decimal to Binary ***/
     public String getDecToBin(long decValue) {
@@ -1016,32 +1004,6 @@ public class MainActivity extends AppCompatActivity {
 
         return dirContent;
     }
-
-    // Collecting all the data for File
-    public ArrayList<StringBuilder> getListOfFileDataTraverse(Uri uri, FATable fat, DataRegion dataRegion,
-                                                              ArrayList<Long> clusterNumList, long bytesPerCluster, long totalFileSize) throws IOException {
-        ArrayList<StringBuilder> fileContent = new ArrayList<StringBuilder>();
-        for (int i = 0; i < clusterNumList.size(); i++) {
-            if (totalFileSize >= bytesPerCluster) {
-                System.out.println("Total File Size: " + totalFileSize);
-                totalFileSize = totalFileSize - (bytesPerCluster);
-                System.out.println("File Cluster No.: "+ clusterNumList.get(i) + " Cluster No for Cal: " + (clusterNumList.get(i) - 2));
-                for (long j=((clusterNumList.get(i) - 2) * bytesPerCluster); j<((clusterNumList.get(i) - 1) * bytesPerCluster); j++) {
-                    fileContent.add(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + j),
-                            (dataRegion.getStartDataRegionDec() + j)));
-                }
-            } else {
-                System.out.println("END Total File Size: " + totalFileSize);
-                System.out.println("END File Cluster No.: "+ clusterNumList.get(i) + " Cluster No for Cal: " + (clusterNumList.get(i) - 2));
-                for (long j=(clusterNumList.get(i) - 2) * bytesPerCluster; j<((clusterNumList.get(i) - 2) * bytesPerCluster + totalFileSize); j++) {
-                    fileContent.add(getBEHexData(uri, (dataRegion.getStartDataRegionDec() + j),
-                            (dataRegion.getStartDataRegionDec() + j)));
-                }
-            }
-        }
-        return fileContent;
-    }
-
 
     public ArrayList<FileEntry> traverseDirectory(Uri uri, FATable fat, DataRegion dataRegion, long bytesPerCluster,
                                                   ArrayList<StringBuilder> listOfDirData, ArrayList<FileEntry> listOfFileAndDir, String pathName) throws IOException, InterruptedException {
