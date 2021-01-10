@@ -600,13 +600,12 @@ public class MainActivity extends AppCompatActivity {
                 if (totalFileSize >= bytesPerCluster) {
                     long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
                     long endCount = (clusterNumList.get(i) -1) * bytesPerCluster;
-                    System.out.println("Starting: " + startCount + " Ending: " + endCount);
-                    System.out.println("Starting: " + startCount + " Ending: " + endCount + " Current File Size: " + totalFileSize);
+                    //System.out.println("Starting: " + startCount + " Ending: " + endCount + " Current File Size: " + totalFileSize);
                     outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
                 } else {
                     long startCount = (clusterNumList.get(i) - 2) * bytesPerCluster;
                     long endCount = (clusterNumList.get(i) -2) * bytesPerCluster + totalFileSize;
-                    System.out.println("Final Starting: " + startCount + " Final Ending: " + endCount + " Current File Size: " + totalFileSize);
+                    //System.out.println("Final Starting: " + startCount + " Final Ending: " + endCount + " Current File Size: " + totalFileSize);
                     outputStream.write(getHexBEBuf(uri, (dataRegion.getStartDataRegionDec() + startCount), (dataRegion.getStartDataRegionDec() + endCount - 1)));
                 }
             } catch (IOException e) {
