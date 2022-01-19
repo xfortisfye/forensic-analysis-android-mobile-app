@@ -1,7 +1,4 @@
-# ICT2202-Icarus (xPosed Project)
-
-
-
+# ict2202-icarus
 
 ![SIT Logo](/pictures/SIT_Logo.png?raw=true "SIT Logo")
 ![Icarus Logo](/pictures/Icarus_Logo.png?raw=true "Icarus Logo")
