@@ -1,18 +1,13 @@
 # ict2202-icarus
 
-![SIT Logo](/pictures/SIT_Logo.png?raw=true "SIT Logo")
+
 ![Icarus Logo](/pictures/Icarus_Logo.png?raw=true "Icarus Logo")
-
-
-ICT2202 Digital Forensics
-AY2020/2021, Trimester 1
-
 
 Youtube Link: https://youtu.be/nFhL5-qZKhk
  
 1.	Installation of Icarus
 
-Icarus.apk may be downloaded from the following link: https://github.com/qiikaii/ICT2202-Icarus/blob/main/app/release/Icarus.apk
+Icarus.apk may be downloaded from the following link: https://github.com/xfortisfye/ict2202-icarus/blob/main/app/release/Icarus.apk
 
 Thereafter, user should install Icarus as seen in Figure 1.1
 
