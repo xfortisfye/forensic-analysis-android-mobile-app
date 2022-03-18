@@ -2,6 +2,7 @@
 
 ## Setting Up
 1. [Clone GitHub Repo](https://github.com/xfortisfye/303-see-other/blob/main/github-notes.md#clone-github-repo)
+2. Install [Android Studio](https://developer.android.com/studio)
 
 ![Icarus Logo](/pictures/Icarus_Logo.png?raw=true "Icarus Logo")
 
