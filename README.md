@@ -1,5 +1,7 @@
 # ict2202-icarus
 
+## Setting Up
+1. [Clone GitHub Repo](https://github.com/xfortisfye/303-see-other/blob/main/github-notes.md#clone-github-repo)
 
 ![Icarus Logo](/pictures/Icarus_Logo.png?raw=true "Icarus Logo")
 
