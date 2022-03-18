@@ -3,7 +3,7 @@
 
 ![Icarus Logo](/pictures/Icarus_Logo.png?raw=true "Icarus Logo")
 
-Youtube Link: https://youtu.be/nFhL5-qZKhk
+Youtube Link: https://www.youtube.com/watch?v=c1NPYY3F3tM
  
 1.	Installation of Icarus
 
