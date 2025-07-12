@@ -1,7 +1,6 @@
 # forensic-analysis-android-mobile-app
 
 ## Description
-
 An Android application that is able to perform analysis on the image's partition details and carve out files as [seen here](https://www.youtube.com/watch?v=vqxqjrnj7q0).
 
 ## Setting Up
