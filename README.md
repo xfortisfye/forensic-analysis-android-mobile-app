@@ -1,4 +1,4 @@
-# ict2202-icarus
+# forensic-analysis-android-mobile-app
 
 ## Description
 
